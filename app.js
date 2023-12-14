@@ -8,7 +8,7 @@ const logger = require('morgan')
 
 const app = express()
 const server = http.createServer(app)
-const expressWs = require('express-ws')(app, server)
+require('express-ws')(app, server)
 
 const indexRouter = require('./routes/index')
 const usersRouter = require('./routes/users')

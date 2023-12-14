@@ -1,4 +1,11 @@
 module.exports = {
   extends: ['standard'],
-  'comma-dangle': ['error', 'always-multiline'],
+  env: {
+    browser: true,
+    node: true,
+  },
+  rules: {
+    'comma-dangle': 'off',
+    'space-before-function-paren': 'off',
+  },
 }
