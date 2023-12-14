@@ -1,5 +1,4 @@
 module.exports = {
-  extends: [
-    'standard'
-  ]
+  extends: ['standard'],
+  'comma-dangle': ['error', 'always-multiline'],
 }

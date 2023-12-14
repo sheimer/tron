@@ -1,4 +1,4 @@
-cArena = function (domCanvas) {
+const cArena = function (domCanvas) {
   this.sBorderColor = game.hParams.sBorderColor || 'rgb(0,0,0)'
   this.sBGColor = game.hParams.sBGColor || 'rgb(255,255,255)'
   this.iBlockSize = game.hParams.iBlockSize || 2

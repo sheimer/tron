@@ -1,4 +1,4 @@
-cPlayer = function (sName, sColor, iLeft, iRight, hPos, iMove) {
+const cPlayer = function (sName, sColor, iLeft, iRight, hPos, iMove) {
   this.hPos = hPos || { x: 40, y: 120 }
   this.hInit = {
     hPos: {},

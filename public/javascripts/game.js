@@ -1,4 +1,4 @@
-var game = {}
+const game = {}
 game.hParams = {
   iFps: 20,
   iWidth: 640,
@@ -19,7 +19,7 @@ game.init = function () {
   game.oArena.addPlayer()
   game.oArena.addPlayer(
     'sheimer',
-    'rgb(0,0,0)',
+    'rgb(120,120,120)',
     65 /*a*/,
     83 /*s*/,
     { x: 279, y: 120 },
@@ -30,8 +30,6 @@ game.init = function () {
 game.start = function () {
   document.getElementById('log').innerHTML = ''
   game.oArena.reset()
-  console.log(Math.round(1000 / game.hParams.iFps))
-  //game.running = setInterval(game.run, Math.round(1000 / game.hParams.iFps));
   game.running = true
   game.timer.interval = Math.round(1000 / game.hParams.iFps)
   game.timer.started = new Date().getTime()
@@ -54,7 +52,6 @@ game.run = function () {
   }
 
   window.requestAnimationFrame(() => {
-    console.log(timediff)
     if (game.running) {
       game.run()
     }
