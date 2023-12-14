@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  canvas#arena(width='640px' height='480px')
+  #log
+  input(type='button' value=' start ' onclick='game.start(); return false;')
