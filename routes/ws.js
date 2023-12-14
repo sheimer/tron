@@ -33,6 +33,8 @@ const Game = class {
   }
 }
 
+// TODO: dont use express-ws anymore, instead build like on
+// https://github.com/websockets/ws#multiple-servers-sharing-a-single-https-server
 router.ws('/echo', function (ws, req) {
   ws.on('message', function (msg) {
     ws.send(msg)
