@@ -1,5 +1,4 @@
-const express = require('express')
-const router = express.Router()
+const ws = require('ws')
 
 const Game = class {
   constructor(ws) {
@@ -33,15 +32,25 @@ const Game = class {
   }
 }
 
-// TODO: dont use express-ws anymore, instead build like on
-// https://github.com/websockets/ws#multiple-servers-sharing-a-single-https-server
-router.ws('/echo', function (ws, req) {
-  ws.on('message', function (msg) {
-    ws.send(msg)
+const wssEcho = new ws.Server({ noServer: true })
+wssEcho.on('connection', (ws) => {
+  ws.on('message', (msg, binary) => {
+    ws.send(msg, { binary })
   })
-
   const game = new Game(ws)
   game.run()
 })
 
-module.exports = router
+const addWebsockets = (server) => {
+  server.on('upgrade', (req, socket, head) => {
+    if (req.url.startsWith('/ws/echo')) {
+      wssEcho.handleUpgrade(req, socket, head, (ws) => {
+        wssEcho.emit('connection', ws, req)
+      })
+    } else {
+      socket.destroy()
+    }
+  })
+}
+
+module.exports = addWebsockets

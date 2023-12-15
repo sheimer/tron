@@ -1,4 +1,6 @@
-const game = {}
+import { Arena } from './arena.class.js'
+
+export const game = {}
 game.hParams = {
   iFps: 20,
   iWidth: 640,
@@ -15,13 +17,13 @@ game.timer = {
 }
 
 game.init = function () {
-  game.oArena = new cArena()
+  game.oArena = new Arena(game)
   game.oArena.addPlayer()
   game.oArena.addPlayer(
     'sheimer',
     'rgb(120,120,120)',
-    65 /*a*/,
-    83 /*s*/,
+    65 /* a */,
+    83 /* s */,
     { x: 279, y: 120 },
     3,
   )

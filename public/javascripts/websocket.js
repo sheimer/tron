@@ -1,4 +1,6 @@
-const websocket = {
+import { log } from './include.js'
+
+export const websocket = {
   socket: new WebSocket('ws://localhost:3000/ws/echo'),
   connected: false,
   measureTime: false,

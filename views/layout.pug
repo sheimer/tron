@@ -3,10 +3,11 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
-    script(src='/javascripts/include.js')
-    script(src='/javascripts/player.class.js')
-    script(src='/javascripts/arena.class.js')
-    script(src='/javascripts/game.js')
-    script(src='/javascripts/websocket.js')
-  body(onload='game.init()')
+    script(src='/javascripts/game.js' type='module')
+    script(src='/javascripts/include.js' type='module')
+    script(src='/javascripts/player.class.js' type='module')
+    script(src='/javascripts/arena.class.js' type='module')
+    script(src='/javascripts/websocket.js' type='module')
+    script(src='/javascripts/page.js' type='module')
+  body
     block content

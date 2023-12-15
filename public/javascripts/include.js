@@ -1,5 +1,5 @@
-function log(sMsg) {
-  var oCntr = document.getElementById('log')
+export function log(sMsg) {
+  const oCntr = document.getElementById('log')
   if (oCntr) {
     oCntr.innerHTML += '<br>' + sMsg
     oCntr.scrollTop = oCntr.scrollHeight
