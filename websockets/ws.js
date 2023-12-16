@@ -1,8 +1,8 @@
-const ws = require('ws')
+import { WebSocketServer } from 'ws'
 
-const Game = require('../lib/game')
+import { Game } from '../lib/Game.js'
 
-const wssEcho = new ws.WebSocketServer({
+const wssEcho = new WebSocketServer({
   noServer: true,
   perMessageDeflate: false,
 })
@@ -12,7 +12,7 @@ wssEcho.on('connection', (ws) => {
   })
 })
 
-const wssGame = new ws.WebSocketServer({
+const wssGame = new WebSocketServer({
   noServer: true,
   perMessageDeflate: false,
 })
@@ -26,7 +26,7 @@ wssGame.on('connection', (ws) => {
   })
 })
 
-const addWebsockets = (server) => {
+export const addWebsockets = (server) => {
   server.on('upgrade', (req, socket, head) => {
     if (req.url.startsWith('/ws/echo')) {
       wssEcho.handleUpgrade(req, socket, head, (ws) => {
@@ -41,5 +41,3 @@ const addWebsockets = (server) => {
     }
   })
 }
-
-module.exports = addWebsockets
