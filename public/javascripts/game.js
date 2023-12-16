@@ -2,6 +2,7 @@ import { log } from './include.js'
 import { PlayerFE } from './PlayerFE.js'
 import { Arena } from './shared/Arena.js'
 import { Renderer } from './Renderer.js'
+import { websocketGame } from './websocket.js'
 
 export const game = {}
 const properties = {
@@ -28,13 +29,31 @@ game.timer = {
 }
 
 game.init = function () {
+  const players = [
+    {
+      name: 'hidden',
+      color: properties.playercolors[0],
+      left: 75, // k
+      right: 76, // l
+      pos: { x: 40, y: 100 },
+      move: 1,
+    },
+    {
+      name: 'sheimer',
+      color: properties.playercolors[1],
+      left: 65, // a
+      right: 83, // s
+      pos: { x: 279, y: 100 },
+      move: 3,
+    },
+  ]
+
   const size = {
     x: properties.width / properties.blocksize,
     y: properties.height / properties.blocksize,
   }
   game.renderer = new Renderer({ ...properties, size })
   game.arena = new Arena({
-    game,
     size,
     ondraw: (fields) => {
       game.renderer.draw(fields)
@@ -44,31 +63,14 @@ game.init = function () {
       messages.forEach((msg) => log(msg))
     },
   })
-  game.arena.addPlayer(
-    new PlayerFE({
-      name: 'hidden',
-      color: properties.playercolors[0],
-      left: 75, // k
-      right: 76, // l
-      pos: { x: 40, y: 100 },
-      move: 1,
-    }),
-  )
-  game.arena.addPlayer(
-    new PlayerFE({
-      name: 'sheimer',
-      color: properties.playercolors[1],
-      left: 65, // a
-      right: 83, // s
-      pos: { x: 279, y: 100 },
-      move: 3,
-    }),
-  )
+  game.arena.addPlayer(new PlayerFE(players[0]))
+  game.arena.addPlayer(new PlayerFE(players[1]))
+  websocketGame.init({ size, players })
 }
 
 game.start = function () {
   document.getElementById('log').innerHTML = ''
-  game.arena.reset()
+  game.arena.reset(game.running)
   game.running = true
   game.timer.interval = Math.round(1000 / properties.fps)
   game.timer.started = new Date().getTime()

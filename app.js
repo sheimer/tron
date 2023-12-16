@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 
 import { indexRouter } from './routes/index.js'
-import { addWebsockets } from './websockets/ws.js'
+import { addWebsockets } from './websockets/index.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 

@@ -1,6 +1,5 @@
 export class Arena {
-  constructor({ game, size, ondraw, onfinish }) {
-    this.game = game
+  constructor({ size, ondraw, onfinish }) {
     this.size = size
     this.ondraw = ondraw
     this.onfinish = onfinish
@@ -36,8 +35,8 @@ export class Arena {
     this.draw()
   }
 
-  reset() {
-    if (this.game.running) {
+  reset(finish) {
+    if (finish) {
       this.finish()
     }
     for (let i = 0; i < this.players.length; i++) {

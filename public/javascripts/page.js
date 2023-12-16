@@ -7,7 +7,6 @@ document.getElementById('btn-start-game').onclick = () => {
 }
 
 document.getElementById('btn-echo-ws').onclick = () => {
-  websocket.ping()
   return false
 }
 
@@ -15,5 +14,22 @@ document.getElementById('btn-start-game-ws').onclick = () => {
   websocketGame.start()
   return false
 }
+
+const pingContainer = document.createElement('div')
+pingContainer.style.position = 'absolute'
+pingContainer.style.top = '50px'
+pingContainer.style.right = '50px'
+pingContainer.style.color = '#ccc'
+
+const ping = document.createElement('h1')
+pingContainer.appendChild(ping)
+
+document.body.appendChild(pingContainer)
+
+setInterval(() => {
+  if (websocket.connected) {
+    websocket.ping(ping)
+  }
+}, 1000)
 
 game.init()
