@@ -3,8 +3,7 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
-  canvas#arena(width='640px' height='480px')
+  canvas#arena(width='320px' height='200px')
+  canvas#arenaWS(width='320px' height='200px')
   #log
   input(type='button' value=' start ' id='btn-start-game')
-  input(type='button' value=' echo ws ' id='btn-echo-ws')
-  input(type='button' value=' start game ws ' id='btn-start-game-ws')

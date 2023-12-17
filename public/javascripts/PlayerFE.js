@@ -1,8 +1,9 @@
 import { Player } from './shared/Player.js'
 
 export class PlayerFE extends Player {
-  constructor(args) {
-    super(args)
+  constructor({ onchangedir, ...properties }) {
+    super(properties)
+    this.onchangedir = onchangedir
     document.addEventListener('keydown', (evt) => this.onkeydown(evt))
   }
 
@@ -12,5 +13,10 @@ export class PlayerFE extends Player {
     } else if (evt.keyCode === this.right) {
       this.changeDir('right')
     }
+  }
+
+  changeDir(dir) {
+    super.changeDir(dir)
+    this.onchangedir({ id: this.id, dir })
   }
 }

@@ -5,6 +5,7 @@ export class Player {
       move,
     }
     this.dir = { x: 0, y: 0 }
+    this.id = null
     this.name = name
     this.color = color
     this.left = left // keycode for moving left

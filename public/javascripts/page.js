@@ -1,17 +1,8 @@
 import { game } from './game.js'
-import { websocket, websocketGame } from './websocket.js'
+import { websocket } from './websocket.js'
 
 document.getElementById('btn-start-game').onclick = () => {
   game.start()
-  return false
-}
-
-document.getElementById('btn-echo-ws').onclick = () => {
-  return false
-}
-
-document.getElementById('btn-start-game-ws').onclick = () => {
-  websocketGame.start()
   return false
 }
 

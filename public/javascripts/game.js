@@ -7,9 +7,11 @@ import { websocketGame } from './websocket.js'
 export const game = {}
 const properties = {
   fps: 20,
-  width: 640,
-  height: 400,
-  blocksize: 2,
+  size: {
+    x: 320,
+    y: 200,
+  },
+  blocksize: 1,
   bgColor: 'rgb(255,255,255)',
   bordercolor: 'rgb(0,0,0)',
   playercolors: [
@@ -23,7 +25,7 @@ const properties = {
 }
 
 game.timer = {
-  interval: null,
+  interval: Math.round(1000 / properties.fps),
   started: null,
   lastrun: null,
 }
@@ -48,13 +50,10 @@ game.init = function () {
     },
   ]
 
-  const size = {
-    x: properties.width / properties.blocksize,
-    y: properties.height / properties.blocksize,
-  }
-  game.renderer = new Renderer({ ...properties, size })
+  game.renderer = new Renderer({ ...properties, id: 'arena' })
+  game.rendererWS = new Renderer({ ...properties, id: 'arenaWS' })
   game.arena = new Arena({
-    size,
+    size: properties.size,
     ondraw: (fields) => {
       game.renderer.draw(fields)
     },
@@ -63,31 +62,55 @@ game.init = function () {
       messages.forEach((msg) => log(msg))
     },
   })
-  game.arena.addPlayer(new PlayerFE(players[0]))
-  game.arena.addPlayer(new PlayerFE(players[1]))
-  websocketGame.init({ size, players })
+  const onchangedir = ({ id, dir }) => {
+    websocketGame.changeDir({ id, dir })
+  }
+  game.arena.addPlayer(new PlayerFE({ ...players[0], onchangedir }))
+  game.arena.addPlayer(new PlayerFE({ ...players[1], onchangedir }))
+  websocketGame.connect({
+    size: properties.size,
+    players,
+    interval: game.timer.interval,
+    onmessage: (msg) => {
+      if (msg.action === 'draw') {
+        this.rendererWS.draw(msg.payload)
+      } else if (msg.action === 'finish') {
+        console.log(msg.key, msg.payload)
+      }
+    },
+  })
 }
 
 game.start = function () {
   document.getElementById('log').innerHTML = ''
   game.arena.reset(game.running)
-  game.running = true
-  game.timer.interval = Math.round(1000 / properties.fps)
+
   game.timer.started = new Date().getTime()
   game.timer.lastrun = null
-  game.run()
+  if (!game.running) {
+    game.running = true
+    game.run()
+  }
+
+  websocketGame.start()
 }
 
 game.run = function () {
   const current = new Date().getTime()
 
-  const timediff =
+  /*
+  const timediffFrame =
+    game.timer.lastframe !== null ? current - game.timer.lastframe : 0
+  game.timer.lastframe = current
+  */
+
+  const timediffRun =
     game.timer.lastrun !== null
       ? current - game.timer.lastrun
       : game.timer.interval
 
-  if (timediff >= game.timer.interval) {
-    const overlap = timediff - game.timer.interval
+  if (timediffRun >= game.timer.interval) {
+    const overlap = timediffRun - game.timer.interval
     game.timer.lastrun = current - overlap
     game.arena.run()
   }

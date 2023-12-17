@@ -50,6 +50,7 @@ export class Arena {
   }
 
   addPlayer(player) {
+    player.id = this.players.length
     this.players.push(player)
     this.fields[player.pos.x][player.pos.y] = this.players.length - 1
     this.draw()
@@ -97,9 +98,11 @@ export class Arena {
       }
     }
 
-    // finished...
     this.draw()
+
+    // finished...
     if (finished || playersLeft <= 1) {
+      console.log('calling finish in arena run')
       this.finish()
     }
   }

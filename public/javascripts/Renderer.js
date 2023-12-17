@@ -1,22 +1,14 @@
 export class Renderer {
-  constructor({
-    width,
-    height,
-    blocksize,
-    bgColor,
-    bordercolor,
-    playercolors,
-    size,
-  }) {
-    this.width = width
-    this.height = height
+  constructor({ blocksize, bgColor, bordercolor, playercolors, size, id }) {
+    this.width = size.x * blocksize
+    this.height = size.y * blocksize
     this.blocksize = blocksize
     this.bgColor = bgColor
     this.bordercolor = bordercolor
     this.playercolors = playercolors
     this.size = size
 
-    this.domCanvas = document.getElementById('arena')
+    this.domCanvas = document.getElementById(id)
     this.canvas = null
 
     if (!this.domCanvas) {
