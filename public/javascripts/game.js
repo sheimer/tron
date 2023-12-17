@@ -65,8 +65,12 @@ game.init = function () {
   const onchangedir = ({ id, dir }) => {
     websocketGame.changeDir({ id, dir })
   }
-  game.arena.addPlayer(new PlayerFE({ ...players[0], onchangedir }))
-  game.arena.addPlayer(new PlayerFE({ ...players[1], onchangedir }))
+  game.arena.addPlayer(
+    new PlayerFE({ ...players[0], onchangedir, interval: game.timer.interval }),
+  )
+  game.arena.addPlayer(
+    new PlayerFE({ ...players[1], onchangedir, interval: game.timer.interval }),
+  )
   websocketGame.connect({
     size: properties.size,
     players,

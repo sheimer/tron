@@ -102,7 +102,6 @@ export class Arena {
 
     // finished...
     if (finished || playersLeft <= 1) {
-      console.log('calling finish in arena run')
       this.finish()
     }
   }

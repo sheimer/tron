@@ -4,7 +4,7 @@ export class Player {
       pos: { ...pos },
       move,
     }
-    this.dir = { x: 0, y: 0 }
+    this.dirStack = []
     this.id = null
     this.name = name
     this.color = color
@@ -17,10 +17,12 @@ export class Player {
   init() {
     this.pos = { ...this.defaults.pos }
     this.move = this.defaults.move
+    this.dirStack = []
+    this.setDir()
+
     this.alive = true
     this.escaped = false
     this.killedBy = -1
-    this.setDir()
   }
 
   reset() {
@@ -29,13 +31,17 @@ export class Player {
 
   setDir() {
     const even = this.move % 2 === 0
-    this.dir.x = even ? 0 : this.move === 1 ? 1 : -1
-    this.dir.y = even ? (this.move === 2 ? 1 : -1) : 0
+    this.dirStack.push({
+      x: even ? 0 : this.move === 1 ? 1 : -1,
+      y: even ? (this.move === 2 ? 1 : -1) : 0,
+    })
   }
 
   nextCoords() {
+    const nextDir =
+      this.dirStack.length > 1 ? this.dirStack.shift() : this.dirStack[0]
     for (const axis of ['x', 'y']) {
-      this.pos[axis] += this.dir[axis]
+      this.pos[axis] += nextDir[axis]
     }
   }
 
