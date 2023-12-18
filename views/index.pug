@@ -3,6 +3,11 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
-  canvas#arenaWS(width='640px' height='400px')
+  div#screen
+    canvas#arenaWS
+    div#playernames
+    div#scores
   #log
   input(type='button' value=' start ' id='btn-start-game')
+  div#gamestats
+    h1#ping

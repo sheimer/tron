@@ -61,6 +61,17 @@ export const websocketGame = {
     websocketGame.socket.send(msg)
   },
 
+  setPlayers: (players) => {
+    if (!websocketGame.connected) {
+      log('websocketGame not connected')
+      return
+    }
+
+    websocketGame.socket.send(
+      JSON.stringify({ action: 'setPlayers', payload: players }),
+    )
+  },
+
   start: () => {
     if (!websocketGame.connected) {
       log('websocketGame not connected')

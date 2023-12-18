@@ -18,7 +18,6 @@ wssGame.on('connection', (ws) => {
     if (msg.action === 'init') {
       games[key] = new Game({
         size: msg.payload.size,
-        players: msg.payload.players,
         interval: msg.payload.interval,
         ondraw: (changes) => {
           ws.send(JSON.stringify({ action: 'draw', key, payload: changes }))
@@ -27,6 +26,8 @@ wssGame.on('connection', (ws) => {
           ws.send(JSON.stringify({ action: 'finish', key, payload: messages }))
         },
       })
+    } else if (msg.action === 'setPlayers') {
+      games[key].setPlayers(msg.payload)
     } else if (msg.action === 'start') {
       games[key].start()
     } else if (msg.action === 'changeDir') {

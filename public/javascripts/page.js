@@ -6,17 +6,7 @@ document.getElementById('btn-start-game').onclick = () => {
   return false
 }
 
-const pingContainer = document.createElement('div')
-pingContainer.style.position = 'absolute'
-pingContainer.style.top = '50px'
-pingContainer.style.right = '50px'
-pingContainer.style.color = '#ccc'
-
-const ping = document.createElement('h1')
-pingContainer.appendChild(ping)
-
-document.body.appendChild(pingContainer)
-
+const ping = document.getElementById('ping')
 setInterval(() => {
   if (websocket.connected) {
     websocket.ping(ping)

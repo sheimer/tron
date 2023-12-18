@@ -37,7 +37,7 @@ export class Player {
     })
   }
 
-  nextCoords() {
+  nextPos() {
     const nextDir =
       this.dirStack.length > 1 ? this.dirStack.shift() : this.dirStack[0]
     for (const axis of ['x', 'y']) {
