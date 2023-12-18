@@ -54,8 +54,8 @@ game.init = function () {
   game.rendererWS = new Renderer({ ...properties, id: 'arenaWS' })
   game.arena = new Arena({
     size: properties.size,
-    ondraw: (fields) => {
-      game.renderer.draw(fields)
+    ondraw: (changes) => {
+      game.renderer.draw(changes)
     },
     onfinish: (messages) => {
       game.running = false

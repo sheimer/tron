@@ -7,6 +7,7 @@ const games = {}
 
 export const wssGame = new WebSocketServer({
   noServer: true,
+  allowSynchronousEvents: true,
   perMessageDeflate: false,
 })
 
@@ -19,8 +20,8 @@ wssGame.on('connection', (ws) => {
         size: msg.payload.size,
         players: msg.payload.players,
         interval: msg.payload.interval,
-        ondraw: (fields) => {
-          ws.send(JSON.stringify({ action: 'draw', key, payload: fields }))
+        ondraw: (changes) => {
+          ws.send(JSON.stringify({ action: 'draw', key, payload: changes }))
         },
         onfinish: (messages) => {
           ws.send(JSON.stringify({ action: 'finish', key, payload: messages }))

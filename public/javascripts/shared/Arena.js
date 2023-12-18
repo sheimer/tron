@@ -5,6 +5,7 @@ export class Arena {
     this.onfinish = onfinish
     this.players = []
     this.fields = null
+    this.fieldChanges = null
     /*
       2 dimensional array representing playing field, each field containing:
         -3:  explosion
@@ -20,6 +21,8 @@ export class Arena {
     this.escaped = -1
 
     this.fields = []
+    this.fieldChanges = []
+
     const xMax = this.size.x - 1
     const yMax = this.size.y - 1
     for (let x = 0; x < this.size.x; x++) {
@@ -27,11 +30,14 @@ export class Arena {
       for (let y = 0; y < this.size.y; y++) {
         if (x === 0 || y === 0 || x === xMax || y === yMax) {
           this.fields[x][y] = -2
+          this.fieldChanges.push([x, y, -2])
         } else {
           this.fields[x][y] = -1
+          this.fieldChanges.push([x, y, -1])
         }
       }
     }
+
     this.draw()
   }
 
@@ -46,13 +52,20 @@ export class Arena {
   }
 
   draw() {
-    this.ondraw(this.fields)
+    const changes = [...this.fieldChanges]
+    this.fieldChanges = []
+    this.ondraw(changes)
   }
 
   addPlayer(player) {
     player.id = this.players.length
     this.players.push(player)
     this.fields[player.pos.x][player.pos.y] = this.players.length - 1
+    this.fieldChanges.push([
+      player.pos.x,
+      player.pos.y,
+      this.players.length - 1,
+    ])
     this.draw()
   }
 
@@ -95,6 +108,7 @@ export class Arena {
           }
         }
         this.fields[x][y] = i
+        this.fieldChanges.push([x, y, i])
       }
     }
 

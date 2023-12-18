@@ -18,6 +18,8 @@ export const websocket = {
   },
 }
 
+websocket.socket.binaryType = 'blob'
+
 websocket.socket.addEventListener('open', (event) => {
   websocket.connected = true
 })
@@ -36,6 +38,8 @@ export const websocketGame = {
 
   connect: ({ onmessage, ...args }) => {
     websocketGame.socket = new WebSocket('ws://localhost:3000/ws/game')
+
+    websocketGame.socket.binaryType = 'blob'
 
     websocketGame.socket.addEventListener('open', (event) => {
       websocketGame.connected = true
