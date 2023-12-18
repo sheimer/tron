@@ -3,13 +3,12 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src='/javascripts/page.js' type='module')
     script(src='/javascripts/include.js' type='module')
     script(src='/javascripts/game.js' type='module')
+    script(src='/javascripts/websocket.js' type='module')
     script(src='/javascripts/Renderer.js' type='module')
     script(src='/javascripts/PlayerFE.js' type='module')
     script(src='/javascripts/shared/Player.js' type='module')
-    script(src='/javascripts/shared/Arena.js' type='module')
-    script(src='/javascripts/websocket.js' type='module')
-    script(src='/javascripts/page.js' type='module')
   body
     block content

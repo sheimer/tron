@@ -1,17 +1,16 @@
 import { log } from './include.js'
 import { PlayerFE } from './PlayerFE.js'
-import { Arena } from './shared/Arena.js'
 import { Renderer } from './Renderer.js'
 import { websocketGame } from './websocket.js'
 
 export const game = {}
 const properties = {
-  fps: 20,
+  fps: 25,
   size: {
     x: 320,
     y: 200,
   },
-  blocksize: 1,
+  blocksize: 2,
   bgColor: 'rgb(255,255,255)',
   bordercolor: 'rgb(0,0,0)',
   playercolors: [
@@ -26,8 +25,6 @@ const properties = {
 
 game.timer = {
   interval: Math.round(1000 / properties.fps),
-  started: null,
-  lastrun: null,
 }
 
 game.init = function () {
@@ -50,27 +47,17 @@ game.init = function () {
     },
   ]
 
-  game.renderer = new Renderer({ ...properties, id: 'arena' })
   game.rendererWS = new Renderer({ ...properties, id: 'arenaWS' })
-  game.arena = new Arena({
-    size: properties.size,
-    ondraw: (changes) => {
-      game.renderer.draw(changes)
-    },
-    onfinish: (messages) => {
-      game.running = false
-      messages.forEach((msg) => log(msg))
-    },
-  })
+
   const onchangedir = ({ id, dir }) => {
     websocketGame.changeDir({ id, dir })
   }
-  game.arena.addPlayer(
-    new PlayerFE({ ...players[0], onchangedir, interval: game.timer.interval }),
-  )
-  game.arena.addPlayer(
-    new PlayerFE({ ...players[1], onchangedir, interval: game.timer.interval }),
-  )
+
+  game.players = [
+    new PlayerFE({ ...players[0], id: 0, onchangedir }),
+    new PlayerFE({ ...players[1], id: 1, onchangedir }),
+  ]
+
   websocketGame.connect({
     size: properties.size,
     players,
@@ -79,7 +66,7 @@ game.init = function () {
       if (msg.action === 'draw') {
         this.rendererWS.draw(msg.payload)
       } else if (msg.action === 'finish') {
-        console.log(msg.key, msg.payload)
+        msg.payload.forEach((msg) => log(msg))
       }
     },
   })
@@ -87,41 +74,6 @@ game.init = function () {
 
 game.start = function () {
   document.getElementById('log').innerHTML = ''
-  game.arena.reset(game.running)
-
-  game.timer.started = new Date().getTime()
-  game.timer.lastrun = null
-  if (!game.running) {
-    game.running = true
-    game.run()
-  }
 
   websocketGame.start()
-}
-
-game.run = function () {
-  const current = new Date().getTime()
-
-  /*
-  const timediffFrame =
-    game.timer.lastframe !== null ? current - game.timer.lastframe : 0
-  game.timer.lastframe = current
-  */
-
-  const timediffRun =
-    game.timer.lastrun !== null
-      ? current - game.timer.lastrun
-      : game.timer.interval
-
-  if (timediffRun >= game.timer.interval) {
-    const overlap = timediffRun - game.timer.interval
-    game.timer.lastrun = current - overlap
-    game.arena.run()
-  }
-
-  if (game.running) {
-    window.requestAnimationFrame(() => {
-      game.run()
-    })
-  }
 }

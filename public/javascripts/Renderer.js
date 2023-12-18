@@ -21,9 +21,9 @@ export class Renderer {
 
     if (!this.domCanvas) {
       this.domCanvas = document.createElement('canvas')
-      this.domCanvas.width = this.width
-      this.domCanvas.height = this.height
     }
+    this.domCanvas.width = this.width
+    this.domCanvas.height = this.height
     this.canvas = this.domCanvas.getContext('2d')
   }
 

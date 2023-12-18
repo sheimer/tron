@@ -1,11 +1,11 @@
 export class Player {
-  constructor({ name, color, left, right, pos, move }) {
+  constructor({ id, name, color, left, right, pos, move }) {
     this.defaults = {
       pos: { ...pos },
       move,
     }
     this.dirStack = []
-    this.id = null
+    this.id = id
     this.name = name
     this.color = color
     this.left = left // keycode for moving left
