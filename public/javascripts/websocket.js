@@ -36,7 +36,7 @@ export const websocketGame = {
   socket: null,
   connected: false,
 
-  connect: ({ onmessage, ...args }) => {
+  connect: ({ onconnect, onmessage, ...args }) => {
     websocketGame.socket = new WebSocket('ws://localhost:3000/ws/game')
 
     websocketGame.socket.binaryType = 'blob'

@@ -26,8 +26,10 @@ wssGame.on('connection', (ws) => {
           ws.send(JSON.stringify({ action: 'finish', key, payload: messages }))
         },
       })
+      ws.send(JSON.stringify({ action: 'setState', payload: 'connected' }))
     } else if (msg.action === 'setPlayers') {
       games[key].setPlayers(msg.payload)
+      ws.send(JSON.stringify({ action: 'setState', payload: 'serverReady' }))
     } else if (msg.action === 'start') {
       games[key].start()
     } else if (msg.action === 'changeDir') {
