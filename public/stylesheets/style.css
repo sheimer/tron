@@ -46,10 +46,11 @@ a {
 }
 
 #log {
-  width: 640px;
-  height: 90px;
-  border: 1px solid #7f9db9;
-  overflow: auto;
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
+  color: #ccc;
+  text-align: right;
 }
 
 #gamestats {
