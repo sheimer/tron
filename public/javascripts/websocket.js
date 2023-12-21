@@ -2,8 +2,14 @@ import { log } from './include.js'
 
 let pingDiv = null
 
+const { protocol, hostname, port } = window.location
+
 export const websocket = {
-  socket: new WebSocket('ws://localhost:3000/ws/echo'),
+  socket: new WebSocket(
+    `${protocol === 'https' ? 'wss' : 'ws'}://${hostname}${
+      port.length ? ':' + port : ''
+    }/ws/echo`,
+  ),
   connected: false,
   ping: (div) => {
     if (div) {
