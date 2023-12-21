@@ -61,7 +61,6 @@ export class Game {
         } else if (state === 'serverReady') {
           setTimeout(() => {
             websocketGame.start()
-            this.setState('running')
           }, 1000)
         } else if (state === 'scores') {
           setTimeout(() => {

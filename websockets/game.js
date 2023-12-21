@@ -54,6 +54,7 @@ wssGame.on('connection', (ws) => {
       games[key].setPlayers(msg.payload)
       ws.send(JSON.stringify({ action: 'setState', payload: 'serverReady' }))
     } else if (msg.action === 'start') {
+      broadcast(key, JSON.stringify({ action: 'setState', payload: 'running' }))
       games[key].start()
     } else if (msg.action === 'changeDir') {
       games[key].changeDir(msg.payload)

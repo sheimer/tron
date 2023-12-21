@@ -36,7 +36,7 @@ const enableStartIfReady = (state) => {
 }
 
 const resetLog = (state) => {
-  if (state === 'waitingForServer') {
+  if (state === 'running') {
     document.getElementById('log').innerHTML = ''
   }
 }
