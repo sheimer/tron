@@ -12,6 +12,7 @@ const _properties = {
   blocksize: 2,
   bgColor: 'rgb(255,255,255)',
   bordercolor: 'rgb(0,0,0)',
+  explosioncolor: 'rgb(122, 21, 21)',
   playercolors: [
     'rgb(0,0,0)',
     'rgb(0,0,0)',

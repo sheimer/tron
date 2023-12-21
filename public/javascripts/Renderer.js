@@ -1,10 +1,19 @@
 export class Renderer {
-  constructor({ blocksize, bgColor, bordercolor, playercolors, size, id }) {
+  constructor({
+    blocksize,
+    bgColor,
+    bordercolor,
+    explosioncolor,
+    playercolors,
+    size,
+    id,
+  }) {
     this.width = size.x * blocksize
     this.height = size.y * blocksize
     this.blocksize = blocksize
     this.bgColor = bgColor
     this.bordercolor = bordercolor
+    this.explosioncolor = explosioncolor
     this.playercolors = playercolors
     this.size = size
 
@@ -33,7 +42,7 @@ export class Renderer {
 
   draw(changes) {
     this.canvas.fillStyle = this.bgColor
-    this.canvas.clearRect(0, 0, this.width - 1, this.height - 1)
+    this.canvas.clearRect(0, 0, this.width, this.height)
 
     for (let i = 0; i < changes.length; i++) {
       const change = changes[i]
@@ -48,6 +57,9 @@ export class Renderer {
           const cy = y * this.blocksize
           if (this.fields[x][y] === -2) {
             this.canvas.fillStyle = this.bordercolor
+            this.canvas.fillRect(cx, cy, this.blocksize, this.blocksize)
+          } else if (this.fields[x][y] === -3) {
+            this.canvas.fillStyle = this.explosioncolor
             this.canvas.fillRect(cx, cy, this.blocksize, this.blocksize)
           } else if (this.fields[x][y] >= 0 && this.fields[x][y] < 6) {
             const player = this.fields[x][y]
