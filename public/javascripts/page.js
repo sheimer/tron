@@ -1,55 +1,52 @@
-import { Game } from './Game.js'
-import { websocket } from './websocket.js'
+import { wsPing } from './ws/ping.js'
+import { GamePage } from './page/Game.js'
+import { LobbyPage } from './page/Lobby.js'
 
 const ping = document.getElementById('ping')
 setInterval(() => {
-  if (websocket.connected) {
-    websocket.ping(ping)
+  if (wsPing.connected) {
+    wsPing.ping(ping)
   }
 }, 1000)
 
-const startBtn = document.getElementById('btn-start-game')
+class Page {
+  constructor(handler = []) {
+    this.state = null
 
-const addPlayersBeforeProperlyImplemented = (state) => {
-  if (state === 'settingPlayers') {
-    game.addPlayer({
-      name: 'hidden',
-      left: 75, // k
-      right: 76, // l
-    })
-    game.addPlayer({
-      name: 'sheimer',
-      left: 65, // a
-      right: 83, // s
-    })
-    game.setState('ready')
+    this.stateHandler = handler
+  }
+
+  setState(state) {
+    this.state = state
+    this.stateHandler.forEach((handler) => handler(state))
+  }
+
+  addHandler(handler) {
+    this.stateHandler.push(handler)
   }
 }
 
-const enableStartIfReady = (state) => {
-  const disabled = !(state === 'ready' || state === 'finished')
-  const setFocus = !disabled && startBtn.disabled
-  startBtn.disabled = disabled
-  if (setFocus) {
-    startBtn.focus()
-  }
-}
+const page = new Page()
 
-const resetLog = (state) => {
-  if (state === 'running') {
-    document.getElementById('log').innerHTML = ''
-  }
-}
-
-const game = new Game({
-  stateHandler: [
-    addPlayersBeforeProperlyImplemented,
-    enableStartIfReady,
-    resetLog,
-  ],
+console.log('where will "game connected" be set?!?!')
+const lobbyPage = new LobbyPage({
+  onGameConnect: (gameId) => {
+    console.log(gameId, '...has to be used by game to init server game')
+    page.setState('playersconfig')
+  },
 })
 
-startBtn.onclick = () => {
-  game.start()
-  return false
-}
+page.addHandler((state) => {
+  lobbyPage.pageHandler(state)
+})
+
+const gamePage = new GamePage()
+
+page.addHandler((state) => {
+  gamePage.pageHandler(state)
+})
+
+page.setState('lobby')
+
+// after select/create game: show playersconfig
+// if all players ready: start game rotation

@@ -1,9 +1,9 @@
 import { log, fisherYatesShuffle } from './include.js'
 import { PlayerFE } from './PlayerFE.js'
 import { Renderer } from './Renderer.js'
-import { websocketGame } from './websocket.js'
+import { wsGame } from './ws/game.js'
 
-const _properties = {
+export const defaultProperties = {
   fps: 50,
   size: {
     x: 320,
@@ -60,7 +60,7 @@ export class Game {
           this.setState('settingPlayers')
         } else if (state === 'serverReady') {
           setTimeout(() => {
-            websocketGame.start()
+            wsGame.start()
           }, 1000)
         } else if (state === 'scores') {
           setTimeout(() => {
@@ -72,18 +72,14 @@ export class Game {
 
     this.setState('initializing')
 
-    this.properties = { ...properties, ..._properties }
-
-    this.timer = {
-      interval: Math.round(1000 / this.properties.fps),
-    }
+    this.properties = { ...properties, ...defaultProperties }
 
     this.renderer = new Renderer({ ...this.properties, id: 'arena' })
     this.players = []
 
-    websocketGame.connect({
+    wsGame.connect({
       size: this.properties.size,
-      interval: this.timer.interval,
+      interval: Math.round(1000 / this.properties.fps),
       onmessage: (msg) => {
         if (msg.action === 'setState') {
           this.setState(msg.payload)
@@ -126,7 +122,7 @@ export class Game {
         ...player,
         id,
         color: this.properties.playercolors[id],
-        onchangedir: websocketGame.changeDir,
+        onchangedir: wsGame.changeDir,
       }),
     )
   }
@@ -144,7 +140,7 @@ export class Game {
 
     console.log('positioning has to go to server!!!')
 
-    websocketGame.setPlayers(this.players)
+    wsGame.setPlayers(this.players)
     this.setState('waitingForServer')
   }
 }

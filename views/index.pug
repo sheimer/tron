@@ -2,12 +2,24 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
   div#screen
     canvas#arena
+    #lobby
+      p Welcome to #{title}
+      p Select or create a new game, please...
+      table#gamelisttable
+        thead
+          tr
+            th Id
+            th Created By
+            th Number Players
+            th
+        tbody#body-gamelisttable
+    #playersconfig
     #playernames
     #scores
   input(type='button' value=' start ' id='btn-start-game')
+  input(type='button' value=' create game ' id='btn-create-game')
   #gamestats
     h1#ping
   #log

@@ -2,7 +2,6 @@ doctype html
 html
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
 
     link(rel='apple-touch-icon' sizes='180x180' href='/favicon/apple-touch-icon.png')
     link(rel='icon' type='image/png' sizes='32x32' href='/favicon/favicon-32x32.png')
@@ -14,12 +13,8 @@ html
     meta(name='msapplication-config' content='/favicon/browserconfig.xml')
     meta(name='theme-color' content='#454450')
 
+    link(rel='stylesheet', href='/stylesheets/style.css')
+
     script(src='/javascripts/page.js' type='module')
-    script(src='/javascripts/include.js' type='module')
-    script(src='/javascripts/Game.js' type='module')
-    script(src='/javascripts/websocket.js' type='module')
-    script(src='/javascripts/Renderer.js' type='module')
-    script(src='/javascripts/PlayerFE.js' type='module')
-    script(src='/javascripts/shared/Player.js' type='module')
   body
     block content
