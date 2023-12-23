@@ -39,10 +39,11 @@ export const defaultProperties = {
 }
 
 export class Game {
-  constructor({ properties = {}, stateHandler = [] }) {
+  constructor({ properties = {}, key, stateHandler = [] }) {
+    this.key = key
     this.states = [
-      'initializing', // running automatically on page load
-      'connecting', // running automatically on initializing, maybe later on disconnect as well
+      'initializing', // set in constructor
+      'connecting', // set in constructor, maybe later on disconnect as well
       'settingPlayers', // after connected
       'ready', // game ready to start. after player settings
       // game start requestable if "ready" or "scores"
@@ -56,9 +57,7 @@ export class Game {
     this.stateHandler = [
       ...stateHandler,
       (state) => {
-        if (state === 'connected') {
-          this.setState('settingPlayers')
-        } else if (state === 'serverReady') {
+        if (state === 'serverReady') {
           setTimeout(() => {
             wsGame.start()
           }, 1000)
@@ -78,10 +77,19 @@ export class Game {
     this.players = []
 
     wsGame.connect({
+      key: this.key,
       size: this.properties.size,
       interval: Math.round(1000 / this.properties.fps),
       onmessage: (msg) => {
-        if (msg.action === 'setState') {
+        if (msg.action === 'serverState') {
+          console.log(
+            'game on server, needs to be reduced to important stuff (like players)',
+            msg.payload,
+          )
+          if (this.state === 'connecting') {
+            this.setState('settingPlayers')
+          }
+        } else if (msg.action === 'setState') {
           this.setState(msg.payload)
         } else if (msg.action === 'draw') {
           this.renderer.draw(msg.payload)

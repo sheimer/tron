@@ -19,6 +19,11 @@ export const wsLobby = {
       wsLobby.connected = true
     })
 
+    wsLobby.socket.addEventListener('close', (event) => {
+      wsLobby.connected = false
+      wsLobby.socket = null
+    })
+
     wsLobby.socket.addEventListener('message', (event) => {
       const msg = JSON.parse(event.data)
       onmessage(msg)

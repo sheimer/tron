@@ -15,7 +15,7 @@ export const addWebsockets = (server) => {
         wssGame.emit('connection', ws, req)
       })
     } else if (req.url.startsWith('/ws/lobby')) {
-      wssGame.handleUpgrade(req, socket, head, (ws) => {
+      wssLobby.handleUpgrade(req, socket, head, (ws) => {
         wssLobby.emit('connection', ws, req)
       })
     } else {

@@ -8,13 +8,9 @@ export const wssGame = new WebSocketServer({
   perMessageDeflate: false,
 })
 
-const broadcast = (ws, message, all = true) => {
+const broadcast = (gameId, message) => {
   wssGame.clients.forEach((client) => {
-    if (
-      client.readyState === WebSocket.OPEN &&
-      client?.gameId === ws.gameId &&
-      (all || ws !== client)
-    ) {
+    if (client.readyState === WebSocket.OPEN && client?.gameId === gameId) {
       client.send(message)
     }
   })
@@ -22,24 +18,28 @@ const broadcast = (ws, message, all = true) => {
 
 wssGame.on('connection', (ws) => {
   const game = gameServer.getGame(ws.gameId)
+  game.connect({
+    ondraw: (changes) => {
+      broadcast(ws.gameId, JSON.stringify({ action: 'draw', payload: changes }))
+    },
+    onfinish: (messages) => {
+      broadcast(
+        ws.gameId,
+        JSON.stringify({ action: 'finish', payload: messages }),
+      )
+    },
+  })
+
+  ws.send(
+    JSON.stringify({
+      action: 'serverState',
+      payload: gameServer.getGameInfo(ws.gameId),
+    }),
+  )
+
   ws.on('message', (msg, binary) => {
     const { action, payload } = JSON.parse(msg.toString())
     switch (action) {
-      case 'init': {
-        game.connect({
-          ondraw: (changes) => {
-            broadcast(ws, JSON.stringify({ action: 'draw', payload: changes }))
-          },
-          onfinish: (messages) => {
-            broadcast(
-              ws,
-              JSON.stringify({ action: 'finish', payload: messages }),
-            )
-          },
-        })
-        ws.send(JSON.stringify({ action: 'setState', payload: 'connected' }))
-        break
-      }
       case 'setPlayers': {
         game.setPlayers(payload)
         ws.send(JSON.stringify({ action: 'setState', payload: 'serverReady' }))
@@ -47,7 +47,7 @@ wssGame.on('connection', (ws) => {
       }
       case 'start': {
         broadcast(
-          ws,
+          ws.gameId,
           JSON.stringify({ action: 'setState', payload: 'running' }),
         )
         game.start()

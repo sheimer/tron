@@ -16,10 +16,16 @@ const broadcast = (ws, message, all = true) => {
   })
 }
 
-wssLobby.on('connection', (ws) => {
-  ws.send(
-    JSON.stringify({ action: 'list', payload: gameServer.getOpenGames() }),
+gameServer.setChangeHandler(() => {
+  broadcast(
+    null,
+    JSON.stringify({ action: 'list', payload: gameServer.getGameList() }),
   )
+})
+
+wssLobby.on('connection', (ws) => {
+  ws.send(JSON.stringify({ action: 'list', payload: gameServer.getGameList() }))
+
   ws.on('message', (msg, binary) => {
     const { action, payload } = JSON.parse(msg.toString())
     switch (action) {
@@ -34,7 +40,7 @@ wssLobby.on('connection', (ws) => {
           ws,
           JSON.stringify({
             action: 'list',
-            payload: gameServer.getOpenGames(),
+            payload: gameServer.getGameList(),
           }),
           false,
         )

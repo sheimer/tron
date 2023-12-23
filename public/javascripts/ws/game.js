@@ -6,33 +6,23 @@ export const wsGame = {
   socket: null,
   connected: false,
 
-  connect: ({ onmessage, ...args }) => {
+  connect: ({ onmessage, key, ...args }) => {
     wsGame.socket = new WebSocket(
       `${protocol === 'https' ? 'wss' : 'ws'}://${hostname}${
         port.length ? ':' + port : ''
-      }/ws/game`,
+      }/ws/game/${key}`,
     )
 
     wsGame.socket.binaryType = 'blob'
 
     wsGame.socket.addEventListener('open', (event) => {
       wsGame.connected = true
-      wsGame.init(args)
     })
 
     wsGame.socket.addEventListener('message', (event) => {
       const msg = JSON.parse(event.data)
       onmessage(msg)
     })
-  },
-
-  init: (props) => {
-    if (!wsGame.connected) {
-      log('wsGame not connected')
-      return
-    }
-    const msg = JSON.stringify({ action: 'init', payload: props })
-    wsGame.socket.send(msg)
   },
 
   setPlayers: (players) => {

@@ -1,5 +1,5 @@
 import { wsPing } from './ws/ping.js'
-import { GamePage } from './page/Game.js'
+import { GamePage, game } from './page/Game.js'
 import { LobbyPage } from './page/Lobby.js'
 
 const ping = document.getElementById('ping')
@@ -28,10 +28,9 @@ class Page {
 
 const page = new Page()
 
-console.log('where will "game connected" be set?!?!')
 const lobbyPage = new LobbyPage({
   onGameConnect: (gameId) => {
-    console.log(gameId, '...has to be used by game to init server game')
+    game.key = gameId
     page.setState('playersconfig')
   },
 })
@@ -40,13 +39,14 @@ page.addHandler((state) => {
   lobbyPage.pageHandler(state)
 })
 
-const gamePage = new GamePage()
+const gamePage = new GamePage({
+  onAllPlayersSet: () => {
+    page.setState('game')
+  },
+})
 
 page.addHandler((state) => {
   gamePage.pageHandler(state)
 })
 
 page.setState('lobby')
-
-// after select/create game: show playersconfig
-// if all players ready: start game rotation
