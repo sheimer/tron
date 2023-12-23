@@ -1,10 +1,18 @@
 import { Game } from '../Game.js'
 
-const startBtn = document.getElementById('btn-start-game')
-const arena = document.getElementById('arena')
-const playersconfig = document.getElementById('playersconfig')
-const playernames = document.getElementById('playernames')
-const scores = document.getElementById('scores')
+const pageElements = {
+  playersconfig: {
+    playersconfig: document.getElementById('playersconfig'),
+    footerPlayersconfig: document.getElementById('footer-playersconfig'),
+  },
+  game: {
+    startBtn: document.getElementById('btn-start-game'),
+    arena: document.getElementById('arena'),
+    playernames: document.getElementById('playernames'),
+    scores: document.getElementById('scores'),
+    footerGame: document.getElementById('footer-game'),
+  },
+}
 
 export const game = {
   key: null,
@@ -13,10 +21,10 @@ export const game = {
 
 const enableStartIfReady = (state) => {
   const disabled = !(state === 'ready' || state === 'finished')
-  const setFocus = !disabled && startBtn.disabled
-  startBtn.disabled = disabled
+  const setFocus = !disabled && pageElements.game.startBtn.disabled
+  pageElements.game.startBtn.disabled = disabled
   if (setFocus) {
-    startBtn.focus()
+    pageElements.game.startBtn.focus()
   }
 }
 
@@ -26,58 +34,66 @@ const resetLog = (state) => {
   }
 }
 
+const addPlayersBeforeProperlyImplemented = (state) => {
+  if (state === 'settingPlayers') {
+    game.instance.addPlayer({
+      name: 'hidden',
+      left: 75, // k
+      right: 76, // l
+    })
+    game.instance.addPlayer({
+      name: 'sheimer',
+      left: 65, // a
+      right: 83, // s
+    })
+    game.instance.setState('ready')
+  }
+}
+
 export class GamePage {
   constructor({ onAllPlayersSet }) {
     this.onAllPlayersSet = onAllPlayersSet
   }
 
-  pageHandler(state) {
-    if (state !== 'game' && state !== 'playersconfig') {
-      startBtn.style.display = 'none'
-      arena.style.display = 'none'
-      playersconfig.style.display = 'none'
-      playernames.style.display = 'none'
-      scores.style.display = 'none'
-    } else {
-      startBtn.style.display = ''
-      arena.style.display = ''
-      console.log('page game receiving page state ', state)
-      if (state === 'playersconfig') {
-        const addPlayersBeforeProperlyImplemented = (state) => {
-          if (state === 'settingPlayers') {
-            game.instance.addPlayer({
-              name: 'hidden',
-              left: 75, // k
-              right: 76, // l
-            })
-            game.instance.addPlayer({
-              name: 'sheimer',
-              left: 65, // a
-              right: 83, // s
-            })
-            game.instance.setState('ready')
-          }
-        }
+  pageHandler(pageState) {
+    console.log('page game receiving page state ', pageState)
+    if (pageState === 'playersconfig') {
+      Object.values(pageElements.game).forEach((element) => {
+        element.style.display = 'none'
+      })
 
-        game.instance = new Game({
-          key: game.key,
-          stateHandler: [
-            addPlayersBeforeProperlyImplemented,
-            enableStartIfReady,
-            resetLog,
-          ],
-        })
+      game.instance = new Game({
+        key: game.key,
+        stateHandler: [
+          addPlayersBeforeProperlyImplemented,
+          enableStartIfReady,
+          resetLog,
+        ],
+      })
 
-        this.onAllPlayersSet()
-      } else if (state === 'game') {
-        game.instance.addStateHandler(enableStartIfReady)
-        game.instance.addStateHandler(resetLog)
+      this.onAllPlayersSet()
+    } else if (pageState === 'game') {
+      Object.values(pageElements.playersconfig).forEach((element) => {
+        element.style.display = 'none'
+      })
+      pageElements.game.footerGame.style.display = 'flex'
+      pageElements.game.startBtn.style.display = 'block'
+      pageElements.game.arena.style.display = 'block'
 
-        startBtn.onclick = () => {
-          game.instance.start()
-          return false
-        }
+      game.instance.addStateHandler(enableStartIfReady)
+      game.instance.addStateHandler(resetLog)
+
+      pageElements.game.startBtn.onclick = () => {
+        game.instance.start()
+        return false
       }
+    } else {
+      Object.values(pageElements.game).forEach((element) => {
+        element.style.display = 'none'
+      })
+      Object.values(pageElements.playersconfig).forEach((element) => {
+        element.style.display = 'none'
+      })
     }
   }
 }

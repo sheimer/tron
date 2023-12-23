@@ -30,8 +30,9 @@ wssLobby.on('connection', (ws) => {
     const { action, payload } = JSON.parse(msg.toString())
     switch (action) {
       case 'create': {
-        const { size, interval, isPublic } = payload
+        const { name, size, interval, isPublic } = payload
         const key = gameServer.createGame({
+          name,
           size,
           interval,
           isPublic,

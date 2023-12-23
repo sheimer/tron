@@ -11,15 +11,30 @@ block content
         thead
           tr
             th Id
-            th Created By
+            th Name
             th Number Players
             th
         tbody#body-gamelisttable
     #playersconfig
+      p Game ID #[span#gameId gameId] ready, create players!
+      table#playerstable
+        thead
+          tr
+            th Name
+            th Keys
+            th Local
+        tbody#body-playerstable
     #playernames
+      p Playernames, needs to change...
     #scores
-  input(type='button' value=' start ' id='btn-start-game')
-  input(type='button' value=' create game ' id='btn-create-game')
+  #footer-game
+    input(type='button' value=' start ' id='btn-start-game' disabled=true)
+  #footer-lobby
+    input(type='text' value='' placeholder='gamename' id='input-create-game')
+    input(type='button' value=' create game ' id='btn-create-game' disabled=true)
+  #footer-playersconfig
+    input(type='text' value='' placeholder='playername' id='input-add-player')
+    input(type='button' value=' add player ' id='btn-add-player' disabled=true)
   #gamestats
     h1#ping
   #log

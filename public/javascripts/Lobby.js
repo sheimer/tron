@@ -26,8 +26,9 @@ export class Lobby {
     })
   }
 
-  createGame() {
+  createGame(gameName) {
     wsLobby.createGame({
+      name: gameName,
       size: gameProperties.size,
       interval: Math.round(1000 / gameProperties.fps),
       isPublic: true,

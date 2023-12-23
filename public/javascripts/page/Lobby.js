@@ -1,9 +1,10 @@
 import { Lobby } from '../Lobby.js'
 
 const lobbyContainer = document.getElementById('lobby')
-
-const btnCreateGame = document.getElementById('btn-create-game')
 const bodyGamelistTable = document.getElementById('body-gamelisttable')
+const lobbyFooter = document.getElementById('footer-lobby')
+const inputGameName = document.getElementById('input-create-game')
+const btnCreateGame = document.getElementById('btn-create-game')
 
 const updateGamelistTable = ({ list, onGameConnect }) => {
   console.log(bodyGamelistTable)
@@ -18,8 +19,9 @@ export class LobbyPage {
 
   pageHandler(state) {
     if (state === 'lobby') {
-      lobbyContainer.style.display = ''
-      btnCreateGame.style.display = ''
+      let gameName = ''
+      lobbyContainer.style.display = 'block'
+      lobbyFooter.style.display = 'flex'
 
       this.lobby = new Lobby({
         onListReceived: (list) => {
@@ -30,12 +32,18 @@ export class LobbyPage {
         },
       })
 
+      inputGameName.onkeyup = (evt) => {
+        gameName = evt.target.value
+        btnCreateGame.disabled = !gameName.length
+      }
+
       btnCreateGame.onclick = () => {
-        this.lobby.createGame()
+        this.lobby.createGame(gameName)
+        return false
       }
     } else {
       lobbyContainer.style.display = 'none'
-      btnCreateGame.style.display = 'none'
+      lobbyFooter.style.display = 'none'
 
       this.lobby.disconnect()
     }
