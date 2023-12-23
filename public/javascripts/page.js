@@ -29,7 +29,7 @@ class Page {
 const page = new Page()
 
 const lobbyPage = new LobbyPage({
-  onGameConnect: (gameId) => {
+  connectGame: (gameId) => {
     game.key = gameId
     page.setState('playersconfig')
   },
