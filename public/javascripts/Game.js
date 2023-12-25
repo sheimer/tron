@@ -1,4 +1,4 @@
-import { log, fisherYatesShuffle } from './include.js'
+import { log } from './include.js'
 import { PlayerFE } from './PlayerFE.js'
 import { Renderer } from './Renderer.js'
 import { wsGame } from './ws/game.js'
@@ -20,21 +20,6 @@ export const defaultProperties = {
     'rgb(0,0,0)',
     'rgb(0,0,0)',
     'rgb(0,0,0)',
-  ],
-  startPositions: [
-    { x: 50, y: 50 },
-    { x: 270, y: 50 },
-    { x: 50, y: 100 },
-    { x: 270, y: 100 },
-    { x: 50, y: 150 },
-    { x: 270, y: 150 },
-  ],
-  availablePostions: [
-    [2, 3],
-    [1, 2, 5],
-    [0, 1, 4, 5],
-    [0, 1, 2, 4, 5],
-    [0, 1, 2, 3, 4, 5],
   ],
 }
 
@@ -160,19 +145,6 @@ export class Game {
   }
 
   start() {
-    const randomPositions = fisherYatesShuffle([
-      ...this.properties.availablePostions[this.players.length - 2],
-    ])
-
-    this.players.forEach((player, i) => {
-      const posId = randomPositions[i]
-      player.pos = this.properties.startPositions[posId]
-      player.move = posId % 2 === 0 ? 1 : 3
-    })
-
-    console.log('positioning has to go to server!!!')
-
-    wsGame.setPlayers(this.players)
     this.setState('waitingForServer')
   }
 }

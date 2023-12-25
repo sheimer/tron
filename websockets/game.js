@@ -50,11 +50,6 @@ wssGame.on('connection', (ws) => {
         )
         break
       }
-      case 'setPlayers': {
-        game.setPlayers(payload)
-        ws.send(JSON.stringify({ action: 'setState', payload: 'serverReady' }))
-        break
-      }
       case 'start': {
         broadcast(
           ws.gameId,

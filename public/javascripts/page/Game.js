@@ -40,10 +40,10 @@ const keycodesText = {
   76: 'l',
   81: 'q',
   87: 'w',
-  40: '&lt;down>',
-  39: '&lt;right>',
-  98: '&lt;kpad 2>',
-  99: '&lt;kpad 3>',
+  40: '<down>',
+  39: '<right>',
+  98: '<kpad 2>',
+  99: '<kpad 3>',
 }
 
 const updatePlayersTable = ({ list }) => {

@@ -1,5 +1,13 @@
 export class Player {
-  constructor({ id, name, color, left, right, pos, move }) {
+  constructor({
+    id,
+    name,
+    color,
+    left,
+    right,
+    pos = { x: 1, y: 1 },
+    move = 2,
+  }) {
     this.defaults = {
       pos: { ...pos },
       move,
