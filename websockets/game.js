@@ -40,6 +40,16 @@ wssGame.on('connection', (ws) => {
   ws.on('message', (msg, binary) => {
     const { action, payload } = JSON.parse(msg.toString())
     switch (action) {
+      case 'addPlayer': {
+        game.addPlayer(payload)
+        ws.send(
+          JSON.stringify({
+            action: 'gameinfo',
+            payload: gameServer.getGameInfo(ws.gameId),
+          }),
+        )
+        break
+      }
       case 'setPlayers': {
         game.setPlayers(payload)
         ws.send(JSON.stringify({ action: 'setState', payload: 'serverReady' }))

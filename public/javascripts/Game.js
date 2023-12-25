@@ -39,7 +39,7 @@ export const defaultProperties = {
 }
 
 export class Game {
-  constructor({ properties = {}, key, stateHandler = [] }) {
+  constructor({ properties = {}, key, stateHandler = [], onPlayersUpdate }) {
     this.key = key
     this.states = [
       'initializing', // set in constructor
@@ -68,6 +68,7 @@ export class Game {
         }
       },
     ]
+    this.onPlayersUpdate = onPlayersUpdate
 
     this.setState('initializing')
 
@@ -75,6 +76,7 @@ export class Game {
 
     this.renderer = new Renderer({ ...this.properties, id: 'arena' })
     this.players = []
+    this.localPlayers = {}
 
     wsGame.connect({
       key: this.key,
@@ -82,13 +84,19 @@ export class Game {
       interval: Math.round(1000 / this.properties.fps),
       onmessage: (msg) => {
         if (msg.action === 'serverState') {
-          console.log(
-            'game on server, needs to be reduced to important stuff (like players)',
-            msg.payload,
-          )
+          console.log(msg)
+          if (msg?.payload?.players) {
+            this.onPlayersList(msg.payload.players)
+          }
           if (this.state === 'connecting') {
             this.setState('settingPlayers')
           }
+        } else if (msg.action === 'gameinfo') {
+          console.log(
+            'gameinfo, onPlayersList should update playerstable and add local FEPlayer: ',
+            msg.payload,
+          )
+          this.onPlayersList(msg.payload.players)
         } else if (msg.action === 'setState') {
           this.setState(msg.payload)
         } else if (msg.action === 'draw') {
@@ -123,16 +131,32 @@ export class Game {
     }, 0)
   }
 
+  onPlayersList(players) {
+    this.onPlayersUpdate(players)
+    this.players.forEach((player) => {
+      player.destroy()
+    })
+    this.players = []
+    players.forEach((player) => {
+      const newPlayer = { ...player }
+      if (this.localPlayers[player.id]) {
+        newPlayer.onchangedir = wsGame.changeDir
+      } else {
+        newPlayer.onchangedir = null
+        newPlayer.left = null
+        newPlayer.right = null
+      }
+      this.players.push(new PlayerFE(newPlayer))
+    })
+  }
+
   addPlayer(player) {
-    const id = this.players.length
-    this.players.push(
-      new PlayerFE({
-        ...player,
-        id,
-        color: this.properties.playercolors[id],
-        onchangedir: wsGame.changeDir,
-      }),
-    )
+    player.id = Array.from(crypto.getRandomValues(new Uint8Array(4)))
+      .map((num) => num.toString(16).padStart(2, '0'))
+      .join('')
+    console.log(player)
+    player.color = this.properties.playercolors[0]
+    wsGame.addPlayer(player)
   }
 
   start() {

@@ -6,15 +6,19 @@ export class PlayerFE extends Player {
     this.onchangedir = onchangedir
 
     // to give proper "this"
-    this.onkeydown = (evt) => {
-      this._onkeydown(evt)
-    }
+    if (this.onchangedir !== null) {
+      this.onkeydown = (evt) => {
+        this._onkeydown(evt)
+      }
 
-    document.addEventListener('keydown', this.onkeydown)
+      document.addEventListener('keydown', this.onkeydown)
+    }
   }
 
   destroy() {
-    document.removeEventListener('keydown', this.onkeydown)
+    if (this.onchangedir !== null) {
+      document.removeEventListener('keydown', this.onkeydown)
+    }
   }
 
   _onkeydown(evt) {
@@ -26,6 +30,9 @@ export class PlayerFE extends Player {
   }
 
   changeDir(dir) {
+    if (this.onchangedir === null) {
+      return
+    }
     super.changeDir(dir)
     this.onchangedir({ id: this.id, dir })
   }

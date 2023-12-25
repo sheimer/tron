@@ -10,20 +10,20 @@ block content
       table#gamelisttable
         thead
           tr
-            th Id
-            th Name
-            th Number Players
-            th Status
-            th
+            th(style="width: 10%") Id
+            th(style="width: 50%") Name
+            th(style="width: 15%") # Players
+            th(style="width: 15%") Status
+            th(style="width: 10%")
         tbody#body-gamelisttable
     #playersconfig
-      p Game ID #[span#gameId gameId] ready, create players!
+      p Game "#[span#gameName gameName]" (#[span#gameId gameId]) ready, create players!
       table#playerstable
         thead
           tr
-            th Name
-            th Keys
-            th Local
+            th(style="width: 50%") Name
+            th(style="width: 40%") Keys
+            th(style="width: 10%")
         tbody#body-playerstable
     #playernames
       p Playernames, needs to change...
@@ -35,7 +35,16 @@ block content
     input(type='button' value=' create game ' id='btn-create-game' disabled=true)
   #footer-playersconfig
     input(type='text' value='' placeholder='playername' id='input-add-player')
+    select(id='select-keycodes' required=true)
+      option(value='' disabled=true selected=true hidden=true) select left/right turn
+      option(value='66_78') b/n
+      option(value='89_88') y/x
+      option(value='75_76') k/l
+      option(value='81_87') q/w
+      option(value='40_39') &lt;down>/&lt;right>
+      option(value='98_99') &lt;kpad 2>/&lt;kpad 3>
     input(type='button' value=' add player ' id='btn-add-player' disabled=true)
+    input(type='button' value=' start ' id='btn-init-game' disabled=true)
   #gamestats
     h1#ping
   #log

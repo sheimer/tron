@@ -29,8 +29,9 @@ class Page {
 const page = new Page()
 
 const lobbyPage = new LobbyPage({
-  connectGame: (gameId) => {
+  connectGame: (gameId, name) => {
     game.key = gameId
+    game.name = name
     page.setState('playersconfig')
   },
 })
@@ -40,7 +41,7 @@ page.addHandler((state) => {
 })
 
 const gamePage = new GamePage({
-  onAllPlayersSet: () => {
+  toGameMode: () => {
     page.setState('game')
   },
 })

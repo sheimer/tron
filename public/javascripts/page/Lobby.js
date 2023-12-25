@@ -28,18 +28,16 @@ const updateGamelistTable = ({ list, connectGame }) => {
     )
     tr.appendChild(td)
     td = document.createElement('td')
-    const startButton = document.createElement('Button')
-    startButton.appendChild(document.createTextNode('join'))
+    const startButton = document.createElement('button')
+    startButton.appendChild(document.createTextNode(' join '))
     startButton.onclick = () => {
-      connectGame(list[i].key)
+      connectGame(list[i].key, list[i].name)
     }
     startButton.disabled = !list[i].acceptingPlayers
     td.appendChild(startButton)
     tr.appendChild(td)
     bodyGamelistTable.appendChild(tr)
   }
-  console.log(bodyGamelistTable)
-  console.log(list)
 }
 
 export class LobbyPage {
@@ -59,7 +57,7 @@ export class LobbyPage {
           updateGamelistTable({ list, connectGame: this.connectGame })
         },
         onGameCreated: (gameId) => {
-          this.connectGame(gameId)
+          this.connectGame(gameId, gameName)
         },
       })
 
@@ -67,6 +65,7 @@ export class LobbyPage {
         gameName = evt.target.value
         btnCreateGame.disabled = !gameName.length
       }
+      inputGameName.onkeyup({ target: inputGameName })
 
       btnCreateGame.onclick = () => {
         this.lobby.createGame(gameName)
