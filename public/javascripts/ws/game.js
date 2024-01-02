@@ -34,6 +34,15 @@ export const wsGame = {
     wsGame.socket.send(JSON.stringify({ action: 'addPlayer', payload: player }))
   },
 
+  reset: () => {
+    if (!wsGame.connected) {
+      log('wsGame not connected')
+      return
+    }
+
+    wsGame.socket.send(JSON.stringify({ action: 'reset' }))
+  },
+
   start: () => {
     if (!wsGame.connected) {
       log('wsGame not connected')

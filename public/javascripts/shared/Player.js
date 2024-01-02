@@ -1,17 +1,5 @@
 export class Player {
-  constructor({
-    id,
-    name,
-    color,
-    left,
-    right,
-    pos = { x: 1, y: 1 },
-    move = 2,
-  }) {
-    this.defaults = {
-      pos: { ...pos },
-      move,
-    }
+  constructor({ id, name, color, left, right }) {
     this.dirStack = []
     this.id = id
     this.name = name
@@ -19,22 +7,27 @@ export class Player {
     this.left = left // keycode for moving left
     this.right = right // keycode for moving right
 
-    this.init()
+    this.init({})
   }
 
-  init() {
-    this.pos = { ...this.defaults.pos }
-    this.move = this.defaults.move
-    this.dirStack = []
-    this.setDir()
+  init({ pos = null, move = null }) {
+    if (pos !== null) {
+      this.pos = { ...pos }
+      this.move = move
+      this.dirStack = []
+      this.setDir()
+    } else {
+      this.pos = null
+      this.move = null
+    }
 
     this.alive = true
     this.escaped = false
     this.killedBy = -1
   }
 
-  reset() {
-    this.init()
+  reset({ pos, move }) {
+    this.init({ pos, move })
   }
 
   setDir() {

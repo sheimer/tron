@@ -1,9 +1,10 @@
 import { Player } from './shared/Player.js'
 
 export class PlayerFE extends Player {
-  constructor({ onchangedir, ...properties }) {
+  constructor({ onchangedir, isLocal, ...properties }) {
     super(properties)
     this.onchangedir = onchangedir
+    this.isLocal = isLocal
 
     // to give proper "this"
     if (this.onchangedir !== null) {

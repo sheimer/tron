@@ -52,27 +52,40 @@ const updatePlayersTable = ({ list }) => {
   }
 
   for (let i = 0; i < list.length; i++) {
+    const isLocal = list[i].isLocal
     const tr = document.createElement('tr')
+    if (!isLocal) {
+      tr.style.color = '#666666'
+    }
     let td = document.createElement('td')
     td.appendChild(document.createTextNode(list[i].name))
     tr.appendChild(td)
     td = document.createElement('td')
-    td.appendChild(
-      document.createTextNode(
-        `${keycodesText[list[i].left]}/${keycodesText[list[i].right]}`,
-      ),
-    )
+    if (isLocal) {
+      td.appendChild(
+        document.createTextNode(
+          `${keycodesText[list[i].left]}/${keycodesText[list[i].right]}`,
+        ),
+      )
+    } else {
+      td.appendChild(document.createTextNode('remote player'))
+    }
     tr.appendChild(td)
     td = document.createElement('td')
-    const rmvButton = document.createElement('button')
-    rmvButton.appendChild(document.createTextNode(' remove '))
-    rmvButton.onclick = () => {
-      console.log('should be able to remove player...')
-    }
-    td.appendChild(rmvButton)
+    // const rmvButton = document.createElement('button')
+    // rmvButton.appendChild(document.createTextNode(' remove '))
+    // rmvButton.onclick = () => {
+    //   console.log('should be able to remove player...')
+    // }
+    // td.appendChild(rmvButton)
     tr.appendChild(td)
     bodyPlayersTable.appendChild(tr)
   }
+}
+
+const updatePlayersPositions = ({ players, positions }) => {
+  console.log(players)
+  console.log(positions)
 }
 
 export const game = {
@@ -97,7 +110,7 @@ const enableStartIfReady = (state) => {
 }
 
 const resetLog = (state) => {
-  if (state === 'waitingForServer') {
+  if (state === 'start') {
     document.getElementById('log').innerHTML = ''
   }
 }
@@ -107,6 +120,9 @@ export class GamePage {
     this.toGameMode = () => {
       toGameMode()
       game.instance.setState('ready')
+      console.log(
+        'shows gamescreen and enables "start" button...buut start button should be removed, and game starts at once',
+      )
     }
   }
 
@@ -134,6 +150,10 @@ export class GamePage {
         ],
         onPlayersUpdate: (players) => {
           updatePlayersTable({ list: players })
+          initBtn.disabled = players.length < 2
+        },
+        onPlayersPositions: ({ players, positions }) => {
+          updatePlayersPositions({ players, positions })
         },
       })
 

@@ -28,6 +28,12 @@ wssGame.on('connection', (ws) => {
         JSON.stringify({ action: 'finish', payload: messages }),
       )
     },
+    onreset: (positions) => {
+      broadcast(
+        ws.gameId,
+        JSON.stringify({ action: 'reset', payload: positions }),
+      )
+    },
   })
 
   ws.send(
@@ -48,6 +54,10 @@ wssGame.on('connection', (ws) => {
             payload: gameServer.getGameInfo(ws.gameId),
           }),
         )
+        break
+      }
+      case 'reset': {
+        game.reset()
         break
       }
       case 'start': {

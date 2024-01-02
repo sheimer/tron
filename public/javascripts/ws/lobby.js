@@ -44,6 +44,8 @@ export const wsLobby = {
   },
 
   disconnect: () => {
-    wsLobby.socket.close()
+    if (wsLobby.connected) {
+      wsLobby.socket.close()
+    }
   },
 }

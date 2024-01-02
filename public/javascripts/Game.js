@@ -24,7 +24,13 @@ export const defaultProperties = {
 }
 
 export class Game {
-  constructor({ properties = {}, key, stateHandler = [], onPlayersUpdate }) {
+  constructor({
+    properties = {},
+    key,
+    stateHandler = [],
+    onPlayersUpdate,
+    onPlayersPositions,
+  }) {
     this.key = key
     this.states = [
       'initializing', // set in constructor
@@ -32,8 +38,7 @@ export class Game {
       'settingPlayers', // after connected
       'ready', // game ready to start. after player settings
       // game start requestable if "ready" or "scores"
-      'waitingForServer', // game start requested, waiting for server
-      'serverReady', // server ready, start game
+      'start', // game start requested
       'running', // game running
       'scores', // game finished, showing scores
       'finished', // 1 second after scores, still showing scores, but ready to request new start
@@ -42,7 +47,8 @@ export class Game {
     this.stateHandler = [
       ...stateHandler,
       (state) => {
-        if (state === 'serverReady') {
+        if (state === 'start') {
+          wsGame.reset()
           setTimeout(() => {
             wsGame.start()
           }, 1000)
@@ -54,6 +60,7 @@ export class Game {
       },
     ]
     this.onPlayersUpdate = onPlayersUpdate
+    this.onPlayersPositions = onPlayersPositions
 
     this.setState('initializing')
 
@@ -69,7 +76,6 @@ export class Game {
       interval: Math.round(1000 / this.properties.fps),
       onmessage: (msg) => {
         if (msg.action === 'serverState') {
-          console.log(msg)
           if (msg?.payload?.players) {
             this.onPlayersList(msg.payload.players)
           }
@@ -77,13 +83,11 @@ export class Game {
             this.setState('settingPlayers')
           }
         } else if (msg.action === 'gameinfo') {
-          console.log(
-            'gameinfo, onPlayersList should update playerstable and add local FEPlayer: ',
-            msg.payload,
-          )
           this.onPlayersList(msg.payload.players)
         } else if (msg.action === 'setState') {
           this.setState(msg.payload)
+        } else if (msg.action === 'reset') {
+          this.onPlayersReset(msg.payload)
         } else if (msg.action === 'draw') {
           this.renderer.draw(msg.payload)
         } else if (msg.action === 'finish') {
@@ -117,7 +121,6 @@ export class Game {
   }
 
   onPlayersList(players) {
-    this.onPlayersUpdate(players)
     this.players.forEach((player) => {
       player.destroy()
     })
@@ -126,25 +129,32 @@ export class Game {
       const newPlayer = { ...player }
       if (this.localPlayers[player.id]) {
         newPlayer.onchangedir = wsGame.changeDir
+        newPlayer.isLocal = true
       } else {
         newPlayer.onchangedir = null
         newPlayer.left = null
         newPlayer.right = null
+        newPlayer.isLocal = false
       }
       this.players.push(new PlayerFE(newPlayer))
     })
+    this.onPlayersUpdate(this.players)
+  }
+
+  onPlayersReset(positions) {
+    this.onPlayersPositions({ players: this.players, positions })
   }
 
   addPlayer(player) {
     player.id = Array.from(crypto.getRandomValues(new Uint8Array(4)))
       .map((num) => num.toString(16).padStart(2, '0'))
       .join('')
-    console.log(player)
+    this.localPlayers[player.id] = true
     player.color = this.properties.playercolors[0]
     wsGame.addPlayer(player)
   }
 
   start() {
-    this.setState('waitingForServer')
+    this.setState('start')
   }
 }
