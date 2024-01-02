@@ -23,6 +23,15 @@ const selectKeycodes = document.getElementById('select-keycodes')
 const addPlayerBtn = document.getElementById('btn-add-player')
 const initBtn = document.getElementById('btn-init-game')
 
+const playerPositions = [
+  document.getElementById('playerpos0'),
+  document.getElementById('playerpos1'),
+  document.getElementById('playerpos2'),
+  document.getElementById('playerpos3'),
+  document.getElementById('playerpos4'),
+  document.getElementById('playerpos5'),
+]
+
 const keycodes = {
   '66_78': { left: 66, right: 78 }, // b/n
   '89_88': { left: 89, right: 88 }, // y/x
@@ -86,6 +95,15 @@ const updatePlayersTable = ({ list }) => {
 const updatePlayersPositions = ({ players, positions }) => {
   console.log(players)
   console.log(positions)
+  playerPositions.forEach((pos, index) => {
+    const id =
+      Object.entries(positions).find(
+        ([key, playerpos]) => playerpos === index,
+      )?.[0] ?? null
+    const name = id !== null ? players.name : ''
+    pos.innerHTML = ''
+    pos.appendChild(document.createTextNode(name))
+  })
 }
 
 export const game = {
