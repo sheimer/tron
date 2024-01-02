@@ -93,14 +93,15 @@ const updatePlayersTable = ({ list }) => {
 }
 
 const updatePlayersPositions = ({ players, positions }) => {
-  console.log(players)
-  console.log(positions)
+  const posNames = {}
+  players.forEach((player) => {
+    if (positions[player.id]) {
+      posNames[positions[player.id]] = player.name
+    }
+  })
+
   playerPositions.forEach((pos, index) => {
-    const id =
-      Object.entries(positions).find(
-        ([key, playerpos]) => playerpos === index,
-      )?.[0] ?? null
-    const name = id !== null ? players.name : ''
+    const name = posNames?.[index] ?? ''
     pos.innerHTML = ''
     pos.appendChild(document.createTextNode(name))
   })
