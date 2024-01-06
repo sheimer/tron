@@ -1,6 +1,9 @@
+const KILLZONE = 10
+
 export class Player {
   constructor({ id, name, color, left, right }) {
     this.dirStack = []
+    this.killzone = new Array(KILLZONE).fill(null)
     this.id = id
     this.name = name
     this.color = color
@@ -15,6 +18,7 @@ export class Player {
       this.pos = { ...pos }
       this.move = move
       this.dirStack = []
+      this.killzone = new Array(KILLZONE).fill(null)
       this.setDir()
     } else {
       this.pos = null
@@ -44,6 +48,9 @@ export class Player {
     for (const axis of ['x', 'y']) {
       this.pos[axis] += nextDir[axis]
     }
+    this.killzone.push(`${this.pos.x}-${this.pos.y}`)
+    this.killzone.shift()
+    console.log(this.killzone)
   }
 
   changeDir(dir) {

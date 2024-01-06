@@ -22,11 +22,8 @@ wssGame.on('connection', (ws) => {
     ondraw: (changes) => {
       broadcast(ws.gameId, JSON.stringify({ action: 'draw', payload: changes }))
     },
-    onfinish: (messages) => {
-      broadcast(
-        ws.gameId,
-        JSON.stringify({ action: 'finish', payload: messages }),
-      )
+    onfinish: (stats) => {
+      broadcast(ws.gameId, JSON.stringify({ action: 'finish', payload: stats }))
     },
     onreset: (positions) => {
       broadcast(

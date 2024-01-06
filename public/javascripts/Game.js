@@ -91,7 +91,10 @@ export class Game {
         } else if (msg.action === 'draw') {
           this.renderer.draw(msg.payload)
         } else if (msg.action === 'finish') {
-          msg.payload.forEach((msg) => log(msg))
+          log(JSON.stringify(msg.payload))
+          console.log(
+            'put stats and scores (msg.payload) to page somehow (see onPlayersList or onPlayersReset)',
+          )
           this.setState('scores')
         }
       },
