@@ -138,15 +138,10 @@ export class GamePage {
   constructor({ toGameMode }) {
     this.toGameMode = () => {
       toGameMode()
-      game.instance.setState('ready')
-      console.log(
-        'shows gamescreen and enables "start" button...buut start button should be removed, and game starts at once',
-      )
     }
   }
 
   pageHandler(pageState) {
-    console.log('page game receiving page state ', pageState)
     if (pageState === 'playersconfig') {
       Object.values(pageElements.game).forEach((element) => {
         element.style.display = 'none'
@@ -162,7 +157,6 @@ export class GamePage {
       game.instance = new Game({
         key: game.key,
         stateHandler: [
-          // addPlayersBeforeProperlyImplemented,
           enableAddPlayerIfConnected,
           enableStartIfReady,
           resetLog,
@@ -173,6 +167,7 @@ export class GamePage {
         },
         onPlayersPositions: ({ players, positions }) => {
           updatePlayersPositions({ players, positions })
+          this.toGameMode()
         },
       })
 
@@ -208,7 +203,8 @@ export class GamePage {
       }
 
       initBtn.onclick = () => {
-        this.toGameMode()
+        game.instance.start()
+        return false
       }
     } else if (pageState === 'game') {
       Object.values(pageElements.playersconfig).forEach((element) => {

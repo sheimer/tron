@@ -17,8 +17,11 @@ class Page {
   }
 
   setState(state) {
+    const changed = this.state !== state
     this.state = state
-    this.stateHandler.forEach((handler) => handler(state))
+    if (changed) {
+      this.stateHandler.forEach((handler) => handler(state))
+    }
   }
 
   addHandler(handler) {

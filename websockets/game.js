@@ -48,7 +48,8 @@ wssGame.on('connection', (ws) => {
     switch (action) {
       case 'addPlayer': {
         game.addPlayer(payload)
-        ws.send(
+        broadcast(
+          ws.gameId,
           JSON.stringify({
             action: 'gameinfo',
             payload: gameServer.getGameInfo(ws.gameId),
