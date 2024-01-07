@@ -1,4 +1,4 @@
-const KILLZONE = 10
+const KILLZONE = 32
 
 export class Player {
   constructor({ id, name, color, left, right }) {
@@ -9,6 +9,7 @@ export class Player {
     this.color = color
     this.left = left // keycode for moving left
     this.right = right // keycode for moving right
+    this.deadPlayers = 0
 
     this.init({})
   }
@@ -18,7 +19,7 @@ export class Player {
       this.pos = { ...pos }
       this.move = move
       this.dirStack = []
-      this.killzone = new Array(KILLZONE).fill(null)
+      this.killzone.fill(null)
       this.setDir()
     } else {
       this.pos = null
@@ -27,6 +28,7 @@ export class Player {
 
     this.alive = true
     this.escaped = false
+    this.deadPlayers = 0
     this.killedBy = -1
   }
 
@@ -50,7 +52,6 @@ export class Player {
     }
     this.killzone.push(`${this.pos.x}-${this.pos.y}`)
     this.killzone.shift()
-    console.log(this.killzone)
   }
 
   changeDir(dir) {
