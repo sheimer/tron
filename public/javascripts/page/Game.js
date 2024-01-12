@@ -32,6 +32,12 @@ const playerPositions = [
   document.getElementById('playerpos5'),
 ]
 
+export const game = {
+  key: null,
+  name: null,
+  instance: null,
+}
+
 const keycodes = {
   '66_78': { left: 66, right: 78 }, // b/n
   '89_88': { left: 89, right: 88 }, // y/x
@@ -107,10 +113,8 @@ const updatePlayersPositions = ({ players, positions }) => {
   })
 }
 
-export const game = {
-  key: null,
-  name: null,
-  instance: null,
+const updateScores = ({ scores }) => {
+  console.log('...update score table', scores)
 }
 
 const enableAddPlayerIfConnected = (state) => {
@@ -131,6 +135,33 @@ const enableStartIfReady = (state) => {
 const resetLog = (state) => {
   if (state === 'start') {
     document.getElementById('log').innerHTML = ''
+  }
+}
+
+const showPlayerPositions = (state) => {
+  if (state === 'running') {
+    pageElements.game.playernames.style.display = 'block'
+    setTimeout(() => {
+      pageElements.game.playernames.style.display = 'none'
+    }, 2500)
+  } else {
+    pageElements.game.playernames.style.display = 'none'
+  }
+}
+
+const showArena = (state) => {
+  if (state === 'scores' || state === 'finished') {
+    pageElements.game.arena.style.display = 'none'
+  } else if (state === 'running') {
+    pageElements.game.arena.style.display = 'block'
+  }
+}
+
+const showScores = (state) => {
+  if (state === 'scores' || state === 'finished') {
+    pageElements.game.scores.style.display = 'block'
+  } else {
+    pageElements.game.scores.style.display = 'none'
   }
 }
 
@@ -160,6 +191,9 @@ export class GamePage {
           enableAddPlayerIfConnected,
           enableStartIfReady,
           resetLog,
+          showPlayerPositions,
+          showArena,
+          showScores,
         ],
         onPlayersUpdate: (players) => {
           updatePlayersTable({ list: players })
@@ -168,6 +202,10 @@ export class GamePage {
         onPlayersPositions: ({ players, positions }) => {
           updatePlayersPositions({ players, positions })
           this.toGameMode()
+        },
+        onScoresUpdate: (scores) => {
+          console.log('page/Game.js', scores)
+          updateScores({ scores })
         },
       })
 

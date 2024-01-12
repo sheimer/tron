@@ -54,16 +54,15 @@ wssGame.on('connection', (ws) => {
         )
         break
       }
-      case 'reset': {
-        game.reset()
-        break
-      }
       case 'start': {
+        game.reset()
         broadcast(
           ws.gameId,
           JSON.stringify({ action: 'setState', payload: 'running' }),
         )
-        game.start()
+        setTimeout(() => {
+          game.start()
+        }, 1000)
         break
       }
       case 'changeDir': {

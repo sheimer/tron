@@ -33,6 +33,18 @@ block content
       #playerpos4
       #playerpos5
     #scores
+      p [span#gameNumber] game's results...
+      p#messages
+      table#scoretable
+        thead
+          tr
+            th(style="width: 30%") Name
+            th(style="width: 20%") Round
+            th(style="width: 10%") Kills
+            th(style="width: 10%") Killed
+            th(style="width: 10%") Escaped
+            th(style="width: 20%") Total
+        tbody#body-scoretable
   #footer-game
     input(type='button' value=' start ' id='btn-start-game' disabled=true)
   #footer-lobby

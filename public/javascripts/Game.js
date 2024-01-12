@@ -1,4 +1,3 @@
-import { log } from './include.js'
 import { PlayerFE } from './PlayerFE.js'
 import { Renderer } from './Renderer.js'
 import { wsGame } from './ws/game.js'
@@ -30,6 +29,7 @@ export class Game {
     stateHandler = [],
     onPlayersUpdate,
     onPlayersPositions,
+    onScoresUpdate,
   }) {
     this.key = key
     this.states = [
@@ -48,10 +48,7 @@ export class Game {
       ...stateHandler,
       (state) => {
         if (state === 'start') {
-          wsGame.reset()
-          setTimeout(() => {
-            wsGame.start()
-          }, 1000)
+          wsGame.start()
         } else if (state === 'scores') {
           setTimeout(() => {
             this.setState('finished')
@@ -61,6 +58,7 @@ export class Game {
     ]
     this.onPlayersUpdate = onPlayersUpdate
     this.onPlayersPositions = onPlayersPositions
+    this.onScoresUpdate = onScoresUpdate
 
     this.setState('initializing')
 
@@ -91,10 +89,7 @@ export class Game {
         } else if (msg.action === 'draw') {
           this.renderer.draw(msg.payload)
         } else if (msg.action === 'finish') {
-          log(JSON.stringify(msg.payload))
-          console.log(
-            'put stats and scores (msg.payload) to page somehow (see onPlayersList or onPlayersReset)',
-          )
+          this.onScoresUpdate(msg.payload)
           this.setState('scores')
         }
       },
