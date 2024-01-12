@@ -204,7 +204,6 @@ export class GamePage {
           this.toGameMode()
         },
         onScoresUpdate: (scores) => {
-          console.log('page/Game.js', scores)
           updateScores({ scores })
         },
       })
