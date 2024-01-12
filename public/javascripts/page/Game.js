@@ -95,7 +95,7 @@ const updatePlayersTable = ({ list }) => {
 const updatePlayersPositions = ({ players, positions }) => {
   const posNames = {}
   players.forEach((player) => {
-    if (positions[player.id]) {
+    if (typeof positions[player.id] !== 'undefined') {
       posNames[positions[player.id]] = player.name
     }
   })
