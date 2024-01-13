@@ -58,7 +58,12 @@ export class Game {
     ]
     this.onPlayersUpdate = onPlayersUpdate
     this.onPlayersPositions = onPlayersPositions
-    this.onScoresUpdate = onScoresUpdate
+    this.onScoresUpdate = (scores) => {
+      scores.players.forEach((player) => {
+        player.isLocal = !!this.localPlayers[player.id]
+      })
+      onScoresUpdate(scores)
+    }
 
     this.setState('initializing')
 

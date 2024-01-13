@@ -18,6 +18,10 @@ const pageElements = {
 
 const bodyPlayersTable = document.getElementById('body-playerstable')
 
+const gameCounter = document.getElementById('gamecount')
+const gameMessages = document.getElementById('messages')
+const bodyScoreTable = document.getElementById('body-scoretable')
+
 const inputPlayername = document.getElementById('input-add-player')
 const selectKeycodes = document.getElementById('select-keycodes')
 const addPlayerBtn = document.getElementById('btn-add-player')
@@ -61,6 +65,21 @@ const keycodesText = {
   99: '<kpad 3>',
 }
 
+const ordinalSuffixOf = (i) => {
+  const j = i % 10
+  const k = i % 100
+  if (j === 1 && k !== 11) {
+    return i + 'st'
+  }
+  if (j === 2 && k !== 12) {
+    return i + 'nd'
+  }
+  if (j === 3 && k !== 13) {
+    return i + 'rd'
+  }
+  return i + 'th'
+}
+
 const updatePlayersTable = ({ list }) => {
   while (bodyPlayersTable.firstChild) {
     bodyPlayersTable.removeChild(bodyPlayersTable.lastChild)
@@ -70,7 +89,7 @@ const updatePlayersTable = ({ list }) => {
     const isLocal = list[i].isLocal
     const tr = document.createElement('tr')
     if (!isLocal) {
-      tr.style.color = '#666666'
+      tr.style.color = '#333333'
     }
     let td = document.createElement('td')
     td.appendChild(document.createTextNode(list[i].name))
@@ -98,6 +117,50 @@ const updatePlayersTable = ({ list }) => {
   }
 }
 
+const updateScores = ({ scores }) => {
+  gameCounter.innerHTML = ''
+  gameMessages.innerHTML = ''
+  gameCounter.appendChild(
+    document.createTextNode(ordinalSuffixOf(scores.gamecount)),
+  )
+  scores.messages.forEach((message) => {
+    const div = document.createElement('div')
+    div.appendChild(document.createTextNode(message))
+    gameMessages.appendChild(div)
+  })
+
+  const addScoreColumn = (tr, content) => {
+    const td = document.createElement('td')
+    td.style.textAlign = 'right'
+    td.appendChild(document.createTextNode(content))
+    tr.appendChild(td)
+  }
+
+  while (bodyScoreTable.firstChild) {
+    bodyScoreTable.removeChild(bodyScoreTable.lastChild)
+  }
+
+  for (let i = 0; i < scores.players.length; i++) {
+    const player = scores.players[i]
+    const tr = document.createElement('tr')
+    if (!player.isLocal) {
+      tr.style.color = '#333333'
+    }
+
+    const td = document.createElement('td')
+    td.appendChild(document.createTextNode(player.name))
+    tr.appendChild(td)
+
+    addScoreColumn(tr, player.lastScore)
+    addScoreColumn(tr, player.kills)
+    addScoreColumn(tr, player.killed)
+    addScoreColumn(tr, player.escaped)
+    addScoreColumn(tr, player.total)
+
+    bodyScoreTable.appendChild(tr)
+  }
+}
+
 const updatePlayersPositions = ({ players, positions }) => {
   const posNames = {}
   players.forEach((player) => {
@@ -111,10 +174,6 @@ const updatePlayersPositions = ({ players, positions }) => {
     pos.innerHTML = ''
     pos.appendChild(document.createTextNode(name))
   })
-}
-
-const updateScores = ({ scores }) => {
-  console.log('...update score table', scores)
 }
 
 const enableAddPlayerIfConnected = (state) => {
