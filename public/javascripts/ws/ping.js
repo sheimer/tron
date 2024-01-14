@@ -13,7 +13,7 @@ export const wsPing = {
 
   connect: () => {
     const socket = new WebSocket(
-      `${protocol === 'https' ? 'wss' : 'ws'}://${hostname}${
+      `${protocol.startsWith('https') ? 'wss' : 'ws'}://${hostname}${
         port.length ? ':' + port : ''
       }/ws/echo`,
     )
