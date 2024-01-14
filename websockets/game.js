@@ -19,6 +19,7 @@ const broadcast = (gameId, message) => {
 wssGame.on('connection', (ws) => {
   const game = gameServer.getGame(ws.gameId)
   game.connect({
+    client: ws,
     ondraw: (changes) => {
       broadcast(ws.gameId, JSON.stringify({ action: 'draw', payload: changes }))
     },

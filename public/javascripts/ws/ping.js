@@ -26,6 +26,7 @@ export const wsPing = {
     socket.addEventListener('close', (event) => {
       if (wsPing.connectionRetries < maxConnectRetries) {
         setTimeout(() => {
+          console.log('connect ping from lose event')
           wsPing.connect()
         }, reconnectInterval)
         wsPing.connectionRetries++
@@ -47,7 +48,8 @@ export const wsPing = {
     if (div) {
       pingDiv = div
     }
-    if (wsPing?.socket?.readyState !== 1) {
+
+    if (wsPing.socket?.readyState !== 1) {
       if (pingDiv) {
         pingDiv.innerHTML = '-'
       } else {
@@ -60,4 +62,5 @@ export const wsPing = {
   },
 }
 
+console.log('connect ping from ping module')
 wsPing.connect()
