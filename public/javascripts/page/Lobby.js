@@ -49,10 +49,12 @@ export class LobbyPage {
   pageHandler(state) {
     if (state === 'lobby') {
       let gameName = ''
-      lobbyContainer.style.display = 'block'
-      lobbyFooter.style.display = 'flex'
 
       this.lobby = new Lobby({
+        onConnect: () => {
+          lobbyContainer.style.display = 'block'
+          lobbyFooter.style.display = 'flex'
+        },
         onListReceived: (list) => {
           updateGamelistTable({ list, connectGame: this.connectGame })
         },

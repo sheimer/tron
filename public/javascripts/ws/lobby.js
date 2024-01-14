@@ -6,7 +6,7 @@ export const wsLobby = {
   socket: null,
   connected: false,
 
-  connect: ({ onmessage }) => {
+  connect: ({ onconnect, onmessage }) => {
     wsLobby.socket = new WebSocket(
       `${protocol === 'https' ? 'wss' : 'ws'}://${hostname}${
         port.length ? ':' + port : ''
@@ -16,7 +16,7 @@ export const wsLobby = {
     wsLobby.socket.binaryType = 'blob'
 
     wsLobby.socket.addEventListener('open', (event) => {
-      wsLobby.connected = true
+      onconnect()
     })
 
     wsLobby.socket.addEventListener('close', (event) => {

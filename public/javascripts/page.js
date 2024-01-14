@@ -4,9 +4,7 @@ import { LobbyPage } from './page/Lobby.js'
 
 const ping = document.getElementById('ping')
 setInterval(() => {
-  if (wsPing.connected) {
-    wsPing.ping(ping)
-  }
+  wsPing.ping(ping)
 }, 1000)
 
 class Page {

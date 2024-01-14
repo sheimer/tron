@@ -3,11 +3,15 @@ import { wsLobby } from './ws/lobby.js'
 import { defaultProperties as gameProperties } from './Game.js'
 
 export class Lobby {
-  constructor({ onListReceived, onGameCreated }) {
+  constructor({ onListReceived, onGameCreated, onConnect }) {
     this.onListReceived = onListReceived
     this.onGameCreated = onGameCreated
+    this.onConnect = onConnect
 
     wsLobby.connect({
+      onconnect: () => {
+        this.onConnect()
+      },
       onmessage: (msg) => {
         const { action, payload } = msg
         switch (action) {
