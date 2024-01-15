@@ -7,7 +7,7 @@ export const wsLobby = {
 
   connect: ({ onconnect, onmessage }) => {
     wsLobby.socket = new WebSocket(
-      `${protocol === 'https' ? 'wss' : 'ws'}://${hostname}${
+      `${protocol.startsWith('https') ? 'wss' : 'ws'}://${hostname}${
         port.length ? ':' + port : ''
       }/ws/lobby`,
     )

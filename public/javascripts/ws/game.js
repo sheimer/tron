@@ -8,7 +8,7 @@ export const wsGame = {
 
   connect: ({ onmessage, key, ...args }) => {
     wsGame.socket = new WebSocket(
-      `${protocol === 'https' ? 'wss' : 'ws'}://${hostname}${
+      `${protocol.startsWith('https') ? 'wss' : 'ws'}://${hostname}${
         port.length ? ':' + port : ''
       }/ws/game/${key}`,
     )
