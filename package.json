@@ -19,15 +19,13 @@
     "ws": "^8.15.1"
   },
   "devDependencies": {
-    "eslint": "^8.55.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.0",
-    "eslint-plugin-n": "^16.4.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "prettier": "3.1.1"
+    "@eslint/js": "^9.3.0",
+    "eslint": "^9.3.0",
+    "globals": "^15.3.0",
+    "prettier": "^3.2.5"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8",
-    "utf-8-validate": "^5.0.10"
+    "utf-8-validate": "^6.0.4"
   }
 }
