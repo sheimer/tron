@@ -6,6 +6,8 @@ export class PlayerFE extends Player {
     this.onchangedir = onchangedir
     this.isLocal = isLocal
 
+    console.log('player constructor frontend only')
+
     // to give proper "this"
     if (this.onchangedir !== null) {
       this.onkeydown = (evt) => {
