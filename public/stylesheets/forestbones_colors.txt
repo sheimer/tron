@@ -1,0 +1,59 @@
+  /* --color-light-
+
+    let g:terminal_color_0 = '#FAF3E1'
+    let g:terminal_color_1 = '#F85550'
+    let g:terminal_color_2 = '#8DA200'
+    let g:terminal_color_3 = '#DEA000'
+    let g:terminal_color_4 = '#3A94C4'
+    let g:terminal_color_5 = '#DF69BA'
+    let g:terminal_color_6 = '#36A87E'
+    let g:terminal_color_7 = '#4F5B62'
+    let g:terminal_color_8 = '#DBC988'
+    let g:terminal_color_9 = '#E6271C'
+    let g:terminal_color_10 = '#758700'
+    let g:terminal_color_11 = '#B98500'
+    let g:terminal_color_12 = '#297CA6'
+    let g:terminal_color_13 = '#CA43A3'
+    let g:terminal_color_14 = '#258C67'
+    let g:terminal_color_15 = '#6E7F88'
+
+	bg = hsl(72, 52%, 96%), -- base hsl(72, 100%, 98%)
+	fg = hsl(226.3, 24.8%, 38%), -- base hsl(226.3, 24.8%, 43.9%)
+	rose = hsl(12.7, 90.9%, 59%),
+	leaf    = hsl(96.6, 99.9%, 62.6%),
+	wood    = hsl(53.5, 100%, 70.1%),
+	water    = hsl(236.1, 86.1%, 58.1%),
+	blossom = hsl(327.8, 67%, 61.1%),
+	sky     = hsl(151.6, 87.3%, 61.5%),
+
+
+*/
+  /* --color-dark-
+
+    let g:terminal_color_0 = '#2C343A'
+    let g:terminal_color_1 = '#E67C7F'
+    let g:terminal_color_2 = '#A9C181'
+    let g:terminal_color_3 = '#DDBD7F'
+    let g:terminal_color_4 = '#7FBCB4'
+    let g:terminal_color_5 = '#D69AB7'
+    let g:terminal_color_6 = '#83C193'
+    let g:terminal_color_7 = '#E7DCC4'
+    let g:terminal_color_8 = '#45525C'
+    let g:terminal_color_9 = '#ED9294'
+    let g:terminal_color_10 = '#B0CE7B'
+    let g:terminal_color_11 = '#EDC77A'
+    let g:terminal_color_12 = '#7AC9C0'
+    let g:terminal_color_13 = '#E5A7C4'
+    let g:terminal_color_14 = '#7DD093'
+    let g:terminal_color_15 = '#B2A790'
+
+	bg = hsl(232.6, 27%, 20.7%),
+	fg = hsl(67.1, 26.4%, 88%), -- base: hsl(67.1, 26.4%, 80.3%)
+	rose = hsl(11.3, 67.5%, 64.4%),
+	leaf = hsl(105.4, 50.2%, 74.5%),
+	wood = hsl(62.2, 55.8%, 77.6%),
+	water = hsl(179.5, 51%, 71.8%),
+	blossom = hsl(339.1, 46.7%, 69.8%),
+	sky = hsl(136.1, 45.8%, 72.6%),
+
+*/

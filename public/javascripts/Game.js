@@ -1,26 +1,49 @@
 import { PlayerFE } from './PlayerFE.js'
 import { Renderer } from './Renderer.js'
 import { wsGame } from './ws/game.js'
+import {
+  cssColors,
+  addThemeChangeListener,
+  rmvThemeChangeListener,
+} from './cssColors.js'
 
 export const defaultProperties = {
-  fps: 50,
-  size: {
-    x: 320,
-    y: 200,
-  },
+  // fps: 50, // original speed i guess...
+  fps: 40,
+  size: { x: 320, y: 200 },
   blocksize: 2,
-  bgColor: 'rgb(255,255,255)',
-  bordercolor: 'rgb(0,0,0)',
-  explosioncolor: 'rgb(122, 21, 21)',
-  playercolors: [
-    'rgb(0,0,0)',
-    'rgb(0,0,0)',
-    'rgb(0,0,0)',
-    'rgb(0,0,0)',
-    'rgb(0,0,0)',
-    'rgb(0,0,0)',
-  ],
+  colors: {
+    bgColor: cssColors.bg,
+    bordercolor: cssColors.fg,
+    explosioncolor: cssColors.rose,
+    playercolors: [
+      cssColors.fg,
+      cssColors.fg,
+      cssColors.fg,
+      cssColors.fg,
+      cssColors.fg,
+      cssColors.fg,
+    ],
+  },
 }
+
+const setColors = () => {
+  defaultProperties.colors = {
+    bgColor: cssColors.bg,
+    bordercolor: cssColors.fg,
+    explosioncolor: cssColors.rose,
+    playercolors: [
+      cssColors.fg,
+      cssColors.fg,
+      cssColors.fg,
+      cssColors.fg,
+      cssColors.fg,
+      cssColors.fg,
+    ],
+  }
+}
+
+setColors()
 
 export class Game {
   constructor({
@@ -69,9 +92,18 @@ export class Game {
 
     this.properties = { ...properties, ...defaultProperties }
 
-    this.renderer = new Renderer({ ...this.properties, id: 'arena' })
+    this.renderer = new Renderer({
+      blocksize: this.properties.blocksize,
+      size: this.properties.size,
+      ...this.properties.colors,
+      id: 'arena',
+    })
     this.players = []
     this.localPlayers = {}
+
+    this.onThemeChange = this.onThemeChange.bind(this)
+
+    addThemeChangeListener(this.onThemeChange)
 
     wsGame.connect({
       key: this.key,
@@ -123,6 +155,19 @@ export class Game {
     }, 0)
   }
 
+  onThemeChange() {
+    setColors()
+    this.properties.colors = { ...defaultProperties.colors }
+
+    this.renderer.bgColor = this.properties.colors.bgColor
+    this.renderer.bordercolor = this.properties.colors.bordercolor
+    this.renderer.explosioncolor = this.properties.colors.explosioncolor
+    this.renderer.playercolors = this.properties.colors.playercolors
+    this.renderer.draw([])
+
+    rmvThemeChangeListener(this.onThemeChange)
+  }
+
   onPlayersList(players) {
     this.players.forEach((player) => {
       player.destroy()
@@ -153,7 +198,7 @@ export class Game {
       .map((num) => num.toString(16).padStart(2, '0'))
       .join('')
     this.localPlayers[player.id] = true
-    player.color = this.properties.playercolors[0]
+    player.color = this.properties.colors.playercolors[0]
     wsGame.addPlayer(player)
   }
 
