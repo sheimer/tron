@@ -9,7 +9,7 @@ import {
 
 export const defaultProperties = {
   // fps: 50, // original speed i guess...
-  fps: 40,
+  fps: 50,
   size: { x: 320, y: 200 },
   blocksize: 2,
   colors: {

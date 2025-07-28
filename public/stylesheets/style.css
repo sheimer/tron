@@ -2,6 +2,7 @@
   color-scheme: light dark;
 
   --color-bg: light-dark(#faf3e1, #2c343a);
+  --color-bg-hl: light-dark(#f6ebc8, #374149);
   --color-fg: light-dark(#4f5b62, #e7dcc4);
   --color-fg-muted: light-dark(#9a9071, #6e7b85);
   --color-rose: light-dark(#f85550, #e67c7f);
@@ -38,24 +39,33 @@ a {
 }
 
 select,
+select option,
 button,
-input,
-input:focus {
+input {
   color: var(--color-fg);
+  background-color: var(--color-bg);
   border: 1px solid;
   border-color: var(--color-fg);
   border-radius: 4px;
   outline: none;
 }
 
+select:hover,
+button:hover,
+input:hover,
+select:focus,
+button:focus,
 input:focus {
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-hl);
 }
 
+select:invalid,
 input::placeholder {
   color: var(--color-fg-muted);
 }
 
+select:disabled,
+button:disabled,
 input:disabled {
   color: var(--color-fg-muted);
   border-color: var(--color-fg-muted);
