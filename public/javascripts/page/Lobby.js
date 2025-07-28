@@ -52,8 +52,8 @@ export class LobbyPage {
 
       this.lobby = new Lobby({
         onConnect: () => {
-          lobbyContainer.style.display = 'block'
-          lobbyFooter.style.display = 'flex'
+          lobbyContainer.style.display = ''
+          lobbyFooter.style.display = ''
         },
         onListReceived: (list) => {
           updateGamelistTable({ list, connectGame: this.connectGame })

@@ -7,10 +7,17 @@
   --color-fg-muted: light-dark(#9a9071, #6e7b85);
   --color-rose: light-dark(#f85550, #e67c7f);
   --color-leaf: light-dark(#8da200, #a9c181);
+  --color-leaf-hl: light-dark(#738400, #bed09f);
   --color-wood: light-dark(#dea000, #ddbd7f);
   --color-water: light-dark(#3a94c4, #7fbcb4);
   --color-blossom: light-dark(#df69ba, #d69ab7);
   --color-sky: light-dark(#36a87e, #83c193);
+
+  --size-tiny: 5px;
+  --size-small: calc(var(--size-tiny) * 1.618);
+  --size-medium: calc(var(--size-small) * 1.618);
+  --size-large: calc(var(--size-medium) * 1.618);
+  --size-huge: calc(var(--size-large) * 1.618);
 }
 
 html {
@@ -40,21 +47,27 @@ a {
 
 select,
 select option,
+input,
 button,
+input[type="button"],
+input[type="submit"] {
+  border: 1px solid;
+  border-radius: 4px;
+  outline: none;
+  padding: var(--size-tiny) var(--size-small);
+}
+
+select,
+select option,
 input {
   color: var(--color-fg);
   background-color: var(--color-bg);
-  border: 1px solid;
   border-color: var(--color-fg);
-  border-radius: 4px;
-  outline: none;
 }
 
 select:hover,
-button:hover,
 input:hover,
 select:focus,
-button:focus,
 input:focus {
   background-color: var(--color-bg-hl);
 }
@@ -65,9 +78,33 @@ input::placeholder {
 }
 
 select:disabled,
-button:disabled,
 input:disabled {
   color: var(--color-fg-muted);
+  border-color: var(--color-fg-muted);
+}
+
+button,
+input[type="button"],
+input[type="submit"] {
+  color: var(--color-bg);
+  background-color: var(--color-leaf);
+  border-color: var(--color-leaf);
+}
+
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+button:focus,
+input[type="button"]:focus,
+input[type="submit"]:focus {
+  background-color: var(--color-leaf-hl);
+  border-color: var(--color-leaf-hl);
+}
+
+button:disabled,
+input[type="button"]:disabled,
+input[type="submit"]:disabled {
+  background-color: var(--color-fg-muted);
   border-color: var(--color-fg-muted);
 }
 
@@ -89,21 +126,16 @@ option[value=""][disabled] {
 }
 
 #arena {
-  display: none;
   width: 100%;
   height: 100%;
 }
 
 #lobby {
-  display: none;
   position: absolute;
   top: 0px;
   left: 0px;
   width: 100%;
   height: 100%;
-}
-#footer-lobby {
-  display: none;
 }
 
 #gamelisttable {
@@ -115,7 +147,6 @@ option[value=""][disabled] {
 }
 
 #playersconfig {
-  display: none;
   position: absolute;
   top: 0px;
   left: 0px;
@@ -123,12 +154,7 @@ option[value=""][disabled] {
   height: 100%;
 }
 
-#footer-playersconfig {
-  display: none;
-}
-
 #playernames {
-  display: none;
   position: absolute;
   top: 0px;
   left: 0px;
@@ -179,16 +205,11 @@ option[value=""][disabled] {
 }
 
 #scores {
-  display: none;
   position: absolute;
   top: 0px;
   left: 0px;
   width: 100%;
   height: 100%;
-}
-
-#footer-game {
-  display: none;
 }
 
 #log {
@@ -204,4 +225,9 @@ option[value=""][disabled] {
   top: 50px;
   right: 50px;
   color: var(--color-fg-muted);
+}
+
+.flex-row {
+  display: flex;
+  column-gap: var(--size-tiny);
 }

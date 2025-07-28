@@ -45,12 +45,12 @@ block content
             th(style="width: 15%; text-align: right;") Escaped
             th(style="width: 15%; text-align: right;") Total
         tbody#body-scoretable
-  #footer-game
+  #footer-game(class='flex-row')
     input(type='button' value=' start ' id='btn-start-game' disabled=true)
-  #footer-lobby
+  #footer-lobby(class='flex-row')
     input(type='text' value='' placeholder='gamename' id='input-create-game')
     input(type='button' value=' create game ' id='btn-create-game' disabled=true)
-  #footer-playersconfig
+  #footer-playersconfig(class='flex-row')
     input(type='text' value='' placeholder='playername' id='input-add-player')
     select(id='select-keycodes' required=true)
       option(value='' disabled=true selected=true hidden=true) select left/right turn

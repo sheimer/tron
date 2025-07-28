@@ -237,11 +237,7 @@ export class GamePage {
         element.style.display = 'none'
       })
       Object.values(pageElements.playersconfig).forEach((element) => {
-        element.style.display = element.id.startsWith('footer')
-          ? 'flex'
-          : element.tagName === 'SPAN'
-            ? ''
-            : 'block'
+        element.style.display = ''
       })
 
       game.instance = new Game({
@@ -306,10 +302,10 @@ export class GamePage {
       Object.values(pageElements.playersconfig).forEach((element) => {
         element.style.display = 'none'
       })
-      pageElements.game.footerGame.style.display = 'flex'
-      pageElements.game.startBtn.style.display = 'block'
-      pageElements.game.arena.style.display = 'block'
-      pageElements.game.playernames.style.display = 'block'
+      pageElements.game.footerGame.style.display = ''
+      pageElements.game.startBtn.style.display = ''
+      pageElements.game.arena.style.display = ''
+      pageElements.game.playernames.style.display = ''
 
       pageElements.game.startBtn.onclick = () => {
         game.instance.start()
