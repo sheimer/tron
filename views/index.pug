@@ -47,21 +47,23 @@ block content
         tbody#body-scoretable
   #footer-game(class='flex-row')
     input(type='button' value=' start ' id='btn-start-game' disabled=true)
-  #footer-lobby(class='flex-row')
-    input(type='text' value='' placeholder='gamename' id='input-create-game')
-    input(type='button' value=' create game ' id='btn-create-game' disabled=true)
-  #footer-playersconfig(class='flex-row')
-    input(type='text' value='' placeholder='playername' id='input-add-player')
-    select(id='select-keycodes' required=true)
-      option(value='' disabled=true selected=true hidden=true) select left/right turn
-      option(value='66_78') b/n
-      option(value='89_88') y/x
-      option(value='75_76') k/l
-      option(value='81_87') q/w
-      option(value='40_39') &lt;down>/&lt;right>
-      option(value='98_99') &lt;kpad 2>/&lt;kpad 3>
-    input(type='button' value=' add player ' id='btn-add-player' disabled=true)
-    input(type='button' value=' start ' id='btn-init-game' disabled=true)
+  form(onsubmit='return false;' id='form-create-game')
+    #footer-lobby(class='flex-row')
+      input(type='text' value='' placeholder='gamename' id='input-create-game')
+      input(type='submit' value=' create game ' id='btn-create-game' disabled=true)
+  form(onsubmit='return false;' id='form-add-player')
+    #footer-playersconfig(class='flex-row')
+      input(type='text' value='' placeholder='playername' id='input-add-player')
+      select(id='select-keycodes' required=true)
+        option(value='' disabled=true selected=true hidden=true) select left/right turn
+        option(value='66_78') b/n
+        option(value='89_88') y/x
+        option(value='75_76') k/l
+        option(value='81_87') q/w
+        option(value='40_39') &lt;down>/&lt;right>
+        option(value='98_99') &lt;kpad 2>/&lt;kpad 3>
+      input(type='submit' value=' add player ' id='btn-add-player' disabled=true)
+      input(type='button' value=' start ' id='btn-init-game' disabled=true)
   #gamestats
     h1#ping
   #log

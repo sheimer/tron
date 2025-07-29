@@ -24,6 +24,7 @@ const bodyScoreTable = document.getElementById('body-scoretable')
 
 const inputPlayername = document.getElementById('input-add-player')
 const selectKeycodes = document.getElementById('select-keycodes')
+const addPlayerForm = document.getElementById('form-add-player')
 const addPlayerBtn = document.getElementById('btn-add-player')
 const initBtn = document.getElementById('btn-init-game')
 
@@ -285,12 +286,14 @@ export class GamePage {
       }
       selectKeycodes.onchange({ target: selectKeycodes })
 
-      addPlayerBtn.onclick = () => {
-        game.instance.addPlayer({
-          name: playername,
-          left: keycodes[playerkeys].left,
-          right: keycodes[playerkeys].right,
-        })
+      addPlayerForm.onsubmit = () => {
+        if (!addPlayerBtn.disabled) {
+          game.instance.addPlayer({
+            name: playername,
+            left: keycodes[playerkeys].left,
+            right: keycodes[playerkeys].right,
+          })
+        }
         return false
       }
 

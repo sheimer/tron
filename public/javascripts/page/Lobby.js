@@ -3,6 +3,7 @@ import { Lobby } from '../Lobby.js'
 const lobbyContainer = document.getElementById('lobby')
 const bodyGamelistTable = document.getElementById('body-gamelisttable')
 const lobbyFooter = document.getElementById('footer-lobby')
+const formCreateGame = document.getElementById('form-create-game')
 const inputGameName = document.getElementById('input-create-game')
 const btnCreateGame = document.getElementById('btn-create-game')
 
@@ -69,8 +70,10 @@ export class LobbyPage {
       }
       inputGameName.onkeyup({ target: inputGameName })
 
-      btnCreateGame.onclick = () => {
-        this.lobby.createGame(gameName)
+      formCreateGame.onsubmit = () => {
+        if (!btnCreateGame.disabled) {
+          this.lobby.createGame(gameName)
+        }
         return false
       }
     } else {
