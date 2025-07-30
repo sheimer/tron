@@ -9,13 +9,13 @@ import {
 
 export const defaultProperties = {
   // fps: 50, // original speed i guess...
-  fps: 50,
+  fps: 25,
   size: { x: 320, y: 200 },
-  blocksize: 2,
+  blocksize: 4,
   colors: {
     bgColor: cssColors.bg,
     bordercolor: cssColors.fg,
-    explosioncolor: cssColors.rose,
+    explosioncolor: cssColors.blossom,
     playercolors: [
       cssColors.fg,
       cssColors.fg,
@@ -31,7 +31,7 @@ const setColors = () => {
   defaultProperties.colors = {
     bgColor: cssColors.bg,
     bordercolor: cssColors.fg,
-    explosioncolor: cssColors.rose,
+    explosioncolor: cssColors.blossom,
     playercolors: [
       cssColors.fg,
       cssColors.fg,
