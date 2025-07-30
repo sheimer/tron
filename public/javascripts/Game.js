@@ -11,7 +11,7 @@ export const defaultProperties = {
   // fps: 50, // original speed i guess...
   fps: 25,
   size: { x: 320, y: 200 },
-  blocksize: 4,
+  blocksize: 2,
   colors: {
     bgColor: cssColors.bg,
     bordercolor: cssColors.fg,

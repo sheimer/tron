@@ -1,48 +1,14 @@
-:root {
-  color-scheme: light dark;
+@import url("/remixicon/remixicon.css");
 
-  --color-bg: light-dark(#faf3e1, #2c343a);
-  --color-bg-hl: light-dark(#f6ebc8, #374149);
-  --color-fg: light-dark(#4f5b62, #e7dcc4);
-  --color-fg-muted: light-dark(#9a9071, #6e7b85);
-  --color-rose: light-dark(#f85550, #e67c7f);
-  --color-leaf: light-dark(#8da200, #a9c181);
-  --color-leaf-hl: light-dark(#738400, #bed09f);
-  --color-wood: light-dark(#dea000, #ddbd7f);
-  --color-water: light-dark(#3a94c4, #7fbcb4);
-  --color-blossom: light-dark(#df69ba, #d69ab7);
-  --color-sky: light-dark(#36a87e, #83c193);
+@import url("var.css");
+@import url("defaults.css");
+@import url("flex.css");
+@import url("dropdown.css");
 
-  --size-tiny: 5px;
-  --size-small: calc(var(--size-tiny) * 1.618);
-  --size-medium: calc(var(--size-small) * 1.618);
-  --size-large: calc(var(--size-medium) * 1.618);
-  --size-huge: calc(var(--size-large) * 1.618);
-}
-
-html {
-  box-sizing: border-box;
-}
-
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-
-body {
-  background-color: var(--color-bg);
-  color: var(--color-fg);
-  padding: 50px;
-  font:
-    14px "Lucida Grande",
-    Helvetica,
-    Arial,
-    sans-serif;
-}
-
-a {
-  color: var(--color-water);
+button:not(:disabled),
+input[type="button"]:not(:disabled),
+input[type="submit"]:not(:disabled) {
+  cursor: pointer;
 }
 
 select,
@@ -108,15 +74,16 @@ input[type="submit"]:disabled {
   border-color: var(--color-fg-muted);
 }
 
-th {
-  text-align: left;
-}
-
 select:required:invalid {
   color: var(--color-fg-muted);
 }
+
 option[value=""][disabled] {
   display: none;
+}
+
+th {
+  text-align: left;
 }
 
 #screen {
@@ -126,6 +93,7 @@ option[value=""][disabled] {
 }
 
 #arena {
+  display: none;
   width: 100%;
   height: 100%;
 }
@@ -220,14 +188,15 @@ option[value=""][disabled] {
   text-align: right;
 }
 
-#gamestats {
+#controls {
   position: absolute;
   top: 50px;
   right: 50px;
-  color: var(--color-fg-muted);
 }
 
-.flex-row {
-  display: flex;
-  column-gap: var(--size-tiny);
+#gamestats {
+  position: absolute;
+  bottom: 50px;
+  left: 50px;
+  color: var(--color-fg-muted);
 }
