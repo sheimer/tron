@@ -11,6 +11,7 @@ const pageElements = {
     arena: document.getElementById('arena'),
     playernames: document.getElementById('playernames'),
     scores: document.getElementById('scores'),
+    scoresWaiting: document.getElementById('scores-waiting'),
     footerGame: document.getElementById('footer-game'),
     startBtn: document.getElementById('btn-start-game'),
   },
@@ -41,6 +42,34 @@ export const game = {
   key: null,
   name: null,
   instance: null,
+  connectedGames: JSON.parse(sessionStorage.getItem('connectedGames')) ?? {},
+  addConnectedGame: () => {
+    if (!game.connectedGames[game.key]) {
+      game.connectedGames[game.key] = {
+        localPlayers: {},
+      }
+      sessionStorage.setItem(
+        'connectedGames',
+        JSON.stringify(game.connectedGames),
+      )
+    }
+  },
+  removeConnectedGames: (keys) => {
+    keys.forEach((key) => {
+      delete game.connectedGames[key]
+    })
+    sessionStorage.setItem(
+      'connectedGames',
+      JSON.stringify(game.connectedGames),
+    )
+  },
+  addLocalPlayer: (id, player) => {
+    game.connectedGames[game.key].localPlayers[id] = true
+    sessionStorage.setItem(
+      'connectedGames',
+      JSON.stringify(game.connectedGames),
+    )
+  },
 }
 
 const keycodes = {
@@ -210,7 +239,7 @@ const showPlayerPositions = (state) => {
 }
 
 const showArena = (state) => {
-  if (state === 'scores' || state === 'finished') {
+  if (state === 'scores' || state === 'scoresWaiting' || state === 'finished') {
     pageElements.game.arena.style.display = 'none'
   } else if (state === 'running') {
     pageElements.game.arena.style.display = 'block'
@@ -218,10 +247,18 @@ const showArena = (state) => {
 }
 
 const showScores = (state) => {
-  if (state === 'scores' || state === 'finished') {
+  if (state === 'scores' || state === 'scoresWaiting' || state === 'finished') {
     pageElements.game.scores.style.display = 'block'
   } else {
     pageElements.game.scores.style.display = 'none'
+  }
+}
+
+const showScoresWaiting = (state) => {
+  if (state === 'scoresWaiting') {
+    pageElements.game.scoresWaiting.style.display = 'block'
+  } else {
+    pageElements.game.scoresWaiting.style.display = 'none'
   }
 }
 
@@ -243,6 +280,9 @@ export class GamePage {
 
       game.instance = new Game({
         key: game.key,
+        localPlayers: game.connectedGames[game.key]?.localPlayers ?? {
+          localPlayers: {},
+        },
         stateHandler: [
           enableAddPlayerIfConnected,
           enableStartIfReady,
@@ -250,6 +290,7 @@ export class GamePage {
           showPlayerPositions,
           showArena,
           showScores,
+          showScoresWaiting,
         ],
         onPlayersUpdate: (players) => {
           updatePlayersTable({ list: players })
@@ -258,6 +299,11 @@ export class GamePage {
         onPlayersPositions: ({ players, positions }) => {
           updatePlayersPositions({ players, positions })
           this.toGameMode()
+        },
+        onConnected: (gameState) => {
+          if (gameState.started) {
+            this.toGameMode()
+          }
         },
         onScoresUpdate: (scores) => {
           updateScores({ scores })
@@ -288,10 +334,17 @@ export class GamePage {
 
       addPlayerForm.onsubmit = () => {
         if (!addPlayerBtn.disabled) {
-          game.instance.addPlayer({
+          const left = keycodes[playerkeys].left
+          const right = keycodes[playerkeys].right
+          const id = game.instance.addPlayer({
             name: playername,
-            left: keycodes[playerkeys].left,
-            right: keycodes[playerkeys].right,
+            left,
+            right,
+          })
+          game.addLocalPlayer(id, {
+            name: playername,
+            left,
+            right,
           })
         }
         return false

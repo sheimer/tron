@@ -10,8 +10,32 @@ setInterval(() => {
 class Page {
   constructor(handler = []) {
     this.state = null
-
     this.stateHandler = handler
+
+    const lobbyPage = new LobbyPage({
+      connectGame: (gameId, name) => {
+        game.key = gameId
+        game.name = name
+        game.addConnectedGame(gameId)
+        page.setState('playersconfig')
+      },
+    })
+
+    this.addHandler((state) => {
+      lobbyPage.pageHandler(state)
+    })
+
+    const gamePage = new GamePage({
+      toGameMode: () => {
+        this.setState('game')
+      },
+    })
+
+    this.addHandler((state) => {
+      gamePage.pageHandler(state)
+    })
+
+    this.setState('lobby')
   }
 
   setState(state) {
@@ -28,27 +52,3 @@ class Page {
 }
 
 const page = new Page()
-
-const lobbyPage = new LobbyPage({
-  connectGame: (gameId, name) => {
-    game.key = gameId
-    game.name = name
-    page.setState('playersconfig')
-  },
-})
-
-page.addHandler((state) => {
-  lobbyPage.pageHandler(state)
-})
-
-const gamePage = new GamePage({
-  toGameMode: () => {
-    page.setState('game')
-  },
-})
-
-page.addHandler((state) => {
-  gamePage.pageHandler(state)
-})
-
-page.setState('lobby')

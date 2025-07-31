@@ -49,9 +49,11 @@ export class Game {
   constructor({
     properties = {},
     key,
+    localPlayers = {},
     stateHandler = [],
     onPlayersUpdate,
     onPlayersPositions,
+    onConnected,
     onScoresUpdate,
   }) {
     this.key = key
@@ -63,6 +65,7 @@ export class Game {
       // game start requestable if "ready" or "scores"
       'start', // game start requested
       'running', // game running
+      'scoresWaiting', // game finished, showing scores, but no autofinished state (after reconnect while game still running)
       'scores', // game finished, showing scores
       'finished', // 1 second after scores, still showing scores, but ready to request new start
     ]
@@ -79,8 +82,13 @@ export class Game {
         }
       },
     ]
+
+    this.localPlayers = localPlayers
+    this.players = []
+
     this.onPlayersUpdate = onPlayersUpdate
     this.onPlayersPositions = onPlayersPositions
+    this.onConnected = onConnected
     this.onScoresUpdate = (scores) => {
       scores.players.forEach((player) => {
         player.isLocal = !!this.localPlayers[player.id]
@@ -98,8 +106,6 @@ export class Game {
       ...this.properties.colors,
       id: 'arena',
     })
-    this.players = []
-    this.localPlayers = {}
 
     this.onThemeChange = this.onThemeChange.bind(this)
 
@@ -111,11 +117,19 @@ export class Game {
       interval: Math.round(1000 / this.properties.fps),
       onmessage: (msg) => {
         if (msg.action === 'serverState') {
-          if (msg?.payload?.players) {
-            this.onPlayersList(msg.payload.players)
+          const { players, running, started, scores } = msg?.payload ?? {}
+          if (players) {
+            this.onPlayersList(players)
           }
           if (this.state === 'connecting') {
-            this.setState('settingPlayers')
+            const gameState = { started, running }
+            this.onConnected(gameState)
+            if (started) {
+              this.onScoresUpdate(scores)
+              this.setState(running ? 'scoresWaiting' : 'scores')
+            } else {
+              this.setState('settingPlayers')
+            }
           }
         } else if (msg.action === 'gameinfo') {
           this.onPlayersList(msg.payload.players)
@@ -202,6 +216,7 @@ export class Game {
     this.localPlayers[player.id] = true
     player.color = this.properties.colors.playercolors[0]
     wsGame.addPlayer(player)
+    return player.id
   }
 
   start() {

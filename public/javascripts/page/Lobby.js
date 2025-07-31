@@ -1,4 +1,5 @@
 import { Lobby } from '../Lobby.js'
+import { game } from './Game.js'
 
 const lobbyContainer = document.getElementById('lobby')
 const bodyGamelistTable = document.getElementById('body-gamelisttable')
@@ -34,7 +35,12 @@ const updateGamelistTable = ({ list, connectGame }) => {
     startButton.onclick = () => {
       connectGame(list[i].key, list[i].name)
     }
-    startButton.disabled = !list[i].acceptingPlayers
+
+    const gameReconnectPossible =
+      game.connectedGames[list[i].key] &&
+      Object.keys(game.connectedGames[list[i].key].localPlayers).length
+    startButton.disabled = !list[i].acceptingPlayers && !gameReconnectPossible
+
     td.appendChild(startButton)
     tr.appendChild(td)
     bodyGamelistTable.appendChild(tr)
@@ -57,6 +63,16 @@ export class LobbyPage {
           lobbyFooter.style.display = ''
         },
         onListReceived: (list) => {
+          const localGames = Object.keys(game.connectedGames)
+          const removeGames = []
+          localGames.forEach((localGame) => {
+            if (!list.some((serverGame) => serverGame.key === localGame)) {
+              removeGames.push(localGame)
+            }
+          })
+          if (removeGames.length) {
+            game.removeConnectedGames(removeGames)
+          }
           updateGamelistTable({ list, connectGame: this.connectGame })
         },
         onGameCreated: (gameId) => {
