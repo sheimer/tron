@@ -15,6 +15,11 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 export const app = express()
 export const server = http.createServer(app)
 
+const appStarted = new Date()
+const customCacheControl = (res, file) => {
+  res.setHeader('Last-Modified', appStarted.toUTCString())
+}
+
 addWebsockets(server)
 
 // view engine setup
@@ -25,7 +30,11 @@ app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(
+  express.static(path.join(__dirname, 'public'), {
+    setHeaders: customCacheControl,
+  }),
+)
 
 app.use('/', indexRouter)
 

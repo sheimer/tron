@@ -10,6 +10,7 @@ const { protocol, hostname, port } = window.location
 export const wsPing = {
   socket: null,
   connectionRetries: 0,
+  windowClosing: false,
 
   connect: () => {
     const socket = new WebSocket(
@@ -24,13 +25,20 @@ export const wsPing = {
     })
 
     socket.addEventListener('close', (event) => {
-      if (wsPing.connectionRetries < maxConnectRetries) {
+      if (
+        !wsPing.windowClosing &&
+        wsPing.connectionRetries < maxConnectRetries
+      ) {
         setTimeout(() => {
-          console.log('connect ping from lose event')
+          console.log('connect ping from close event')
           wsPing.connect()
         }, reconnectInterval)
         wsPing.connectionRetries++
       }
+    })
+
+    window.addEventListener('beforeunload', () => {
+      wsPing.windowClosing = true
     })
 
     socket.addEventListener('message', (event) => {
