@@ -1,7 +1,12 @@
+const colorClassesSheet = new CSSStyleSheet()
+
+document.adoptedStyleSheets.push(colorClassesSheet)
+
 const styleObj = window.getComputedStyle(document.body)
 const colors = {}
 
 const setColors = (isDark) => {
+  colorClassesSheet.replaceSync('')
   for (let i = 0; i < styleObj.length; i++) {
     if (styleObj[i].startsWith('--color-')) {
       const name = styleObj[i].replace('--color-', '')
@@ -10,6 +15,12 @@ const setColors = (isDark) => {
         .replace(/^light-dark\(|\)$| /g, '')
         .split(',')
       colors[name] = colorArray[isDark ? 1 : 0]
+      colorClassesSheet.insertRule(
+        `.fg-${name} { color: ${colorArray[isDark ? 1 : 0]};}`,
+      )
+      colorClassesSheet.insertRule(
+        `.bg-${name} { background-color: ${colorArray[isDark ? 1 : 0]};}`,
+      )
     }
   }
 }
@@ -36,18 +47,9 @@ export const addThemeChangeListener = (listener) => {
 }
 
 export const rmvThemeChangeListener = (listener) => {
-  listeners.forEach((activeListener) => {
-    console.log(Object.is(activeListener, listener))
-  })
+  for (let i = listeners.length - 1; i >= 0; i--) {
+    if (Object.is(listeners[i], listener)) {
+      listeners.splice(i, 1)
+    }
+  }
 }
-/*
-  bg: style.getPropertyValue('--color-bg'),
-fg: style.getPropertyValue('--color-fg'),
-fgMuted: style.getPropertyValue('--color-fg-muted'),
-rose: style.getPropertyValue('--color-rose'),
-leaf: style.getPropertyValue('--color-leaf'),
-wood: style.getPropertyValue('--color-wood'),
-water: style.getPropertyValue('--color-water'),
-blossom: style.getPropertyValue('--color-blossom'),
-sky: style.getPropertyValue('--color-sky'),
-  */

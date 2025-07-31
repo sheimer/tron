@@ -90,7 +90,7 @@ const updatePlayersTable = ({ list }) => {
     const isLocal = list[i].isLocal
     const tr = document.createElement('tr')
     if (!isLocal) {
-      tr.style.color = '#333333'
+      tr.className = 'fg-fg-muted'
     }
     let td = document.createElement('td')
     td.appendChild(document.createTextNode(list[i].name))
@@ -145,7 +145,7 @@ const updateScores = ({ scores }) => {
     const player = scores.players[i]
     const tr = document.createElement('tr')
     if (!player.isLocal) {
-      tr.style.color = '#333333'
+      tr.className = 'fg-fg-muted'
     }
 
     const td = document.createElement('td')

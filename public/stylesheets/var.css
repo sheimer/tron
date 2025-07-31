@@ -1,6 +1,10 @@
 :root {
   color-scheme: light dark;
 
+  /*
+    colors will be made available by public/javascripts/cssColors.js as classes
+    "fg-bg", ..., "fg-sky" to set color and "bg-bg", ..., "bg-sky" to set background color
+  */
   --color-bg: light-dark(#faf3e1, #2c343a);
   --color-bg-hl: light-dark(#f6ebc8, #374149);
   --color-fg: light-dark(#4f5b62, #e7dcc4);

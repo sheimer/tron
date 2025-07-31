@@ -134,6 +134,10 @@ export class Game {
     this.setState('connecting')
   }
 
+  destroy() {
+    rmvThemeChangeListener(this.onThemeChange)
+  }
+
   addStateHandler(handler) {
     if (!this.stateHandler.some((_hdl) => _hdl === handler)) {
       this.stateHandler.push(handler)
@@ -164,8 +168,6 @@ export class Game {
     this.renderer.explosioncolor = this.properties.colors.explosioncolor
     this.renderer.playercolors = this.properties.colors.playercolors
     this.renderer.draw([])
-
-    rmvThemeChangeListener(this.onThemeChange)
   }
 
   onPlayersList(players) {
