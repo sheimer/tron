@@ -16,7 +16,7 @@ block content
             th(style="width: 15%") Status
             th(style="width: 10%")
         tbody#body-gamelisttable
-    #playersconfig
+    #playersconfig(style="display:none;")
       p Game "#[span#gameName gameName]" (#[span#gameId gameId]) ready, create players!
       table#playerstable
         thead
@@ -25,14 +25,14 @@ block content
             th(style="width: 40%") Keys
             th(style="width: 10%")
         tbody#body-playerstable
-    #playernames
+    #playernames(style="display:none;")
       #playerpos0
       #playerpos1
       #playerpos2
       #playerpos3
       #playerpos4
       #playerpos5
-    #scores
+    #scores(style="display:none;")
       p #[span#gamecount] game's results...
       p#messages
       table#scoretable(style="width: 100%;")
@@ -49,14 +49,12 @@ block content
       #scores-waiting-overlay
       #scores-waiting-message
         h1(class='fg-water') waiting for current round to finish
-  #footer-game(class='flex-row')
-    input(type='button' value=' start ' id='btn-start-game' disabled=true)
   #footer-lobby
     form(onsubmit='return false;' id='form-create-game')
       div(class='flex-row')
         input(type='text' value='' placeholder='gamename' id='input-create-game')
         input(type='submit' value=' create game ' id='btn-create-game' disabled=true)
-  #footer-playersconfig
+  #footer-playersconfig(style="display:none;")
     form(onsubmit='return false;' id='form-add-player')
       div(class='flex-row')
         input(type='text' value='' placeholder='playername' id='input-add-player')
@@ -70,6 +68,8 @@ block content
           option(value='98_99') &lt;kpad 2>/&lt;kpad 3>
         input(type='submit' value=' add player ' id='btn-add-player' disabled=true)
         input(type='button' value=' start ' id='btn-init-game' disabled=true)
+  #footer-game(class='flex-row' style="display:none;")
+    input(type='button' value=' start ' id='btn-start-game' disabled=true)
   #controls
     h1(class='flex-row')
       div(class='dropdown')
