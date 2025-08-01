@@ -15,9 +15,9 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 export const app = express()
 export const server = http.createServer(app)
 
-const appStarted = new Date()
-const customCacheControl = (res, file) => {
-  res.setHeader('Last-Modified', appStarted.toUTCString())
+const customCacheControl = (res, file, stat) => {
+  const notModifiedSince = new Date(stat.mtimeMs)
+  res.setHeader('Last-Modified', notModifiedSince.toUTCString())
 }
 
 addWebsockets(server)
