@@ -1,16 +1,16 @@
 import { log } from '../include.js'
 
-let pingDiv = null
-
 const maxConnectRetries = 20
 const reconnectInterval = 1000
 
 const { protocol, hostname, port } = window.location
 
-export const wsPing = {
+const wsPing = {
   socket: null,
   connectionRetries: 0,
   windowClosing: false,
+  pingDiv: document.getElementById('ping'),
+  interval: null,
 
   connect: () => {
     const socket = new WebSocket(
@@ -22,9 +22,15 @@ export const wsPing = {
 
     socket.addEventListener('open', (event) => {
       wsPing.connectionRetries = 0
+
+      wsPing.ping()
+      wsPing.interval = setInterval(() => {
+        wsPing.ping()
+      }, 1000)
     })
 
     socket.addEventListener('close', (event) => {
+      clearInterval(wsPing.interval)
       if (
         !wsPing.windowClosing &&
         wsPing.connectionRetries < maxConnectRetries
@@ -42,8 +48,8 @@ export const wsPing = {
     })
 
     socket.addEventListener('message', (event) => {
-      if (pingDiv !== null) {
-        pingDiv.innerHTML = `${new Date().getTime() - event.data}ms ping`
+      if (wsPing.pingDiv !== null) {
+        wsPing.pingDiv.innerHTML = `${new Date().getTime() - event.data}ms ping`
       } else {
         log(`ping: ${new Date().getTime() - event.data}ms`)
       }
@@ -52,14 +58,10 @@ export const wsPing = {
     wsPing.socket = socket
   },
 
-  ping: (div) => {
-    if (div) {
-      pingDiv = div
-    }
-
+  ping: () => {
     if (wsPing.socket?.readyState !== 1) {
-      if (pingDiv) {
-        pingDiv.innerHTML = '-'
+      if (wsPing.pingDiv) {
+        wsPing.pingDiv.innerHTML = '-'
       } else {
         log('wsPing not connected')
       }
@@ -70,5 +72,4 @@ export const wsPing = {
   },
 }
 
-console.log('connect ping from ping module')
 wsPing.connect()

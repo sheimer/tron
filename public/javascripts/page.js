@@ -1,12 +1,6 @@
-import { wsPing } from './ws/ping.js'
+import './ws/ping.js'
 import { GamePage, game } from './page/Game.js'
 import { LobbyPage } from './page/Lobby.js'
-
-const ping = document.getElementById('ping')
-wsPing.ping(ping)
-setInterval(() => {
-  wsPing.ping()
-}, 1000)
 
 class Page {
   constructor(handler = []) {
