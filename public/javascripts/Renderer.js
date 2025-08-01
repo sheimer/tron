@@ -52,18 +52,19 @@ export class Renderer {
     // draw field
     for (let x = 0; x < this.size.x; x++) {
       for (let y = 0; y < this.size.y; y++) {
-        if (this.fields[x][y] !== -1) {
+        const field = this.fields[x][y]
+        if (field !== -1) {
           const cx = x * this.blocksize
           const cy = y * this.blocksize
-          if (this.fields[x][y] === -2) {
+          if (field === -2) {
             this.canvas.fillStyle = this.bordercolor
             this.canvas.fillRect(cx, cy, this.blocksize, this.blocksize)
-          } else if (this.fields[x][y] === -3) {
+          } else if (field === -3) {
             this.canvas.fillStyle = this.explosioncolor
             this.canvas.fillRect(cx, cy, this.blocksize, this.blocksize)
-          } else if (this.fields[x][y] >= 0 && this.fields[x][y] < 6) {
-            const player = this.fields[x][y]
-            this.canvas.fillStyle = this.playercolors[player].color
+          } else if (field >= 0 && field < 6) {
+            const player = field
+            this.canvas.fillStyle = this.playercolors[player]
             this.canvas.fillRect(cx, cy, this.blocksize, this.blocksize)
           }
         }
