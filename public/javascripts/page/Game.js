@@ -295,6 +295,11 @@ export class GamePage {
         onPlayersUpdate: (players) => {
           updatePlayersTable({ list: players })
           initBtn.disabled = players.length < 2
+          if (players.length >= 6) {
+            inputPlayername.disabled = true
+            selectKeycodes.disabled = true
+            addPlayerBtn.disabled = true
+          }
         },
         onPlayersPositions: ({ players, positions }) => {
           updatePlayersPositions({ players, positions })
