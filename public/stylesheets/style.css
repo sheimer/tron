@@ -63,8 +63,8 @@ input[type="submit"]:focus {
 button:disabled,
 input[type="button"]:disabled,
 input[type="submit"]:disabled {
-  background-color: var(--color-fg-muted);
-  border-color: var(--color-fg-muted);
+  background-color: var(--color-leaf-muted);
+  border-color: var(--color-leaf-muted);
 }
 
 select:required:invalid {
@@ -204,6 +204,18 @@ th {
   right: 50px;
   color: var(--color-fg-muted);
   text-align: right;
+}
+
+#colortest {
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
+}
+
+#colortest .color {
+  border: 1px solid var(--color-fg-muted);
+  width: 24px;
+  height: 24px;
 }
 
 #controls {

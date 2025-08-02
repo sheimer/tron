@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1= title
+  h1(class="fg-sky")= title
   #screen
     canvas#arena
     #lobby
@@ -76,8 +76,14 @@ block content
         button#btn-settings
           i(class='ri-equalizer-fill')
         div(class='dropdown-content bottom-end')
+          div(class="flex-row")
+            button#schemeAuto auto
+            button#schemeLight light
+            button#schemeDark dark
           button some button
           button some other button...
   #gamestats
     h2#ping
   #log
+  #colortest
+    h2(class="flex-row small-gap")

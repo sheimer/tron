@@ -1,11 +1,14 @@
 import './ws/ping.js'
 import { GamePage, game } from './page/Game.js'
 import { LobbyPage } from './page/Lobby.js'
+import { Settings } from './page/Settings.js'
 
 class Page {
   constructor(handler = []) {
     this.state = null
     this.stateHandler = handler
+
+    const settings = new Settings()
 
     const lobbyPage = new LobbyPage({
       connectGame: (gameId, name) => {
@@ -16,10 +19,6 @@ class Page {
       },
     })
 
-    this.addHandler((state) => {
-      lobbyPage.pageHandler(state)
-    })
-
     const gamePage = new GamePage({
       toGameMode: () => {
         this.setState('game')
@@ -27,6 +26,8 @@ class Page {
     })
 
     this.addHandler((state) => {
+      settings.pageHandler(state)
+      lobbyPage.pageHandler(state)
       gamePage.pageHandler(state)
     })
 

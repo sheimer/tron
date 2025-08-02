@@ -18,14 +18,14 @@ const setColors = () => {
   defaultProperties.colors = {
     bgColor: cssColors.bg,
     bordercolor: cssColors.fg,
-    explosioncolor: cssColors.blossom,
+    explosioncolor: cssColors.rose,
     playercolors: [
       cssColors.water,
       cssColors.wood,
-      cssColors.fg,
-      cssColors.fg,
-      cssColors.fg,
-      cssColors.fg,
+      cssColors.leaf,
+      cssColors.blossom,
+      cssColors.sky,
+      cssColors.rock,
     ],
   }
 }
@@ -201,7 +201,8 @@ export class Game {
       .map((num) => num.toString(16).padStart(2, '0'))
       .join('')
     this.localPlayers[player.id] = true
-    player.color = this.properties.colors.playercolors[0]
+    player.color =
+      player.color ?? this.properties.colors.playercolors[this.players.length]
     wsGame.addPlayer(player)
     return player.id
   }
