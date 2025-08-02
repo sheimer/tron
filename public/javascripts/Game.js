@@ -12,19 +12,6 @@ export const defaultProperties = {
   fps: 25,
   size: { x: 320, y: 200 },
   blocksize: 2,
-  colors: {
-    bgColor: cssColors.bg,
-    bordercolor: cssColors.fg,
-    explosioncolor: cssColors.blossom,
-    playercolors: [
-      cssColors.fg,
-      cssColors.fg,
-      cssColors.fg,
-      cssColors.fg,
-      cssColors.fg,
-      cssColors.fg,
-    ],
-  },
 }
 
 const setColors = () => {
@@ -33,8 +20,8 @@ const setColors = () => {
     bordercolor: cssColors.fg,
     explosioncolor: cssColors.blossom,
     playercolors: [
-      cssColors.fg,
-      cssColors.fg,
+      cssColors.water,
+      cssColors.wood,
       cssColors.fg,
       cssColors.fg,
       cssColors.fg,
