@@ -2,8 +2,13 @@ import { log } from '../include.js'
 
 const { protocol, hostname, port } = window.location
 
+const maxConnectRetries = 20
+const reconnectInterval = 1000
+
 export const wsGame = {
   socket: null,
+  connectionRetries: 0,
+  windowClosing: false,
   connected: false,
 
   connect: ({ onmessage, key, ...args }) => {
@@ -22,6 +27,23 @@ export const wsGame = {
     wsGame.socket.addEventListener('message', (event) => {
       const msg = JSON.parse(event.data)
       onmessage(msg)
+    })
+
+    wsGame.socket.addEventListener('close', (event) => {
+      if (
+        !wsGame.windowClosing &&
+        wsGame.connectionRetries < maxConnectRetries
+      ) {
+        setTimeout(() => {
+          console.log('connect game from close event')
+          wsGame.connect({ onmessage, key, ...args })
+        }, reconnectInterval)
+        wsGame.connectionRetries++
+      }
+    })
+
+    window.addEventListener('beforeunload', () => {
+      wsGame.windowClosing = true
     })
   },
 
