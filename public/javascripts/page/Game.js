@@ -116,19 +116,22 @@ const updatePlayersTable = ({ list }) => {
   }
 
   for (let i = 0; i < list.length; i++) {
-    const isLocal = list[i].isLocal
+    const player = list[i]
+    const isLocal = player.isLocal
     const tr = document.createElement('tr')
-    if (!isLocal) {
-      tr.className = 'fg-fg-muted'
+    if (isLocal) {
+      tr.className = `fg-${player.color.name}`
+    } else {
+      tr.className = `fg-${player.color.name}-muted`
     }
     let td = document.createElement('td')
-    td.appendChild(document.createTextNode(list[i].name))
+    td.appendChild(document.createTextNode(player.name))
     tr.appendChild(td)
     td = document.createElement('td')
     if (isLocal) {
       td.appendChild(
         document.createTextNode(
-          `${keycodesText[list[i].left]}/${keycodesText[list[i].right]}`,
+          `${keycodesText[player.left]}/${keycodesText[player.right]}`,
         ),
       )
     } else {
@@ -147,7 +150,19 @@ const updatePlayersTable = ({ list }) => {
   }
 }
 
+const createPlayerSpan = (player) => {
+  const span = document.createElement('span')
+  span.className = `fg-${player.color.name}${player.isLocal ? '' : '-muted'}`
+  span.appendChild(document.createTextNode(player.name))
+  return span
+}
+
 const updateScores = ({ scores }) => {
+  const playersById = game.instance.players.reduce((players, player) => {
+    players[player.id] = player
+    return players
+  }, {})
+
   gameCounter.innerHTML = ''
   gameMessages.innerHTML = ''
   gameCounter.appendChild(
@@ -155,7 +170,17 @@ const updateScores = ({ scores }) => {
   )
   scores.messages.forEach((message) => {
     const div = document.createElement('div')
-    div.appendChild(document.createTextNode(message))
+    if (message.playerPre) {
+      const span = createPlayerSpan(playersById[message.playerPre])
+      div.appendChild(span)
+      div.appendChild(document.createTextNode(' '))
+    }
+    div.appendChild(document.createTextNode(message.text))
+    if (message.playerPost) {
+      const span = createPlayerSpan(playersById[message.playerPost])
+      div.appendChild(document.createTextNode(' '))
+      div.appendChild(span)
+    }
     gameMessages.appendChild(div)
   })
 
@@ -172,9 +197,14 @@ const updateScores = ({ scores }) => {
 
   for (let i = 0; i < scores.players.length; i++) {
     const player = scores.players[i]
+    const playerColor = playersById[player.id]?.color ?? 'fg'
+
     const tr = document.createElement('tr')
-    if (!player.isLocal) {
-      tr.className = 'fg-fg-muted'
+
+    if (player.isLocal) {
+      tr.className = `fg-${playerColor.name}`
+    } else {
+      tr.className = `fg-${playerColor.name}-muted`
     }
 
     const td = document.createElement('td')

@@ -27,6 +27,7 @@ wssLobby.on('connection', (ws) => {
   ws.send(JSON.stringify({ action: 'list', payload: gameServer.getGameList() }))
 
   ws.on('message', (msg, binary) => {
+    console.log('make user input secure...')
     const { action, payload } = JSON.parse(msg.toString())
     switch (action) {
       case 'create': {

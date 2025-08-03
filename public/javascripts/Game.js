@@ -20,12 +20,12 @@ const setColors = () => {
     bordercolor: cssColors.fg,
     explosioncolor: cssColors.rose,
     playercolors: [
-      cssColors.water,
-      cssColors.wood,
-      cssColors.leaf,
-      cssColors.blossom,
-      cssColors.sky,
-      cssColors.rock,
+      { name: 'water', value: cssColors.water },
+      { name: 'wood', value: cssColors.wood },
+      { name: 'leaf', value: cssColors.leaf },
+      { name: 'blossom', value: cssColors.blossom },
+      { name: 'sky', value: cssColors.sky },
+      { name: 'rock', value: cssColors.rock },
     ],
   }
 }
@@ -91,6 +91,9 @@ export class Game {
       blocksize: this.properties.blocksize,
       size: this.properties.size,
       ...this.properties.colors,
+      playercolors: this.properties.colors.playercolors.map(
+        (color) => color.value,
+      ),
       id: 'arena',
     })
 
@@ -167,7 +170,9 @@ export class Game {
     this.renderer.bgColor = this.properties.colors.bgColor
     this.renderer.bordercolor = this.properties.colors.bordercolor
     this.renderer.explosioncolor = this.properties.colors.explosioncolor
-    this.renderer.playercolors = this.properties.colors.playercolors
+    this.renderer.playercolors = this.properties.colors.playercolors.map(
+      (color) => color.value,
+    )
     this.renderer.draw([])
   }
 
