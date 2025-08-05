@@ -7,8 +7,10 @@
   */
   --color-bg: light-dark(#faf3e1, #2c343a);
   --color-bg-hl: light-dark(#f6ebc8, #374149);
+  --color-bg-muted: light-dark(#eee7d0, #404040);
 
   --color-fg: light-dark(#4f5b62, #e7dcc4);
+  --color-fg-hl: light-dark(#ac995f, #537ea0);
   --color-fg-muted: light-dark(#9a9071, #6e7b85);
 
   --color-rose: light-dark(#f85550, #e67c7f);

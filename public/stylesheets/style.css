@@ -1,232 +1,39 @@
-button:not(:disabled),
-input[type="button"]:not(:disabled),
-input[type="submit"]:not(:disabled) {
-  cursor: pointer;
-}
-
-select,
-select option,
-input,
-button,
-input[type="button"],
-input[type="submit"] {
-  border: 1px solid;
-  border-radius: 4px;
-  outline: none;
-  padding: var(--size-tiny) var(--size-small);
-}
-
-select,
-select option,
-input {
-  color: var(--color-fg);
-  background-color: var(--color-bg);
-  border-color: var(--color-fg);
-}
-
-select:hover,
-input:hover,
-select:focus,
-input:focus {
-  background-color: var(--color-bg-hl);
-}
-
-select:invalid,
-input::placeholder {
-  color: var(--color-fg-muted);
-}
-
-select:disabled,
-input:disabled {
-  color: var(--color-fg-muted);
-  border-color: var(--color-fg-muted);
-}
-
-button,
-input[type="button"],
-input[type="submit"] {
-  color: var(--color-bg);
-  background-color: var(--color-leaf);
-  border-color: var(--color-leaf);
-}
-
-button:hover,
-input[type="button"]:hover,
-input[type="submit"]:hover,
-button:focus,
-input[type="button"]:focus,
-input[type="submit"]:focus {
-  background-color: var(--color-leaf-hl);
-  border-color: var(--color-leaf-hl);
-}
-
-button:disabled,
-input[type="button"]:disabled,
-input[type="submit"]:disabled {
-  background-color: var(--color-leaf-muted);
-  border-color: var(--color-leaf-muted);
-}
-
-select:required:invalid {
-  color: var(--color-fg-muted);
-}
-
-option[value=""][disabled] {
-  display: none;
-}
-
 th {
   text-align: left;
 }
 
-#screen {
+.relative {
   position: relative;
-  width: 640px;
-  height: 400px;
+  top: 0;
+  left: 0;
 }
 
-#arena {
-  display: none;
+.absolute {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.fullsize {
   width: 100%;
   height: 100%;
 }
 
-#lobby {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
+.gradient-left {
+  mask-image: linear-gradient(
+    to bottom left,
+    transparent,
+    transparent 49%,
+    black 51%,
+    black
+  );
 }
-
-#gamelisttable {
-  width: 100%;
-}
-
-#playerstable {
-  width: 100%;
-}
-
-#playersconfig {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-}
-
-#playernames {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-}
-#playerpos0 {
-  position: absolute;
-  top: 75px;
-  left: 0px;
-  width: 200px;
-  text-align: center;
-}
-#playerpos1 {
-  position: absolute;
-  top: 75px;
-  right: 0px;
-  width: 200px;
-  text-align: center;
-}
-#playerpos2 {
-  position: absolute;
-  top: 175px;
-  left: 0px;
-  width: 200px;
-  text-align: center;
-}
-#playerpos3 {
-  position: absolute;
-  top: 175px;
-  right: 0px;
-  width: 200px;
-  text-align: center;
-}
-#playerpos4 {
-  position: absolute;
-  top: 275px;
-  left: 0px;
-  width: 200px;
-  text-align: center;
-}
-#playerpos5 {
-  position: absolute;
-  top: 275px;
-  right: 0px;
-  width: 200px;
-  text-align: center;
-}
-
-#scores {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-}
-
-#scores-waiting {
-  display: none;
-}
-
-#scores-waiting,
-#scores-waiting-overlay,
-#scores-waiting-message {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-}
-
-#scores-waiting-overlay {
-  background-color: var(--color-bg);
-  opacity: 0.8;
-}
-
-#scores-waiting-message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#log {
-  position: absolute;
-  bottom: 50px;
-  right: 50px;
-  color: var(--color-fg-muted);
-  text-align: right;
-}
-
-#colortest {
-  position: absolute;
-  bottom: 50px;
-  right: 50px;
-}
-
-#colortest .color {
-  border: 1px solid var(--color-fg-muted);
-  width: 24px;
-  height: 24px;
-}
-
-#controls {
-  position: absolute;
-  top: 50px;
-  right: 50px;
-}
-
-#gamestats {
-  position: absolute;
-  bottom: 50px;
-  left: 50px;
-  color: var(--color-fg-muted);
+.gradient-right {
+  mask-image: linear-gradient(
+    to bottom left,
+    black,
+    black 49%,
+    transparent 51%,
+    transparent
+  );
 }

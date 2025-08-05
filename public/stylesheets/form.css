@@ -1,0 +1,119 @@
+button:not(:disabled),
+input[type="button"]:not(:disabled),
+input[type="submit"]:not(:disabled) {
+  cursor: pointer;
+}
+
+select,
+input,
+button,
+.button,
+.button-inverted,
+input[type="button"],
+input[type="submit"] {
+  border: 1px solid;
+  border-radius: 4px;
+  outline: none;
+  padding: var(--size-tiny) var(--size-medium);
+}
+
+select,
+input {
+  color: var(--color-fg);
+  background-color: var(--color-bg);
+  border-color: var(--color-fg);
+
+  option {
+    color: var(--color-fg);
+    background-color: transparent;
+    border-color: var(--color-fg);
+  }
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-bg-hl);
+  }
+
+  &:invalid,
+  &::placeholder {
+    color: var(--color-fg-muted);
+  }
+
+  &:disabled {
+    color: var(--color-fg-muted);
+    border-color: var(--color-fg-muted);
+  }
+}
+
+select:required:invalid {
+  color: var(--color-fg-muted);
+}
+
+option[value=""][disabled] {
+  display: none;
+}
+
+button,
+.button,
+input[type="button"],
+input[type="submit"] {
+  color: var(--color-bg);
+  background-color: var(--color-sky);
+  border-color: var(--color-sky);
+
+  &:hover {
+    background-color: var(--color-sky-hl);
+    border-color: var(--color-sky-hl);
+
+    div.button {
+      background-color: var(--color-sky-hl);
+      border-color: var(--color-sky-hl);
+    }
+    div.button-inverted {
+      color: var(--color-sky-hl);
+      background-color: var(--color-bg);
+      border-color: var(--color-sky-hl);
+    }
+  }
+
+  &:disabled {
+    background-color: var(--color-sky-muted);
+    border-color: var(--color-sky-muted);
+
+    .button {
+      background-color: var(--color-sky-muted) !important;
+      border-color: var(--color-sky-muted) !important;
+    }
+
+    .button-inverted {
+      color: var(--color-sky-muted) !important;
+      background-color: var(--color-bg-muted) !important;
+      border-color: var(--color-sky-muted) !important;
+    }
+  }
+}
+
+.button-inverted {
+  color: var(--color-sky);
+  background-color: var(--color-bg-hl);
+  border-color: var(--color-sky);
+
+  &:hover {
+    color: var(--color-sky-hl) !important;
+    background-color: var(--color-bg) !important;
+    border-color: var(--color-sky-hl) !important;
+  }
+
+  &:disabled {
+    color: var(--color-sky-muted) !important;
+    background-color: var(--color-bg-muted) !important;
+    border-color: var(--color-sky-muted) !important;
+  }
+}
+
+.button-nostyle {
+  color: transparent;
+  background-color: transparent;
+  border: none;
+  padding: 0px;
+}

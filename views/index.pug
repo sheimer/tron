@@ -77,9 +77,23 @@ block content
           i(class='ri-equalizer-fill')
         div(class='dropdown-content bottom-end')
           div(class="flex-row")
-            button#schemeAuto auto
-            button#schemeLight light
-            button#schemeDark dark
+            button#scheme-light
+              div(class="flex-row")
+                i(class="ri-sun-fill")
+                | light
+            button#scheme-dark(class="button-inverted")
+              div(class="flex-row")
+                i(class="ri-moon-clear-fill")
+                | dark
+            button#scheme-auto(class="button-nostyle relative")
+              div(class="button gradient-left")
+                div(class="flex-row")
+                  i(class='ri-palette-fill')
+                  | auto
+              div(class="button-inverted absolute gradient-right")
+                div(class="flex-row")
+                  i(class='ri-palette-fill')
+                  | auto
           button some button
           button some other button...
   #gamestats

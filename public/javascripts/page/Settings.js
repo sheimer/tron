@@ -1,18 +1,18 @@
 import { LIGHT, DARK, AUTO, changeTheme } from '../cssColors.js'
 
-const btnAuto = document.getElementById('schemeAuto')
+const btnAuto = document.getElementById('scheme-auto')
 if (btnAuto) {
   btnAuto.onclick = () => {
     changeTheme(AUTO)
   }
 }
-const btnLight = document.getElementById('schemeLight')
+const btnLight = document.getElementById('scheme-light')
 if (btnLight) {
   btnLight.onclick = () => {
     changeTheme(LIGHT)
   }
 }
-const btnDark = document.getElementById('schemeDark')
+const btnDark = document.getElementById('scheme-dark')
 if (btnDark) {
   btnDark.onclick = () => {
     changeTheme(DARK)
