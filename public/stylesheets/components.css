@@ -119,16 +119,16 @@
 
 #log {
   position: absolute;
-  bottom: 50px;
-  right: 50px;
+  bottom: var(--body-padding-vertical);
+  right: var(--body-padding-horizontal);
   color: var(--color-fg-muted);
   text-align: right;
 }
 
 #colortest {
   position: absolute;
-  bottom: 50px;
-  right: 50px;
+  bottom: var(--body-padding-vertical);
+  right: var(--body-padding-horizontal);
 }
 
 #colortest .color {
@@ -139,13 +139,13 @@
 
 #controls {
   position: absolute;
-  top: 50px;
-  right: 50px;
+  top: var(--body-padding-vertical);
+  right: var(--body-padding-horizontal);
 }
 
 #gamestats {
   position: absolute;
-  bottom: 50px;
-  left: 50px;
+  bottom: var(--body-padding-vertical);
+  left: var(--body-padding-horizontal);
   color: var(--color-fg-muted);
 }

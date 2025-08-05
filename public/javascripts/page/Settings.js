@@ -1,23 +1,33 @@
-import { LIGHT, DARK, AUTO, changeTheme } from '../cssColors.js'
+import { LIGHT, DARK, AUTO, settings } from '../settings.js'
 
-const btnAuto = document.getElementById('scheme-auto')
-if (btnAuto) {
-  btnAuto.onclick = () => {
-    changeTheme(AUTO)
-  }
+const buttons = {
+  theme: {
+    [AUTO]: document.getElementById('scheme-auto'),
+    [LIGHT]: document.getElementById('scheme-light'),
+    [DARK]: document.getElementById('scheme-dark'),
+  },
 }
-const btnLight = document.getElementById('scheme-light')
-if (btnLight) {
-  btnLight.onclick = () => {
-    changeTheme(LIGHT)
+
+Object.entries(buttons.theme).forEach(([theme, button]) => {
+  button.onclick = () => {
+    settings.set('theme', theme)
   }
+})
+
+const setTheme = (newTheme) => {
+  console.log(buttons.theme[newTheme])
+  Object.entries(buttons.theme).forEach(([theme, button]) => {
+    if (theme === newTheme) {
+      button.classList.add('selected')
+    } else {
+      button.classList.remove('selected')
+    }
+  })
 }
-const btnDark = document.getElementById('scheme-dark')
-if (btnDark) {
-  btnDark.onclick = () => {
-    changeTheme(DARK)
-  }
-}
+
+setTheme(settings.theme)
+
+settings.addListener('theme', setTheme)
 
 export class Settings {
   constructor() {}

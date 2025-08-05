@@ -1,22 +1,16 @@
-export const AUTO = 'light dark'
-export const LIGHT = 'light'
-export const DARK = 'dark'
+import { AUTO, DARK, settings } from './settings.js'
 
 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)')
 
 const colorClassesSheet = new CSSStyleSheet()
 document.adoptedStyleSheets.push(colorClassesSheet)
 
-let theme = localStorage.getItem('theme') ?? AUTO
-document.body.style.colorScheme = theme
-
-let systemIsDark = darkThemeMq.matches
-let themeIsDark = theme === AUTO ? systemIsDark : theme === DARK
+document.body.style.colorScheme = settings.theme
 
 const colors = {}
 const listeners = []
 
-const testContainer = document.querySelector('#colortest h2')
+const testContainer = document.querySelector('#colortest div')
 
 const colorVars = []
 Array.from(document.styleSheets).forEach((styleSheet) => {
@@ -68,14 +62,15 @@ const setColors = (isDark) => {
   }
 }
 
+let systemIsDark = darkThemeMq.matches
+let themeIsDark =
+  settings.theme === AUTO ? systemIsDark : settings.theme === DARK
+
 setColors(themeIsDark)
 
 darkThemeMq.addListener((e) => {
   systemIsDark = e.matches
-  if (
-    document.body.style.colorScheme === 'light dark' ||
-    document.body.style.colorScheme.length === 0
-  ) {
+  if (settings.theme === AUTO) {
     setColors(systemIsDark)
     listeners.forEach((listener) => {
       listener()
@@ -83,26 +78,10 @@ darkThemeMq.addListener((e) => {
   }
 })
 
-export const cssColors = colors
-
-export const changeTheme = (theme) => {
-  localStorage.setItem('theme', theme)
+settings.addListener('theme', (theme) => {
   document.body.style.colorScheme = theme
-  themeIsDark = theme === 'light dark' ? systemIsDark : theme === 'dark'
-  setColors(themeIsDark)
-  listeners.forEach((listener) => {
-    listener()
-  })
-}
+  const isDark = theme === 'light dark' ? systemIsDark : theme === 'dark'
+  setColors(isDark)
+})
 
-export const addThemeChangeListener = (listener) => {
-  listeners.push(listener)
-}
-
-export const rmvThemeChangeListener = (listener) => {
-  for (let i = listeners.length - 1; i >= 0; i--) {
-    if (Object.is(listeners[i], listener)) {
-      listeners.splice(i, 1)
-    }
-  }
-}
+export const cssColors = colors

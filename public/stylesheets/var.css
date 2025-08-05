@@ -88,4 +88,7 @@
   --size-medium: calc(var(--size-small) * 1.618);
   --size-large: calc(var(--size-medium) * 1.618);
   --size-huge: calc(var(--size-large) * 1.618);
+
+  --body-padding-horizontal: calc(var(--size-huge) * 1.618);
+  --body-padding-vertical: var(--size-huge);
 }

@@ -16,10 +16,41 @@ body {
   background-color: var(--color-bg);
   color: var(--color-fg);
   margin: 0px;
-  padding: 50px;
+  padding: var(--body-padding-vertical) var(--body-padding-horizontal);
   font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+
+  h1:first-of-type,
+  h2:first-of-type,
+  h3:first-of-type,
+  h4:first-of-type {
+    margin-top: 0px;
+  }
 }
 
 a {
   color: var(--color-water);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-sky);
+}
+
+h1 {
+  margin-top: var(--size-large);
+  margin-bottom: var(--size-large);
+}
+h2 {
+  margin-top: var(--size-medium);
+  margin-bottom: var(--size-medium);
+}
+h3 {
+  margin-top: var(--size-small);
+  margin-bottom: var(--size-small);
+}
+h4 {
+  margin-top: var(--size-tiny);
+  margin-bottom: var(--size-tiny);
 }

@@ -20,12 +20,19 @@
 
   background-color: var(--color-bg-hl);
 
-  padding: var(--size-tiny) var(--size-tiny);
+  padding: var(--size-medium) var(--size-large);
 
   font-size: 1rem;
   font-weight: normal;
 
   z-index: 1;
+
+  h1:first-of-type,
+  h2:first-of-type,
+  h3:first-of-type,
+  h4:first-of-type {
+    margin-top: 0px;
+  }
 }
 
 .dropdown-content.bottom-end {

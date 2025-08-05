@@ -1,11 +1,8 @@
 import { PlayerFE } from './PlayerFE.js'
 import { Renderer } from './Renderer.js'
 import { wsGame } from './ws/game.js'
-import {
-  cssColors,
-  addThemeChangeListener,
-  rmvThemeChangeListener,
-} from './cssColors.js'
+import { settings } from './settings.js'
+import { cssColors } from './cssColors.js'
 
 export const defaultProperties = {
   // fps: 50, // original speed i guess...
@@ -99,7 +96,7 @@ export class Game {
 
     this.onThemeChange = this.onThemeChange.bind(this)
 
-    addThemeChangeListener(this.onThemeChange)
+    settings.addListener('theme', this.onThemeChange)
 
     wsGame.connect({
       key: this.key,
@@ -139,7 +136,7 @@ export class Game {
   }
 
   destroy() {
-    rmvThemeChangeListener(this.onThemeChange)
+    settings.removeListener('theme', this.onThemeChange)
   }
 
   addStateHandler(handler) {
