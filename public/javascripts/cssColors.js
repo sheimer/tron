@@ -18,13 +18,25 @@ const listeners = []
 
 const testContainer = document.querySelector('#colortest h2')
 
-const setColors = (isDark) => {
-  const styleObj = window.getComputedStyle(document.body)
+const colorVars = []
+Array.from(document.styleSheets).forEach((styleSheet) => {
+  const cssRules = Array.from(styleSheet.cssRules)
+  cssRules.forEach((rule) => {
+    if (rule.selectorText === ':root') {
+      Array.from(rule.style).forEach((prop) => {
+        if (prop.startsWith('--color')) {
+          colorVars.push(prop)
+        }
+      })
+    }
+  })
+})
 
+const setColors = (isDark) => {
   colorClassesSheet.replaceSync('')
 
-  for (let i = styleObj.length - 1; i >= 0; i--) {
-    const varName = styleObj[i]
+  for (let i = 0; i < colorVars.length; i++) {
+    const varName = colorVars[i]
     if (varName.startsWith('--color-')) {
       const name = varName.replace('--color-', '')
 
