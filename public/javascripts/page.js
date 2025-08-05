@@ -2,6 +2,7 @@ import './ws/ping.js'
 import { GamePage, game } from './page/Game.js'
 import { LobbyPage } from './page/Lobby.js'
 import { Settings } from './page/Settings.js'
+import './dropdown.js'
 
 class Page {
   constructor(handler = []) {
