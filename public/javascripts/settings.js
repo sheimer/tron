@@ -4,20 +4,24 @@ export const DARK = 'dark'
 
 class Settings {
   theme
+  coloredPlayers
   listeners
 
   constructor() {
     this.listeners = {
       theme: new Set(),
+      coloredPlayers: new Set(),
     }
-    this.theme = localStorage.getItem('theme') ?? AUTO
+    this.theme = JSON.parse(localStorage.getItem('theme')) ?? AUTO
+    this.coloredPlayers =
+      JSON.parse(localStorage.getItem('coloredPlayers')) ?? true
   }
 
   set(key, value) {
     if (typeof this[key] === 'undefined') {
       console.log(`${key} is undefined!`)
     }
-    localStorage.setItem(key, value)
+    localStorage.setItem(key, JSON.stringify(value))
     this.key = value
 
     this.listeners[key].forEach((listener) => {

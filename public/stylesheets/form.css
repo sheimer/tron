@@ -181,34 +181,34 @@ button.selected .button-inverted {
 label.checkbox {
   --radius: calc(var(--size-huge) / 4);
 
+  cursor: pointer;
+
   input[type="checkbox"] {
     display: none;
   }
 
   div {
-    cursor: pointer;
+    position: relative;
     width: var(--size-huge);
     height: calc(var(--size-huge) / 2);
-    background: grey;
-    display: block;
+    background: var(--color-sky);
     border-radius: var(--radius);
-    position: relative;
   }
 
   div:after {
-    content: "";
     position: absolute;
     top: 6%;
     left: 2.5%;
+    content: "";
     width: calc(50% - 5%);
     height: calc(100% - 11%);
-    background: #fff;
+    background: var(--color-bg-hl);
     border-radius: var(--radius);
-    transition: 0.3s;
+    transition: 0.1s;
   }
 
   input:checked + div {
-    background: #bada55;
+    background: var(--color-water);
   }
 
   input:checked + div:after {
@@ -216,7 +216,9 @@ label.checkbox {
     transform: translateX(-100%);
   }
 
-  div:active:after {
-    width: 55%;
+  &:active {
+    div:after {
+      width: 55%;
+    }
   }
 }

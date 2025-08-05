@@ -1,22 +1,25 @@
 import { LIGHT, DARK, AUTO, settings } from '../settings.js'
 
-const buttons = {
+const elements = {
   theme: {
     [AUTO]: document.getElementById('scheme-auto'),
     [LIGHT]: document.getElementById('scheme-light'),
     [DARK]: document.getElementById('scheme-dark'),
   },
+  coloredPlayers: document.querySelector('#colored-players input'),
 }
 
-Object.entries(buttons.theme).forEach(([theme, button]) => {
+/**
+ * theme
+ */
+Object.entries(elements.theme).forEach(([theme, button]) => {
   button.onclick = () => {
     settings.set('theme', theme)
   }
 })
 
 const setTheme = (newTheme) => {
-  console.log(buttons.theme[newTheme])
-  Object.entries(buttons.theme).forEach(([theme, button]) => {
+  Object.entries(elements.theme).forEach(([theme, button]) => {
     if (theme === newTheme) {
       button.classList.add('selected')
     } else {
@@ -28,6 +31,14 @@ const setTheme = (newTheme) => {
 setTheme(settings.theme)
 
 settings.addListener('theme', setTheme)
+
+/**
+ * coloredPlayers
+ */
+elements.coloredPlayers.onchange = (evt) => {
+  settings.set('coloredPlayers', evt.target.checked)
+}
+elements.coloredPlayers.checked = settings.coloredPlayers
 
 export class Settings {
   constructor() {}
