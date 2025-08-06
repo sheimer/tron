@@ -1,34 +1,32 @@
 .flex-row {
   display: flex;
   column-gap: var(--size-tiny);
+  row-gap: var(--size-tiny);
 }
-.flex-row.small-gap {
-  column-gap: var(--size-small);
-}
-.flex-row.medium-gap {
-  column-gap: var(--size-medium);
-}
-.flex-row.large-gap {
-  column-gap: var(--size-large);
-}
-.flex-row.huge-gap {
-  column-gap: var(--size-huge);
-}
-
 .flex-column {
   display: flex;
   flex-direction: column;
+  column-gap: var(--size-tiny);
   row-gap: var(--size-tiny);
 }
-.flex-column.small-gap {
+
+.small-gap {
+  column-gap: var(--size-small);
   row-gap: var(--size-small);
 }
-.flex-column.medium-gap {
+.medium-gap {
+  column-gap: var(--size-medium);
   row-gap: var(--size-medium);
 }
-.flex-column.large-gap {
+.large-gap {
+  column-gap: var(--size-large);
   row-gap: var(--size-large);
 }
-.flex-column.huge-gap {
+.huge-gap {
+  column-gap: var(--size-huge);
   row-gap: var(--size-huge);
+}
+
+.wrap {
+  flex-wrap: wrap;
 }

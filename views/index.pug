@@ -10,9 +10,9 @@ block content
       table#gamelisttable
         thead
           tr
-            th(style="width: 10%") Id
-            th(style="width: 50%") Name
-            th(style="width: 15%") # Players
+            th(style="width: 9%") Id
+            th(style="width: 54%") Name
+            th(style="width: 18%") #Players
             th(style="width: 15%") Status
             th(style="width: 10%")
         tbody#body-gamelisttable
@@ -56,7 +56,7 @@ block content
         input(type='submit' value=' create game ' id='btn-create-game' disabled=true)
   #footer-playersconfig(style="display:none;")
     form(onsubmit='return false;' id='form-add-player')
-      div(class='flex-row')
+      div(class='flex-row wrap')
         input(type='text' value='' placeholder='playername' id='input-add-player')
         select(id='select-keycodes' required=true)
           option(value='' disabled=true selected=true hidden=true) select left/right turn

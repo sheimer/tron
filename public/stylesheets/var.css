@@ -1,6 +1,14 @@
 :root {
   color-scheme: light dark;
 
+  --multiplicator: 1;
+  @media (resolution >= 1.5dppx) {
+    --multiplicator: 1.5;
+  }
+  @media (resolution >= 2dppx) {
+    --multiplicator: 2;
+  }
+
   /*
     colors will be made available by public/javascripts/cssColors.js as classes
     "fg-bg", ..., "fg-sky" to set color and "bg-bg", ..., "bg-sky" to set background color
@@ -83,7 +91,7 @@
     hsl(from var(--color-rock) h calc(s * 0.4) calc(l * 0.7))
   );
 
-  --size-tiny: 5px;
+  --size-tiny: calc(5px * var(--multiplicator));
   --size-small: calc(var(--size-tiny) * 1.618);
   --size-medium: calc(var(--size-small) * 1.618);
   --size-large: calc(var(--size-medium) * 1.618);
@@ -91,4 +99,6 @@
 
   --body-padding-horizontal: calc(var(--size-huge) * 1.618);
   --body-padding-vertical: var(--size-huge);
+
+  --font-size: 14px;
 }

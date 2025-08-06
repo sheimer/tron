@@ -11,8 +11,9 @@ button,
 .button-inverted,
 input[type="button"],
 input[type="submit"] {
-  border: 1px solid;
-  border-radius: 4px;
+  border: calc(1px * var(--multiplicator)) solid;
+  border-radius: calc(4px * var(--multiplicator));
+
   outline: none;
   padding: var(--size-tiny) var(--size-medium);
 }

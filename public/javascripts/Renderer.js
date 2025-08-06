@@ -8,9 +8,23 @@ export class Renderer {
     size,
     id,
   }) {
-    this.width = size.x * blocksize
-    this.height = size.y * blocksize
+    // https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio#monitoring_screen_resolution_or_zoom_level_changes
+    console.log('change of devicePixelRatio: see link in comment above')
+    console.log(
+      'plus missing: orientation horizontal on phone - max width depending on 100% height instead of the other way round!',
+    )
+
+    const dppx = window.devicePixelRatio
+
     this.blocksize = blocksize
+    if (dppx >= 1.5) {
+      this.blocksize = this.blocksize * 1.5
+    }
+    if (dppx >= 2) {
+      this.blocksize = this.blocksize * 2
+    }
+    this.width = size.x * this.blocksize
+    this.height = size.y * this.blocksize
     this.bgColor = bgColor
     this.bordercolor = bordercolor
     this.explosioncolor = explosioncolor
@@ -33,8 +47,6 @@ export class Renderer {
       this.domCanvas = document.createElement('canvas')
       screen.insertBefore(this.domCanvas, screen.firstChild)
     }
-    screen.style.width = this.width + 'px'
-    screen.style.height = this.height + 'px'
     this.domCanvas.width = this.width
     this.domCanvas.height = this.height
     this.canvas = this.domCanvas.getContext('2d')

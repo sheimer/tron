@@ -9,7 +9,7 @@ html {
 }
 
 html {
-  font-size: 14px;
+  font-size: calc(var(--font-size) * var(--multiplicator));
 }
 
 body {
@@ -25,6 +25,12 @@ body {
   h4:first-of-type {
     margin-top: 0px;
   }
+}
+
+button,
+input,
+select {
+  font-size: 1rem;
 }
 
 a {
