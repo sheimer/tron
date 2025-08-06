@@ -1,3 +1,4 @@
+import { settings } from '../settings.js'
 import { Game } from '../Game.js'
 
 const pageElements = {
@@ -115,14 +116,18 @@ const updatePlayersTable = ({ list }) => {
     bodyPlayersTable.removeChild(bodyPlayersTable.lastChild)
   }
 
+  const colors = game.instance.properties.colors[
+    settings.coloredPlayers ? 'playercolors' : 'playerbw'
+  ].map((color) => color.name)
+
   for (let i = 0; i < list.length; i++) {
     const player = list[i]
     const isLocal = player.isLocal
     const tr = document.createElement('tr')
     if (isLocal) {
-      tr.className = `fg-${player.color.name}`
+      tr.className = `fg-${colors[i]}`
     } else {
-      tr.className = `fg-${player.color.name}-muted`
+      tr.className = `fg-${colors[i]}-muted`
     }
     let td = document.createElement('td')
     td.appendChild(document.createTextNode(player.name))
@@ -152,14 +157,18 @@ const updatePlayersTable = ({ list }) => {
 
 const createPlayerSpan = (player) => {
   const span = document.createElement('span')
-  span.className = `fg-${player.color.name}${player.isLocal ? '' : '-muted'}`
+  span.className = `fg-${player.renderColor}${player.isLocal ? '' : '-muted'}`
   span.appendChild(document.createTextNode(player.name))
   return span
 }
 
 const updateScores = ({ scores }) => {
-  const playersById = game.instance.players.reduce((players, player) => {
-    players[player.id] = player
+  const colors = game.instance.properties.colors[
+    settings.coloredPlayers ? 'playercolors' : 'playerbw'
+  ].map((color) => color.name)
+
+  const playersById = game.instance.players.reduce((players, player, index) => {
+    players[player.id] = { ...player, renderColor: colors[index] }
     return players
   }, {})
 
@@ -197,14 +206,14 @@ const updateScores = ({ scores }) => {
 
   for (let i = 0; i < scores.players.length; i++) {
     const player = scores.players[i]
-    const playerColor = playersById[player.id]?.color ?? 'fg'
+    const playerColor = playersById[player.id]?.renderColor ?? 'fg'
 
     const tr = document.createElement('tr')
 
     if (player.isLocal) {
-      tr.className = `fg-${playerColor.name}`
+      tr.className = `fg-${playerColor}`
     } else {
-      tr.className = `fg-${playerColor.name}-muted`
+      tr.className = `fg-${playerColor}-muted`
     }
 
     const td = document.createElement('td')
@@ -297,9 +306,34 @@ export class GamePage {
     this.toGameMode = () => {
       toGameMode()
     }
+    this.currentPage = 'playersconfig'
+    this.currentScores = { gamecount: 0, players: [], messages: [] }
+
+    this.onSettingsChange = this.onSettingsChange.bind(this)
+
+    settings.addListener('coloredPlayers', this.onSettingsChange)
+  }
+
+  destroy() {
+    settings.removeListener('coloredPlayers', this.onSettingsChange)
+  }
+
+  onSettingsChange() {
+    if (game.instance === null) {
+      return
+    }
+    if (this.currentPage === 'playersconfig') {
+      updatePlayersTable({ list: game.instance.players })
+    } else if (
+      game.instance.state === 'scores' ||
+      game.instance.state === 'finished'
+    ) {
+      updateScores({ scores: this.currentScores })
+    }
   }
 
   pageHandler(pageState) {
+    this.currentPage = pageState
     if (pageState === 'playersconfig') {
       Object.values(pageElements.game).forEach((element) => {
         element.style.display = 'none'
@@ -341,6 +375,7 @@ export class GamePage {
           }
         },
         onScoresUpdate: (scores) => {
+          this.currentScores = scores
           updateScores({ scores })
         },
       })

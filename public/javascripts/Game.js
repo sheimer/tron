@@ -16,14 +16,18 @@ const setColors = () => {
     bgColor: cssColors.bg,
     bordercolor: cssColors.fg,
     explosioncolor: cssColors.rose,
-    playercolors: [
-      { name: 'water', value: cssColors.water },
-      { name: 'wood', value: cssColors.wood },
-      { name: 'leaf', value: cssColors.leaf },
-      { name: 'blossom', value: cssColors.blossom },
-      { name: 'sky', value: cssColors.sky },
-      { name: 'rock', value: cssColors.rock },
-    ],
+    playercolors: ['water', 'wood', 'leaf', 'blossom', 'sky', 'rock'].map(
+      (name) => ({
+        name,
+        value: cssColors[name],
+      }),
+    ),
+    playerbw: Array(6)
+      .fill('fg')
+      .map((name) => ({
+        name,
+        value: cssColors[name],
+      })),
   }
 }
 
@@ -88,15 +92,16 @@ export class Game {
       blocksize: this.properties.blocksize,
       size: this.properties.size,
       ...this.properties.colors,
-      playercolors: this.properties.colors.playercolors.map(
-        (color) => color.value,
-      ),
+      playercolors: this.properties.colors[
+        settings.coloredPlayers ? 'playercolors' : 'playerbw'
+      ].map((color) => color.value),
       id: 'arena',
     })
 
-    this.onThemeChange = this.onThemeChange.bind(this)
+    this.onSettingsChange = this.onSettingsChange.bind(this)
 
-    settings.addListener('theme', this.onThemeChange)
+    settings.addListener('theme', this.onSettingsChange)
+    settings.addListener('coloredPlayers', this.onSettingsChange)
 
     wsGame.connect({
       key: this.key,
@@ -136,7 +141,8 @@ export class Game {
   }
 
   destroy() {
-    settings.removeListener('theme', this.onThemeChange)
+    settings.removeListener('theme', this.onSettingsChange)
+    settings.removeListener('coloredPlayers', this.onSettingsChange)
   }
 
   addStateHandler(handler) {
@@ -160,16 +166,16 @@ export class Game {
     }, 0)
   }
 
-  onThemeChange() {
+  onSettingsChange() {
     setColors()
     this.properties.colors = { ...defaultProperties.colors }
 
     this.renderer.bgColor = this.properties.colors.bgColor
     this.renderer.bordercolor = this.properties.colors.bordercolor
     this.renderer.explosioncolor = this.properties.colors.explosioncolor
-    this.renderer.playercolors = this.properties.colors.playercolors.map(
-      (color) => color.value,
-    )
+    this.renderer.playercolors = this.properties.colors[
+      settings.coloredPlayers ? 'playercolors' : 'playerbw'
+    ].map((color) => color.value)
     this.renderer.draw([])
   }
 

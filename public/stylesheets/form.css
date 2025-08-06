@@ -204,7 +204,10 @@ label.checkbox {
     height: calc(100% - 11%);
     background: var(--color-bg-hl);
     border-radius: var(--radius);
-    transition: 0.1s;
+    transition:
+      width 0.1s,
+      transform 0.1s,
+      left 0.1s;
   }
 
   input:checked + div {

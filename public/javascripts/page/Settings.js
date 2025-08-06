@@ -7,6 +7,8 @@ const elements = {
     [DARK]: document.getElementById('scheme-dark'),
   },
   coloredPlayers: document.querySelector('#colored-players input'),
+  showGamestats: document.querySelector('#show-gamestats input'),
+  showPalette: document.querySelector('#show-palette input'),
 }
 
 /**
@@ -33,17 +35,26 @@ setTheme(settings.theme)
 settings.addListener('theme', setTheme)
 
 /**
- * coloredPlayers
+ *
+ * other settings
  */
+elements.coloredPlayers.checked = settings.coloredPlayers
 elements.coloredPlayers.onchange = (evt) => {
   settings.set('coloredPlayers', evt.target.checked)
 }
-elements.coloredPlayers.checked = settings.coloredPlayers
 
-export class Settings {
+elements.showGamestats.checked = settings.showGamestats
+elements.showGamestats.onchange = (evt) => {
+  settings.set('showGamestats', evt.target.checked)
+}
+
+elements.showPalette.checked = settings.showPalette
+elements.showPalette.onchange = (evt) => {
+  settings.set('showPalette', evt.target.checked)
+}
+
+export class SettingsPage {
   constructor() {}
 
-  pageHandler(state) {
-    console.log('page state in Settings')
-  }
+  pageHandler(state) {}
 }

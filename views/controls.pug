@@ -1,29 +1,28 @@
+include mixins/buttonGradient.pug
+include mixins/checkbox.pug
+
 div(class='flex-row')
   div(class='dropdown')
     button#btn-settings
       i(class='ri-equalizer-fill')
     div(class='dropdown-content bottom-end')
       h2 Theme
-      div(class="flex-row")
-        button#scheme-light
-          div(class="flex-row")
-            i(class="ri-sun-fill")
-            | Light
-        button#scheme-dark(class="button-inverted")
-          div(class="flex-row")
-            i(class="ri-moon-clear-fill")
-            | Dark
-        button#scheme-auto(class="button-nostyle relative")
-          div(class="button gradient-left")
+      div(class="flex-column medium-gap")
+        div(class="flex-row")
+          button#scheme-light
+            div(class="flex-row")
+              i(class="ri-sun-fill")
+              | Light
+          button#scheme-dark(class="button-inverted")
+            div(class="flex-row")
+              i(class="ri-moon-clear-fill")
+              | Dark
+          +buttonGradient({"id":"scheme-auto"})
             div(class="flex-row")
               i(class='ri-palette-fill')
               | Auto
-          div(class="button-inverted absolute gradient-right")
-            div(class="flex-row")
-              i(class='ri-palette-fill')
-              | Auto
+        +checkbox({"id":"show-palette", "label": "Show Color Palette"})
       h2 Settings
-      label#colored-players(class="checkbox flex-row small-gap")
-        input(type="checkbox")
-        div
-        | Colored Players
+      div(class="flex-column small-gap")
+        +checkbox({"id":"colored-players", "label": "Colored Players"})
+        +checkbox({"id":"show-gamestats", "label": "Show Ping"})

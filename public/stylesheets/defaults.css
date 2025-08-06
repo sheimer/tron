@@ -54,3 +54,22 @@ h4 {
   margin-top: var(--size-tiny);
   margin-bottom: var(--size-tiny);
 }
+
+table {
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: var(--size-tiny) var(--size-medium);
+}
+
+thead tr {
+  background-color: var(--color-bg-hl);
+}
+tbody tr:nth-child(odd) {
+  background-color: var(--color-bg-muted);
+}
+tbody tr:nth-child(even) {
+  background-color: var(--color-bg-hl);
+}

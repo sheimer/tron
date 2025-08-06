@@ -1,7 +1,8 @@
 import './ws/ping.js'
 import { GamePage, game } from './page/Game.js'
 import { LobbyPage } from './page/Lobby.js'
-import { Settings } from './page/Settings.js'
+import { SettingsPage } from './page/Settings.js'
+import { settings } from './settings.js'
 import './dropdown.js'
 
 class Page {
@@ -9,7 +10,7 @@ class Page {
     this.state = null
     this.stateHandler = handler
 
-    const settings = new Settings()
+    const settingsPage = new SettingsPage()
 
     const lobbyPage = new LobbyPage({
       connectGame: (gameId, name) => {
@@ -27,12 +28,33 @@ class Page {
     })
 
     this.addHandler((state) => {
-      settings.pageHandler(state)
+      settingsPage.pageHandler(state)
       lobbyPage.pageHandler(state)
       gamePage.pageHandler(state)
     })
 
+    this.showGamestats = this.showGamestats.bind(this)
+    this.showGamestats(settings.showGamestats)
+    settings.addListener('showGamestats', this.showGamestats)
+
+    this.showPalette = this.showPalette.bind(this)
+    this.showPalette(settings.showPalette)
+    settings.addListener('showPalette', this.showPalette)
+
     this.setState('lobby')
+  }
+
+  destroy() {
+    settings.removeListener('showGamestats', this.showGamestats)
+    settings.removeListener('showPalette', this.showPalette)
+  }
+
+  showGamestats(show) {
+    document.getElementById('gamestats').style.display = show ? 'block' : 'none'
+  }
+
+  showPalette(show) {
+    document.getElementById('palette').style.display = show ? 'block' : 'none'
   }
 
   setState(state) {

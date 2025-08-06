@@ -10,7 +10,7 @@ document.body.style.colorScheme = settings.theme
 const colors = {}
 const listeners = []
 
-const testContainer = document.querySelector('#colortest div')
+const testContainer = document.querySelector('#palette div')
 
 const colorVars = []
 Array.from(document.styleSheets).forEach((styleSheet) => {
@@ -40,7 +40,7 @@ const setColors = (isDark) => {
       )
 
       const group = name.split('-')[0]
-      let divGroup = document.querySelector(`#colortest .group-${group}`)
+      let divGroup = document.querySelector(`#palette .group-${group}`)
       if (divGroup === null) {
         divGroup = document.createElement('div')
         divGroup.className = `group-${group} flex-column`
@@ -48,7 +48,7 @@ const setColors = (isDark) => {
         testContainer.appendChild(divGroup)
       }
 
-      let divColor = document.querySelector(`#colortest .bg-${name}`)
+      let divColor = document.querySelector(`#palette .bg-${name}`)
       if (divColor === null) {
         divColor = document.createElement('div')
         divColor.className = `color bg-${name} fg-${name}`
