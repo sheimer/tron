@@ -12,14 +12,23 @@ const listeners = []
 
 const testContainer = document.querySelector('#palette div')
 
-const colorVars = []
+const colorVars = new Set()
 Array.from(document.styleSheets).forEach((styleSheet) => {
   const cssRules = Array.from(styleSheet.cssRules)
   cssRules.forEach((rule) => {
     if (rule.selectorText === ':root') {
+      Array.from(rule.cssRules).forEach((innerRule) => {
+        if (innerRule.type === 0) {
+          Array.from(innerRule.style).forEach((prop) => {
+            if (prop.startsWith('--color')) {
+              colorVars.add(prop)
+            }
+          })
+        }
+      })
       Array.from(rule.style).forEach((prop) => {
         if (prop.startsWith('--color')) {
-          colorVars.push(prop)
+          colorVars.add(prop)
         }
       })
     }
@@ -29,8 +38,7 @@ Array.from(document.styleSheets).forEach((styleSheet) => {
 const setColors = (isDark) => {
   colorClassesSheet.replaceSync('')
 
-  for (let i = 0; i < colorVars.length; i++) {
-    const varName = colorVars[i]
+  colorVars.forEach((varName) => {
     if (varName.startsWith('--color-')) {
       const name = varName.replace('--color-', '')
 
@@ -59,7 +67,7 @@ const setColors = (isDark) => {
       const compStyle = window.getComputedStyle(divColor)
       colors[name] = compStyle.getPropertyValue('color')
     }
-  }
+  })
 }
 
 let systemIsDark = darkThemeMq.matches
