@@ -44,6 +44,10 @@ wssGame.on('connection', (ws) => {
   ws.on('message', (msg, binary) => {
     const { action, payload } = JSON.parse(msg.toString())
     switch (action) {
+      case 'setInterval': {
+        game.setInterval(payload)
+        break
+      }
       case 'addPlayer': {
         game.addPlayer(payload)
         broadcast(

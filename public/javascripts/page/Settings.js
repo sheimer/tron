@@ -1,4 +1,4 @@
-import { LIGHT, DARK, AUTO, settings } from '../settings.js'
+import { LIGHT, DARK, AUTO, SPEED, settings } from '../settings.js'
 
 const elements = {
   theme: {
@@ -9,6 +9,7 @@ const elements = {
   coloredPlayers: document.querySelector('#colored-players input'),
   showGamestats: document.querySelector('#show-gamestats input'),
   showPalette: document.querySelector('#show-palette input'),
+  speed: document.getElementById('game-speed'),
 }
 
 /**
@@ -35,7 +36,6 @@ setTheme(settings.theme)
 settings.addListener('theme', setTheme)
 
 /**
- *
  * other settings
  */
 elements.coloredPlayers.checked = settings.coloredPlayers
@@ -51,6 +51,15 @@ elements.showGamestats.onchange = (evt) => {
 elements.showPalette.checked = settings.showPalette
 elements.showPalette.onchange = (evt) => {
   settings.set('showPalette', evt.target.checked)
+}
+
+const speedByValue = Object.entries(SPEED).reduce((speeds, [key, value]) => {
+  speeds[value] = key
+  return speeds
+}, {})
+elements.speed.value = speedByValue[settings.speed]
+elements.speed.onchange = (evt) => {
+  settings.set('speed', SPEED[evt.target.value])
 }
 
 export class SettingsPage {

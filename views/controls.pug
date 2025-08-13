@@ -23,6 +23,13 @@ div(class='flex-row')
               | Auto
         +checkbox({"id":"show-palette", "label": "Show Color Palette"})
       h2 Settings
-      div(class="flex-column small-gap")
-        +checkbox({"id":"colored-players", "label": "Colored Players"})
-        +checkbox({"id":"show-gamestats", "label": "Show Ping"})
+      div(class="flex-column medium-gap")
+        div(class='flex-row small-gap align-center')
+          select(id='game-speed')
+            option(value='SLOW') slow
+            option(value='NORMAL') normal
+            option(value='FAST') fast
+          div speed
+        div(class="flex-column small-gap")
+          +checkbox({"id":"colored-players", "label": "Colored Players"})
+          +checkbox({"id":"show-gamestats", "label": "Show Ping"})

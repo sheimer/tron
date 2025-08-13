@@ -2,11 +2,17 @@ export const AUTO = 'light dark'
 export const LIGHT = 'light'
 export const DARK = 'dark'
 
+export const FAST = 50
+export const NORMAL = 40
+export const SLOW = 30
+export const SPEED = { FAST, NORMAL, SLOW }
+
 class Settings {
   theme
   coloredPlayers
   showPalette
   showGamestats
+  speed
 
   listeners
 
@@ -16,6 +22,7 @@ class Settings {
       coloredPlayers: new Set(),
       showGamestats: new Set(),
       showPalette: new Set(),
+      speed: new Set(),
     }
     this.theme = JSON.parse(localStorage.getItem('theme')) ?? AUTO
 
@@ -25,6 +32,8 @@ class Settings {
     this.showPalette = JSON.parse(localStorage.getItem('showPalette')) ?? false
     this.showGamestats =
       JSON.parse(localStorage.getItem('showGamestats')) ?? false
+
+    this.speed = JSON.parse(localStorage.getItem('speed')) ?? NORMAL
   }
 
   set(key, value) {

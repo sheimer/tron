@@ -47,6 +47,17 @@ export const wsGame = {
     })
   },
 
+  setInterval: (interval) => {
+    if (!wsGame.connected) {
+      log('wsGame not connected')
+      return
+    }
+
+    wsGame.socket.send(
+      JSON.stringify({ action: 'setInterval', payload: interval }),
+    )
+  },
+
   addPlayer: (player) => {
     if (!wsGame.connected) {
       log('wsGame not connected')

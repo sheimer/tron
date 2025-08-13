@@ -6,7 +6,7 @@ import { cssColors } from './cssColors.js'
 
 export const defaultProperties = {
   // fps: 50, // original speed i guess...
-  fps: 25,
+  fps: settings.speed,
   size: { x: 320, y: 200 },
   blocksize: 2,
 }
@@ -86,7 +86,7 @@ export class Game {
 
     this.setState('initializing')
 
-    this.properties = { ...properties, ...defaultProperties }
+    this.properties = { ...defaultProperties, ...properties }
 
     this.renderer = new Renderer({
       blocksize: this.properties.blocksize,
@@ -99,9 +99,11 @@ export class Game {
     })
 
     this.onSettingsChange = this.onSettingsChange.bind(this)
+    this.onSpeedChange = this.onSpeedChange.bind(this)
 
     settings.addListener('theme', this.onSettingsChange)
     settings.addListener('coloredPlayers', this.onSettingsChange)
+    settings.addListener('speed', this.onSpeedChange)
 
     wsGame.connect({
       key: this.key,
@@ -177,6 +179,10 @@ export class Game {
       settings.coloredPlayers ? 'playercolors' : 'playerbw'
     ].map((color) => color.value)
     this.renderer.draw([])
+  }
+
+  onSpeedChange() {
+    wsGame.setInterval(Math.round(1000 / settings.speed))
   }
 
   onPlayersList(players) {
