@@ -6,12 +6,8 @@ export class PlayerFE extends Player {
     this.onchangedir = onchangedir
     this.isLocal = isLocal
 
-    // to give proper "this"
+    this.onkeydown = this.onkeydown.bind(this)
     if (this.onchangedir !== null) {
-      this.onkeydown = (evt) => {
-        this._onkeydown(evt)
-      }
-
       document.addEventListener('keydown', this.onkeydown)
     }
   }
@@ -22,7 +18,10 @@ export class PlayerFE extends Player {
     }
   }
 
-  _onkeydown(evt) {
+  onkeydown(evt) {
+    if (evt.repeat) {
+      return
+    }
     if (evt.keyCode === this.left) {
       this.changeDir('left')
     } else if (evt.keyCode === this.right) {
