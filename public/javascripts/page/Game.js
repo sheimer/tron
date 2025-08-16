@@ -1,6 +1,8 @@
 import { settings } from '../settings.js'
 import { Game } from '../Game.js'
 
+const canHover = window.matchMedia('(hover: hover)').matches //true or false
+
 const pageElements = {
   playersconfig: {
     playersconfig: document.getElementById('playersconfig'),
@@ -26,9 +28,22 @@ const bodyScoreTable = document.getElementById('body-scoretable')
 
 const inputPlayername = document.getElementById('input-add-player')
 const selectKeycodes = document.getElementById('select-keycodes')
+const msgNoKeycodes = document.getElementById('msg-no-keycodes')
 const addPlayerForm = document.getElementById('form-add-player')
 const addPlayerBtn = document.getElementById('btn-add-player')
 const initBtn = document.getElementById('btn-init-game')
+const leftBtn = document.getElementById('btn-left')
+const rightBtn = document.getElementById('btn-right')
+
+if (canHover) {
+  selectKeycodes.required = true
+  selectKeycodes.style.display = ''
+  msgNoKeycodes.style.display = 'none'
+} else {
+  selectKeycodes.required = false
+  selectKeycodes.style.display = 'none'
+  msgNoKeycodes.style.display = 'block'
+}
 
 const playerPositions = [
   document.getElementById('playerpos0'),
@@ -80,6 +95,7 @@ const keycodes = {
   '81_87': { left: 81, right: 87 }, // q/w
   '40_39': { left: 40, right: 39 }, // <down>/<right>
   '98_99': { left: 98, right: 99 }, // <kpad 2>/<kpad 3>
+  btn1_btn2: { left: 'btn-left', right: 'btn-right' }, // touch device, control buttons are created
 }
 const keycodesText = {
   66: 'b',
@@ -94,6 +110,8 @@ const keycodesText = {
   39: '<right>',
   98: '<kpad 2>',
   99: '<kpad 3>',
+  'btn-left': 'btn left',
+  'btn-right': 'btn right',
 }
 
 const ordinalSuffixOf = (i) => {
@@ -248,7 +266,7 @@ const updatePlayersPositions = ({ players, positions }) => {
 const enableAddPlayerIfConnected = (state) => {
   const disabled = state !== 'settingPlayers'
   inputPlayername.disabled = disabled
-  selectKeycodes.disabled = disabled
+  selectKeycodes.disabled = canHover && disabled
 }
 
 const enableStartIfReady = (state) => {
@@ -298,6 +316,16 @@ const showScoresWaiting = (state) => {
     pageElements.game.scoresWaiting.style.display = 'block'
   } else {
     pageElements.game.scoresWaiting.style.display = 'none'
+  }
+}
+
+const showPlayerControlButtons = (state) => {
+  if (!canHover && (state === 'start' || state === 'running')) {
+    leftBtn.style.display = ''
+    rightBtn.style.display = ''
+  } else {
+    leftBtn.style.display = 'none'
+    rightBtn.style.display = 'none'
   }
 }
 
@@ -355,6 +383,7 @@ export class GamePage {
           showArena,
           showScores,
           showScoresWaiting,
+          showPlayerControlButtons,
         ],
         onPlayersUpdate: (players) => {
           updatePlayersTable({ list: players })
@@ -401,6 +430,10 @@ export class GamePage {
         isAddPlayerAvailable()
       }
       selectKeycodes.onchange({ target: selectKeycodes })
+      if (!canHover) {
+        playerkeys = 'btn1_btn2'
+        isAddPlayerAvailable()
+      }
 
       addPlayerForm.onsubmit = () => {
         if (!addPlayerBtn.disabled) {

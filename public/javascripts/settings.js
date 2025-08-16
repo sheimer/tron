@@ -4,7 +4,7 @@ export const DARK = 'dark'
 
 export const FAST = 50
 export const NORMAL = 40
-export const SLOW = 30
+export const SLOW = 25
 export const SPEED = { FAST, NORMAL, SLOW }
 
 class Settings {

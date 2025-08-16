@@ -70,6 +70,10 @@ td {
   padding: var(--size-tiny) var(--size-medium);
 }
 
+th {
+  text-align: left;
+}
+
 thead tr {
   background-color: var(--color-bg-hl);
 }
