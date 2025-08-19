@@ -1,0 +1,50 @@
+#layout {
+  display: grid;
+  min-height: calc(100vh - 2 * var(--body-padding-vertical));
+  gap: var(--size-small) var(--size-tiny);
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto minmax(
+      calc(400px * var(--multiplicator)),
+      1fr
+    ) auto auto;
+  grid-template-areas:
+    "head ctrl"
+    "main main"
+    "btns btns"
+    "stat pltt";
+}
+/*
+  width: calc(640px * var(--multiplicator));
+  height: calc(400px * var(--multiplicator));
+*/
+
+#head {
+  grid-area: head;
+}
+
+#controls {
+  grid-area: ctrl;
+}
+
+#arena,
+#lobby,
+#playersconfig,
+#playernames,
+#scores,
+#scores-waiting {
+  grid-area: main;
+}
+
+#footer-lobby,
+#footer-playersconfig,
+#footer-game {
+  grid-area: btns;
+}
+
+#gamestats {
+  grid-area: stat;
+}
+
+#palette {
+  grid-area: pltt;
+}

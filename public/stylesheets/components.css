@@ -1,12 +1,3 @@
-#screen {
-  position: relative;
-
-  width: calc(640px * var(--multiplicator));
-  height: calc(400px * var(--multiplicator));
-
-  max-width: 100%;
-}
-
 #arena {
   display: none;
   width: 100%;
@@ -15,9 +6,6 @@
 }
 
 #lobby {
-  position: absolute;
-  top: 0px;
-  left: 0px;
   width: 100%;
   height: 100%;
 }
@@ -31,17 +19,14 @@
 }
 
 #playersconfig {
-  position: absolute;
-  top: 0px;
-  left: 0px;
   width: 100%;
   height: 100%;
 }
 
 #playernames {
-  position: absolute;
-  top: 0px;
-  left: 0px;
+  position: relative;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
 }
@@ -89,18 +74,19 @@
 }
 
 #scores {
-  position: absolute;
-  top: 0px;
-  left: 0px;
   width: 100%;
   height: 100%;
 }
 
 #scores-waiting {
   display: none;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
 }
 
-#scores-waiting,
 #scores-waiting-overlay,
 #scores-waiting-message {
   position: absolute;
@@ -131,9 +117,6 @@
 
 #palette {
   display: none;
-  position: absolute;
-  bottom: var(--body-padding-vertical);
-  right: var(--body-padding-horizontal);
 }
 
 #palette .color {
@@ -142,17 +125,8 @@
   height: 24px;
 }
 
-#controls {
-  position: absolute;
-  top: var(--body-padding-vertical);
-  right: var(--body-padding-horizontal);
-}
-
 #gamestats {
   display: none;
-  position: absolute;
-  bottom: var(--body-padding-vertical);
-  left: var(--body-padding-horizontal);
   color: var(--color-fg-muted);
 }
 

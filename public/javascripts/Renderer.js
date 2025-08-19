@@ -42,11 +42,6 @@ export class Renderer {
       }
     }
 
-    const screen = document.getElementById('screen')
-    if (!this.domCanvas) {
-      this.domCanvas = document.createElement('canvas')
-      screen.insertBefore(this.domCanvas, screen.firstChild)
-    }
     this.domCanvas.width = this.width
     this.domCanvas.height = this.height
     this.canvas = this.domCanvas.getContext('2d')
