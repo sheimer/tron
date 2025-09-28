@@ -2,11 +2,11 @@
   color-scheme: light dark;
 
   --multiplicator: 1;
-  @media (resolution >= 1.5dppx) {
-    --multiplicator: 1.5;
-  }
   @media (resolution >= 2dppx) {
-    --multiplicator: 2;
+    --multiplicator: 1;
+  }
+  @media (resolution >= 3dppx) {
+    --multiplicator: 1.5;
   }
 
   /*
