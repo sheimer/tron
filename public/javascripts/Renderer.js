@@ -14,15 +14,12 @@ export class Renderer {
       'plus missing: orientation horizontal on phone - max width depending on 100% height instead of the other way round!',
     )
 
-    const dppx = window.devicePixelRatio
+    const multiplicator = getComputedStyle(document.body).getPropertyValue(
+      '--multiplicator',
+    )
 
-    this.blocksize = blocksize
-    if (dppx >= 1.5) {
-      this.blocksize = this.blocksize * 1.5
-    }
-    if (dppx >= 2) {
-      this.blocksize = this.blocksize * 2
-    }
+    this.blocksize = blocksize * multiplicator
+
     this.width = size.x * this.blocksize
     this.height = size.y * this.blocksize
     this.bgColor = bgColor

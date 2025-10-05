@@ -286,12 +286,12 @@ const resetLog = (state) => {
 
 const showPlayerPositions = (state) => {
   if (state === 'running') {
-    pageElements.game.playernames.style.display = 'block'
+    pageElements.game.playernames.classList.add('active')
     setTimeout(() => {
-      pageElements.game.playernames.style.display = 'none'
+      pageElements.game.playernames.classList.remove('active')
     }, 2500)
   } else {
-    pageElements.game.playernames.style.display = 'none'
+    pageElements.game.playernames.classList.remove('active')
   }
 }
 

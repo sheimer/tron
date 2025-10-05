@@ -48,6 +48,11 @@
     "footer footer"
     "stat pltt";
 
+  @media (orientation: landscape) and (min-height: 1200px) {
+    --arena-width: calc(960px * var(--multiplicator));
+    --arena-height: calc(600px * var(--multiplicator));
+  }
+
   @media (orientation: landscape) and (max-height: 800px) {
     --arena-max-width: calc(var(--inner-height) * 1.6);
     --arena-max-height: var(--inner-height);
@@ -138,6 +143,13 @@
   left: 0;
   width: 100%;
   height: 100%;
+
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+#playernames.active {
+  opacity: 1;
+  transition: opacity 0.5s ease-in;
 }
 #playerpos0 {
   position: absolute;
