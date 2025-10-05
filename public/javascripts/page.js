@@ -50,11 +50,15 @@ class Page {
   }
 
   showGamestats(show) {
-    document.getElementById('gamestats').style.display = show ? 'block' : 'none'
+    document.getElementById('gamestats').style.visibility = show
+      ? 'visible'
+      : 'hidden'
   }
 
   showPalette(show) {
-    document.getElementById('palette').style.display = show ? 'block' : 'none'
+    document.getElementById('palette').style.visibility = show
+      ? 'visible'
+      : 'hidden'
   }
 
   setState(state) {
