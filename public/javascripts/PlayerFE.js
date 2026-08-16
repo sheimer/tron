@@ -1,4 +1,4 @@
-import { Player } from './shared/Player.js'
+import { Player } from '/shared/Player.js'
 
 const leftBtn = document.getElementById('btn-left')
 const rightBtn = document.getElementById('btn-right')

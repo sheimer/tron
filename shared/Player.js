@@ -1,20 +1,20 @@
-const KILLZONE = 32
+import { KILLZONE_LENGTH } from './constants.js'
 
 export class Player {
   constructor({ id, name, color, left, right }) {
     this.dirStack = []
-    this.killzone = new Array(KILLZONE).fill(null)
+    this.killzone = new Array(KILLZONE_LENGTH).fill(null)
     this.id = id
     this.name = name
     this.color = color
-    this.left = left // keycode for moving left
-    this.right = right // keycode for moving right
+    this.left = left // keycode / control ID for turning left
+    this.right = right // keycode / control ID for turning right
     this.deadPlayers = 0
 
     this.init({})
   }
 
-  init({ pos = null, move = null }) {
+  init({ pos = null, move = null } = {}) {
     if (pos !== null) {
       this.pos = { ...pos }
       this.move = move

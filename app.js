@@ -35,6 +35,12 @@ app.use(
     setHeaders: customCacheControl,
   }),
 )
+app.use(
+  '/shared',
+  express.static(path.join(__dirname, 'shared'), {
+    setHeaders: customCacheControl,
+  }),
+)
 
 app.use('/', indexRouter)
 
