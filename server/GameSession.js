@@ -2,9 +2,18 @@ import WebSocket from 'ws'
 
 import { Arena } from './Arena.js'
 import { Player } from '../shared/Player.js'
+import { GRID_SIZE, MAX_PLAYERS } from '../shared/constants.js'
 
-export const Game = class {
-  constructor({ key, name, size, interval, isPublic, onChange, onDestroy }) {
+export class GameSession {
+  constructor({
+    key,
+    name,
+    size = GRID_SIZE,
+    interval,
+    isPublic,
+    onChange,
+    onDestroy,
+  }) {
     this.createdAt = Date.now()
     this.key = key
     this.name = name
@@ -13,8 +22,8 @@ export const Game = class {
     this.onDestroy = onDestroy
 
     this.interval = interval
-    this.timeout = null
-    this.lastaction = null
+    this.timer = null
+    this.nextTickTime = null
     this.gameStarted = null
     this.running = false
     this.acceptingPlayers = true
@@ -34,6 +43,7 @@ export const Game = class {
   }
 
   destroy() {
+    this.stop()
     if (typeof this.arena.destroy === 'function') {
       this.arena.destroy()
     }
@@ -41,8 +51,10 @@ export const Game = class {
     this.onChange = null
     this.clients = []
 
-    this.onDestroy()
-    this.onDestroy = null
+    if (typeof this.onDestroy === 'function') {
+      this.onDestroy()
+      this.onDestroy = null
+    }
   }
 
   checkConnectionStatus() {
@@ -63,7 +75,9 @@ export const Game = class {
       }
     }
     setTimeout(() => {
-      this.checkConnectionStatus()
+      if (this.arena) {
+        this.checkConnectionStatus()
+      }
     }, 60 * 1000)
   }
 
@@ -72,9 +86,11 @@ export const Game = class {
     this.arena.addHandler({
       ondraw,
       onfinish: (stats) => {
-        this.running = false
+        this.stop()
         this.addStats(stats)
-        onfinish(this.stats)
+        if (typeof onfinish === 'function') {
+          onfinish(this.stats)
+        }
       },
       onreset,
     })
@@ -98,10 +114,12 @@ export const Game = class {
     })
 
     if (this.acceptingPlayers) {
-      if (this.stats.players.length >= 6) {
+      if (this.stats.players.length >= MAX_PLAYERS) {
         this.acceptingPlayers = false
       }
-      this.onChange()
+      if (typeof this.onChange === 'function') {
+        this.onChange()
+      }
     }
   }
 
@@ -121,35 +139,43 @@ export const Game = class {
     Object.entries(stats.kills).forEach(([killerId, killedId]) => {
       const killer = playersById[killerId]
       const killed = playersById[killedId]
-      killer.kills++
-      killed.killed++
-      killer.lastScore += playerscount
-      this.stats.messages.push({
-        text: 'kills',
-        playerPre: killerId,
-        playerPost: killedId,
-      })
+      if (killer && killed) {
+        killer.kills++
+        killed.killed++
+        killer.lastScore += playerscount
+        this.stats.messages.push({
+          text: 'kills',
+          playerPre: killerId,
+          playerPost: killedId,
+        })
+      }
     })
 
     if (stats.escaped.length) {
       stats.escaped.forEach((id) => {
         const escapee = playersById[id]
-        escapee.escaped++
-        escapee.lastScore += playerscount * 3
-        this.stats.messages.push({ text: 'escaped!!!', playerPre: id })
+        if (escapee) {
+          escapee.escaped++
+          escapee.lastScore += playerscount * 3
+          this.stats.messages.push({ text: 'escaped!!!', playerPre: id })
+        }
       })
     } else {
       Object.entries(stats.deadOnDeath).forEach(([id, deadcount]) => {
         const player = playersById[id]
-        player.lastScore += deadcount
+        if (player) {
+          player.lastScore += deadcount
+        }
       })
       if (stats.winner !== null) {
         const player = playersById[stats.winner]
-        player.lastScore += playerscount * 2
-        this.stats.messages.push({
-          text: 'wins game!',
-          playerPre: stats.winner,
-        })
+        if (player) {
+          player.lastScore += playerscount * 2
+          this.stats.messages.push({
+            text: 'wins game!',
+            playerPre: stats.winner,
+          })
+        }
       } else {
         this.stats.messages.push({ text: 'All players crashed' })
       }
@@ -166,47 +192,63 @@ export const Game = class {
   start() {
     if (this.acceptingPlayers) {
       this.acceptingPlayers = false
-      this.onChange()
+      if (typeof this.onChange === 'function') {
+        this.onChange()
+      }
     }
 
-    if (this.timeout !== null) {
-      clearTimeout(this.timeout)
-      this.timeout = null
-    }
-    this.running = false
-    this.lastaction = null
-    this.gameStarted = null
-    this.run()
+    this.stop()
+    this.running = true
+    this.gameStarted = Date.now()
+    this.nextTickTime = Date.now() + this.interval
+
+    this.scheduleNextTick()
   }
 
-  run() {
-    const current = new Date().getTime()
-    if (this.gameStarted === null) {
-      this.gameStarted = current
-      this.running = true
-    } else if (!this.running) {
-      this.lastaction = null
-      this.gameStarted = null
-      return
+  stop() {
+    this.running = false
+    if (this.timer !== null) {
+      clearTimeout(this.timer)
+      this.timer = null
     }
+    this.nextTickTime = null
+    this.gameStarted = null
+  }
 
-    const timediff =
-      this.lastaction === null ? this.interval : current - this.lastaction
+  /**
+   * Target-Timestamp Game Loop Scheduler.
+   * Tracks absolute target time (nextTickTime) to absorb both OS setTimeout scheduler
+   * jitter and physics execution duration, eliminating cumulative time drift without busy-waiting.
+   * @see https://gafferongames.com/post/fix_your_timestep/
+   * @see https://developer.mozilla.org/en-US/docs/Games/Anatomy#building_a_main_loop_in_javascript
+   */
+  scheduleNextTick() {
+    const delay = Math.max(0, this.nextTickTime - Date.now())
 
-    if (timediff >= this.interval && this.running) {
-      this.lastaction = current
+    this.timer = setTimeout(() => {
+      if (!this.running) return
+
       this.arena.run()
-    }
 
-    this.timeout = setTimeout(() => {
-      if (this.running) {
-        this.run()
+      if (!this.running) {
+        // Round ended during arena.run() (finish() was called)
+        return
       }
-    }, 0)
+
+      // Advance target timestamp by exact frame interval
+      this.nextTickTime += this.interval
+
+      // Prevent spiral-of-death if process was paused / lagged significantly
+      if (Date.now() - this.nextTickTime > this.interval * 5) {
+        this.nextTickTime = Date.now() + this.interval
+      }
+
+      this.scheduleNextTick()
+    }, delay)
   }
 
   changeDir({ id, dir }) {
-    const player = this.arena.players.find((player) => player.id === id)
+    const player = this.arena.players.find((p) => p.id === id)
     if (player) {
       player.changeDir(dir)
     }

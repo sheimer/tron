@@ -1,6 +1,6 @@
 import WebSocket, { WebSocketServer } from 'ws'
 
-import { gameServer } from '../lib/gameServer.js'
+import { gameServer } from '../server/GameServer.js'
 
 export const wssGame = new WebSocketServer({
   noServer: true,

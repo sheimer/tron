@@ -1,4 +1,4 @@
-const getRandomInt = (min, max) => ((Math.random() * (max - min)) | 0) + min
+import { getRandomInt } from '../shared/utils.js'
 
 const getRandomRadian = () =>
   Math.round(Math.random() * 2 * Math.PI * 1000) / 1000
@@ -6,13 +6,13 @@ const getRandomRadian = () =>
 const getDistance = (pos1, pos2) =>
   Math.round(Math.hypot(pos1.x - pos2.x, pos1.y - pos2.y) * 100) / 100
 
-const _pixelPerFrame = [1, 0.75, 0.5, 0.5, 0.5, 0.25, 0.25, 0.25, 0.125]
+const PIXELS_PER_FRAME = [1, 0.75, 0.5, 0.5, 0.5, 0.25, 0.25, 0.25, 0.125]
 
 class Particle {
   constructor(center) {
     this.center = center
     this.angle = getRandomRadian()
-    this.speed = _pixelPerFrame[getRandomInt(0, _pixelPerFrame.length - 1)]
+    this.speed = PIXELS_PER_FRAME[getRandomInt(0, PIXELS_PER_FRAME.length - 1)]
     this.delay = getRandomInt(0, 12) // delay in frames
     this.start = getRandomInt(0, 4) // starting point in distance in pixel from center
     this.maxDistance = getRandomInt(18, 30) // distance from center to current pos

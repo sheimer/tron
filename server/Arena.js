@@ -1,24 +1,14 @@
 import { fisherYatesShuffle } from '../shared/utils.js'
+import {
+  CELL_TYPE,
+  START_POSITIONS,
+  AVAILABLE_POSITIONS,
+  GRID_SIZE,
+} from '../shared/constants.js'
 import { Explosion } from './Explosion.js'
 
-const startPositions = [
-  { x: 50, y: 50 },
-  { x: 270, y: 50 },
-  { x: 50, y: 100 },
-  { x: 270, y: 100 },
-  { x: 50, y: 150 },
-  { x: 270, y: 150 },
-]
-const availablePostions = [
-  [2, 3],
-  [1, 2, 5],
-  [0, 1, 4, 5],
-  [0, 1, 2, 4, 5],
-  [0, 1, 2, 3, 4, 5],
-]
-
 export class Arena {
-  constructor({ size }) {
+  constructor({ size = GRID_SIZE } = {}) {
     this.size = size
     this.xMax = this.size.x - 1
     this.yMax = this.size.y - 1
@@ -31,10 +21,10 @@ export class Arena {
     this.fieldChanges = null
     /*
       2 dimensional array representing playing field, each field containing:
-        -3:  explosion
-        -2:  border
-        -1:  empty
-        0-5: player
+        -3:  explosion (CELL_TYPE.EXPLOSION)
+        -2:  border    (CELL_TYPE.BORDER)
+        -1:  empty     (CELL_TYPE.EMPTY)
+        0-5: player ID / index
     */
     this.escaped = null
     this.deadPlayers = 0
@@ -71,11 +61,11 @@ export class Arena {
       this.fields[x] = []
       for (let y = 0; y < this.size.y; y++) {
         if (x === 0 || y === 0 || x === this.xMax || y === this.yMax) {
-          this.fields[x][y] = -2
-          this.fieldChanges.push([x, y, -2])
+          this.fields[x][y] = CELL_TYPE.BORDER
+          this.fieldChanges.push([x, y, CELL_TYPE.BORDER])
         } else {
-          this.fields[x][y] = -1
-          this.fieldChanges.push([x, y, -1])
+          this.fields[x][y] = CELL_TYPE.EMPTY
+          this.fieldChanges.push([x, y, CELL_TYPE.EMPTY])
         }
       }
     }
@@ -98,20 +88,23 @@ export class Arena {
     const positions = {}
 
     if (this.players?.length && this.players.length > 1) {
+      const positionIndices = AVAILABLE_POSITIONS[this.players.length - 2]
       const randomPositions = fisherYatesShuffle([
-        ...availablePostions[this.players.length - 2],
+        ...positionIndices,
       ])
 
       for (let i = 0; i < this.players.length; i++) {
         const player = this.players[i]
         const posId = randomPositions[i]
         positions[player.id] = posId
-        const pos = { ...startPositions[posId] }
+        const pos = { ...START_POSITIONS[posId] }
         const move = posId % 2 === 0 ? 1 : 3
         player.reset({ pos, move })
       }
     }
-    this.onreset(positions)
+    if (typeof this.onreset === 'function') {
+      this.onreset(positions)
+    }
     this.init()
   }
 
@@ -171,13 +164,13 @@ export class Arena {
       explosion.nextPos()
       for (let p = 0; p < explosion.particles.length; p++) {
         if (explosion.particles[p].prev !== null) {
-          renderParticle(explosion.particles[p].prev, -1)
+          renderParticle(explosion.particles[p].prev, CELL_TYPE.EMPTY)
         }
         if (
           !explosion.particles[p].finished &&
           explosion.particles[p].pos !== null
         ) {
-          renderParticle(explosion.particles[p].pos, -3)
+          renderParticle(explosion.particles[p].pos, CELL_TYPE.EXPLOSION)
         }
       }
     }
@@ -190,7 +183,7 @@ export class Arena {
       if (player.alive) {
         const x = player.pos.x
         const y = player.pos.y
-        if (this.fields[x][y] !== -1) {
+        if (this.fields[x][y] !== CELL_TYPE.EMPTY) {
           addDeadPlayers++
 
           const killedBy =
@@ -264,6 +257,8 @@ export class Arena {
         }
       }
     }
-    this.onfinish(stats)
+    if (typeof this.onfinish === 'function') {
+      this.onfinish(stats)
+    }
   }
 }

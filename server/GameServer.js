@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto'
 
-import { Game } from '../lib/Game.js'
+import { GameSession } from './GameSession.js'
 
 class GameServer {
   constructor() {
@@ -11,7 +11,7 @@ class GameServer {
   createGame({ name, size, interval, isPublic }) {
     const key = randomBytes(4).toString('hex')
     this.games.push(
-      new Game({
+      new GameSession({
         key,
         name,
         size,
@@ -37,7 +37,9 @@ class GameServer {
   destroyGame(key) {
     console.log('no connected clients anymore - destroy game key', key)
     const index = this.games.findIndex((game) => game.key === key)
-    this.games.splice(index, 1)
+    if (index !== -1) {
+      this.games.splice(index, 1)
+    }
   }
 
   getGameList() {
@@ -57,6 +59,7 @@ class GameServer {
 
   getGameInfo(key) {
     const game = this.getGame(key)
+    if (!game) return null
     return {
       key: game.key,
       name: game.name,
