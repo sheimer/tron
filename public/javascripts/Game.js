@@ -2,36 +2,35 @@ import { PlayerFE } from './PlayerFE.js'
 import { Renderer } from './Renderer.js'
 import { wsGame } from './ws/game.js'
 import { settings } from './settings.js'
-import { cssColors } from './cssColors.js'
+import { getThemeColors, onThemeChange } from './theme.js'
+import { PLAYER_COLOR_KEYS, GRID_SIZE, BLOCK_SIZE } from '/shared/constants.js'
 
 export const defaultProperties = {
-  // fps: 50, // original speed i guess...
   fps: settings.speed,
-  size: { x: 320, y: 200 },
-  blocksize: 2,
+  size: GRID_SIZE,
+  blocksize: BLOCK_SIZE,
 }
 
-const setColors = () => {
-  defaultProperties.colors = {
-    bgColor: cssColors.bg,
-    bordercolor: cssColors.fg,
-    explosioncolor: cssColors.rose,
-    playercolors: ['water', 'wood', 'leaf', 'blossom', 'sky', 'rock'].map(
-      (name) => ({
-        name,
-        value: cssColors[name],
-      }),
-    ),
-    playerbw: Array(6)
+const buildColorConfig = () => {
+  const colors = getThemeColors()
+  return {
+    bgColor: colors.bg,
+    bordercolor: colors.fg,
+    explosioncolor: colors.rose,
+    playercolors: PLAYER_COLOR_KEYS.map((name) => ({
+      name,
+      value: colors[name],
+    })),
+    playerbw: Array(PLAYER_COLOR_KEYS.length)
       .fill('fg')
       .map((name) => ({
         name,
-        value: cssColors[name],
+        value: colors.fg,
       })),
   }
 }
 
-setColors()
+defaultProperties.colors = buildColorConfig()
 
 export class Game {
   constructor({
@@ -91,18 +90,20 @@ export class Game {
     this.renderer = new Renderer({
       blocksize: this.properties.blocksize,
       size: this.properties.size,
-      ...this.properties.colors,
+      bgColor: this.properties.colors.bgColor,
+      bordercolor: this.properties.colors.bordercolor,
+      explosioncolor: this.properties.colors.explosioncolor,
       playercolors: this.properties.colors[
         settings.coloredPlayers ? 'playercolors' : 'playerbw'
       ].map((color) => color.value),
       id: 'arena',
     })
 
-    this.onSettingsChange = this.onSettingsChange.bind(this)
+    this.onThemeUpdate = this.onThemeUpdate.bind(this)
     this.onSpeedChange = this.onSpeedChange.bind(this)
 
-    settings.addListener('theme', this.onSettingsChange)
-    settings.addListener('coloredPlayers', this.onSettingsChange)
+    this.unsubscribeTheme = onThemeChange(this.onThemeUpdate)
+    settings.addListener('coloredPlayers', this.onThemeUpdate)
     settings.addListener('speed', this.onSpeedChange)
 
     wsGame.connect({
@@ -143,8 +144,11 @@ export class Game {
   }
 
   destroy() {
-    settings.removeListener('theme', this.onSettingsChange)
-    settings.removeListener('coloredPlayers', this.onSettingsChange)
+    if (this.unsubscribeTheme) {
+      this.unsubscribeTheme()
+    }
+    settings.removeListener('coloredPlayers', this.onThemeUpdate)
+    settings.removeListener('speed', this.onSpeedChange)
   }
 
   addStateHandler(handler) {
@@ -168,17 +172,20 @@ export class Game {
     }, 0)
   }
 
-  onSettingsChange() {
-    setColors()
+  onThemeUpdate() {
+    defaultProperties.colors = buildColorConfig()
     this.properties.colors = { ...defaultProperties.colors }
 
-    this.renderer.bgColor = this.properties.colors.bgColor
-    this.renderer.bordercolor = this.properties.colors.bordercolor
-    this.renderer.explosioncolor = this.properties.colors.explosioncolor
-    this.renderer.playercolors = this.properties.colors[
+    const playerColors = this.properties.colors[
       settings.coloredPlayers ? 'playercolors' : 'playerbw'
-    ].map((color) => color.value)
-    this.renderer.draw([])
+    ].map((c) => c.value)
+
+    this.renderer.setColors({
+      bgColor: this.properties.colors.bgColor,
+      bordercolor: this.properties.colors.bordercolor,
+      explosioncolor: this.properties.colors.explosioncolor,
+      playercolors: playerColors,
+    })
   }
 
   onSpeedChange() {
