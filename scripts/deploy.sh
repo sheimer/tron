@@ -28,7 +28,7 @@ cp -a run/node_modules build/
 cd build
 
 echo -e "${INFO}*** npm install${NC}"
-npm install
+~/.local/share/fnm/fnm exec npm install
 cd ..
 
 echo -e "${INFO}*** restart service${NC}"
