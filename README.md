@@ -71,3 +71,9 @@ npm start
 # Run linter
 npx eslint .
 ```
+
+---
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for the prioritized backlog across Network Resilience, Server Lifecycle, Gameplay Polish, and Mobile Layout.
