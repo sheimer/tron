@@ -135,13 +135,13 @@ export class Arena {
   run() {
     let finished = 0
     let playersLeft = 0
-    const prevPositions = []
+    const prevPositions = new Array(this.players.length).fill(null)
 
     // calc new positions --> loop players, set their new pos
     for (let i = 0; i < this.players.length; i++) {
       const player = this.players[i]
-      if (player.alive) {
-        prevPositions.push({ ...player.pos })
+      if (player.alive && player.pos) {
+        prevPositions[i] = { ...player.pos }
         player.nextPos()
       }
     }
@@ -180,7 +180,7 @@ export class Arena {
     let addDeadPlayers = 0
     for (let i = 0; i < this.players.length; i++) {
       const player = this.players[i]
-      if (player.alive) {
+      if (player.alive && player.pos) {
         const x = player.pos.x
         const y = player.pos.y
         if (this.fields[x][y] !== CELL_TYPE.EMPTY) {
@@ -194,7 +194,12 @@ export class Arena {
           resetPlayers.push(i)
           if (killedBy >= 0 && killedBy < i) {
             const killer = this.players[killedBy]
-            if (x === killer.pos.x && y === killer.pos.y) {
+            if (
+              killer &&
+              killer.pos &&
+              x === killer.pos.x &&
+              y === killer.pos.y
+            ) {
               // both players tried to occupy same spot in one frame, but as "killedBy" player moved there it was not yet occupied...
               this.killPlayer(player.killedBy, killer, i)
               resetPlayers.push(player.killedBy)
@@ -223,8 +228,10 @@ export class Arena {
 
     for (let j = 0; j < resetPlayers.length; j++) {
       const id = resetPlayers[j]
-      this.players[id].pos = prevPositions[id]
-      this.players[id].killzone.fill(null)
+      if (prevPositions[id]) {
+        this.players[id].pos = prevPositions[id]
+        this.players[id].killzone.fill(null)
+      }
     }
 
     this.draw()
