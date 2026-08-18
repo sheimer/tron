@@ -183,10 +183,10 @@ Each phase is designed to leave the entire application fully functional and play
 
 ## 5. Verification Checklist
 
-- [ ] `/` loads without console errors.
-- [ ] Joining and creating games works instantly across multiple browser windows.
-- [ ] Ping displays live round-trip latency over the single WebSocket.
-- [ ] Canvas rendering runs at stable 60+ FPS with minimal CPU usage.
-- [ ] Round finishes, score table updates, and new round starts correctly.
-- [ ] Touch buttons work on touch-enabled screen / mobile viewport.
-- [ ] Theme switching (Dark/Light/Auto) updates canvas and UI colors dynamically.
+- [x] `/` loads without console errors.
+- [x] Joining and creating games works instantly across multiple browser windows.
+- [x] Ping displays live round-trip latency over the single WebSocket.
+- [x] Canvas rendering runs at stable 60+ FPS with minimal CPU usage.
+- [x] Round finishes, score table updates, and new round starts correctly.
+- [x] Touch buttons work on touch-enabled screen / mobile viewport.
+- [x] Theme switching (Dark/Light/Auto) updates canvas and UI colors dynamically.
