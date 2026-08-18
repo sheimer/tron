@@ -1,0 +1,166 @@
+import { MSG_TYPE } from '/shared/protocol.js'
+
+class NetworkClient {
+  constructor() {
+    this.socket = null
+    this.reconnectAttempts = 0
+    this.maxReconnectAttempts = 25
+    this.reconnectDelay = 1000
+    this.windowClosing = false
+    this.pingInterval = null
+    this.listeners = new Map()
+
+    this.pingElement = document.getElementById('ping')
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', () => {
+        this.windowClosing = true
+      })
+      this.connect()
+    }
+  }
+
+  connect() {
+    const { protocol, hostname, port } = window.location
+    const wsProto = protocol.startsWith('https') ? 'wss' : 'ws'
+    const portStr = port ? `:${port}` : ''
+    const url = `${wsProto}://${hostname}${portStr}/ws`
+
+    this.socket = new WebSocket(url)
+
+    this.socket.addEventListener('open', () => {
+      this.reconnectAttempts = 0
+      this.startPing()
+      this.emit('open')
+    })
+
+    this.socket.addEventListener('close', () => {
+      this.stopPing()
+      this.emit('close')
+
+      if (!this.windowClosing && this.reconnectAttempts < this.maxReconnectAttempts) {
+        setTimeout(() => {
+          this.reconnectAttempts++
+          this.connect()
+        }, this.reconnectDelay)
+      }
+    })
+
+    this.socket.addEventListener('message', (event) => {
+      try {
+        const msg = JSON.parse(event.data)
+        const type = msg.type || msg.action
+
+        if (type === MSG_TYPE.PONG || type === 'pong') {
+          const latency = Date.now() - (msg.t || 0)
+          if (this.pingElement) {
+            this.pingElement.textContent = `${latency}ms ping`
+          }
+          this.emit('pong', latency)
+          return
+        }
+
+        this.emit(type, msg.payload, msg)
+      } catch (err) {
+        console.error('Error parsing WebSocket message:', err)
+      }
+    })
+
+    this.socket.addEventListener('error', (err) => {
+      this.emit('error', err)
+    })
+  }
+
+  startPing() {
+    this.stopPing()
+    this.sendPing()
+    this.pingInterval = setInterval(() => {
+      this.sendPing()
+    }, 1000)
+  }
+
+  stopPing() {
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval)
+      this.pingInterval = null
+    }
+  }
+
+  sendPing() {
+    if (this.isConnected()) {
+      this.send(MSG_TYPE.PING, null, { t: Date.now() })
+    } else if (this.pingElement) {
+      this.pingElement.textContent = '-'
+    }
+  }
+
+  isConnected() {
+    return this.socket?.readyState === WebSocket.OPEN
+  }
+
+  send(type, payload = null, extra = {}) {
+    if (!this.isConnected()) {
+      return false
+    }
+    const data = JSON.stringify({ type, payload, ...extra })
+    this.socket.send(data)
+    return true
+  }
+
+  on(type, callback) {
+    if (!this.listeners.has(type)) {
+      this.listeners.set(type, new Set())
+    }
+    this.listeners.get(type).add(callback)
+    return () => this.off(type, callback)
+  }
+
+  off(type, callback) {
+    if (this.listeners.has(type)) {
+      this.listeners.get(type).delete(callback)
+    }
+  }
+
+  emit(type, ...args) {
+    if (this.listeners.has(type)) {
+      this.listeners.get(type).forEach((cb) => {
+        try {
+          cb(...args)
+        } catch (err) {
+          console.error(`Error in listener for message type ${type}:`, err)
+        }
+      })
+    }
+  }
+
+  // High-level Actions
+  requestLobbyList() {
+    this.send(MSG_TYPE.LOBBY_LIST)
+  }
+
+  createGame({ name, size, interval, isPublic = true }) {
+    this.send(MSG_TYPE.CREATE_GAME, { name, size, interval, isPublic })
+  }
+
+  joinGame(key) {
+    this.send(MSG_TYPE.JOIN_GAME, { key })
+  }
+
+  addPlayer(player) {
+    this.send(MSG_TYPE.ADD_PLAYER, player)
+  }
+
+  startGame() {
+    this.send(MSG_TYPE.START_GAME)
+  }
+
+  setInterval(interval) {
+    this.send(MSG_TYPE.SET_INTERVAL, interval)
+  }
+
+  changeDir({ id, dir }) {
+    this.send(MSG_TYPE.CHANGE_DIR, { id, dir })
+  }
+}
+
+export const network = new NetworkClient()

@@ -1,10 +1,13 @@
-import { Lobby } from '../Lobby.js'
+import { network } from '../network.js'
 import { state } from '../state.js'
+import { settings } from '../settings.js'
+import { MSG_TYPE } from '/shared/protocol.js'
+import { GRID_SIZE } from '/shared/constants.js'
 
 export class LobbyView {
   constructor({ onSelectGame }) {
     this.onSelectGame = onSelectGame
-    this.lobby = null
+    this.unsubscribers = []
 
     this.container = document.getElementById('lobby')
     this.footer = document.getElementById('footer-lobby')
@@ -27,8 +30,13 @@ export class LobbyView {
 
       if (this.formCreateGame) {
         this.formCreateGame.onsubmit = () => {
-          if (!this.btnCreateGame.disabled && this.lobby) {
-            this.lobby.createGame(gameName)
+          if (!this.btnCreateGame.disabled) {
+            network.createGame({
+              name: gameName,
+              size: GRID_SIZE,
+              interval: Math.round(1000 / settings.speed),
+              isPublic: true,
+            })
           }
           return false
         }
@@ -95,9 +103,9 @@ export class LobbyView {
     if (this.container) this.container.style.display = ''
     if (this.footer) this.footer.style.display = ''
 
-    this.lobby = new Lobby({
-      onConnect: () => {},
-      onListReceived: (list) => {
+    this.unsubscribers.push(
+      network.on(MSG_TYPE.LOBBY_LIST, (list) => {
+        if (!Array.isArray(list)) return
         // Clean up stale connected games from sessionStorage
         const localGameKeys = Object.keys(state.connectedGames)
         const staleKeys = localGameKeys.filter(
@@ -108,21 +116,26 @@ export class LobbyView {
         }
         state.set('gamesList', list)
         this.updateGamelistTable(list)
-      },
-      onGameCreated: (gameId) => {
-        const gameName = this.inputGameName ? this.inputGameName.value.trim() : ''
+      }),
+    )
+
+    this.unsubscribers.push(
+      network.on(MSG_TYPE.GAME_CREATED, (gameId) => {
+        const gameName = this.inputGameName
+          ? this.inputGameName.value.trim()
+          : ''
         this.onSelectGame(gameId, gameName)
-      },
-    })
+      }),
+    )
+
+    network.requestLobbyList()
   }
 
   hide() {
     if (this.container) this.container.style.display = 'none'
     if (this.footer) this.footer.style.display = 'none'
 
-    if (this.lobby) {
-      this.lobby.disconnect()
-      this.lobby = null
-    }
+    this.unsubscribers.forEach((unsub) => unsub())
+    this.unsubscribers = []
   }
 }

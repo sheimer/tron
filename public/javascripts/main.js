@@ -1,0 +1,264 @@
+import './ui/dropdown.js'
+import { state } from './state.js'
+import { settings } from './settings.js'
+import { network } from './network.js'
+import { Renderer } from './Renderer.js'
+import { getThemeColors, onThemeChange } from './theme.js'
+import { SettingsView } from './ui/settingsView.js'
+import { LobbyView } from './ui/lobbyView.js'
+import { ConfigView } from './ui/configView.js'
+import { GameView } from './ui/gameView.js'
+import { MSG_TYPE } from '/shared/protocol.js'
+import {
+  PLAYER_COLOR_KEYS,
+  GRID_SIZE,
+  BLOCK_SIZE,
+} from '/shared/constants.js'
+
+const buildColorConfig = () => {
+  const colors = getThemeColors()
+  return {
+    bgColor: colors.bg,
+    bordercolor: colors.fg,
+    explosioncolor: colors.rose,
+    playercolors: PLAYER_COLOR_KEYS.map((name) => ({
+      name,
+      value: colors[name],
+    })),
+    playerbw: Array(PLAYER_COLOR_KEYS.length)
+      .fill('fg')
+      .map((name) => ({
+        name,
+        value: colors.fg,
+      })),
+  }
+}
+
+class AppCoordinator {
+  constructor() {
+    this.currentGameKey = null
+    this.localPlayersConfig = new Map() // playerId -> { left, right }
+    this.unsubscribers = []
+    this.keyboardBound = false
+
+    this.settingsView = new SettingsView()
+
+    this.lobbyView = new LobbyView({
+      onSelectGame: (gameId, name) => {
+        state.setCurrentGame(gameId, name)
+        this.joinGame(gameId)
+        this.setScreen('config')
+      },
+    })
+
+    this.configView = new ConfigView({
+      onAddPlayer: ({ name, left, right }) => {
+        const id = Array.from(crypto.getRandomValues(new Uint8Array(4)))
+          .map((num) => num.toString(16).padStart(2, '0'))
+          .join('')
+
+        this.localPlayersConfig.set(id, { left, right })
+        state.addLocalPlayer(id)
+
+        const colors = buildColorConfig()
+        const playerColor =
+          colors.playercolors[state.players.length]?.name || 'fg'
+
+        network.addPlayer({
+          id,
+          name,
+          color: playerColor,
+          left,
+          right,
+        })
+      },
+      onStartGame: () => {
+        network.startGame()
+      },
+    })
+
+    this.gameView = new GameView({
+      onStartGame: () => {
+        network.startGame()
+      },
+    })
+
+    this.renderer = new Renderer({
+      blocksize: BLOCK_SIZE,
+      size: GRID_SIZE,
+      bgColor: getThemeColors().bg,
+      bordercolor: getThemeColors().fg,
+      explosioncolor: getThemeColors().rose,
+      playercolors: (settings.coloredPlayers
+        ? buildColorConfig().playercolors
+        : buildColorConfig().playerbw
+      ).map((c) => c.value),
+      id: 'arena',
+    })
+
+    this.initNetworkListeners()
+    this.initThemeListeners()
+    this.initKeyboardControls()
+
+    state.subscribe('screen', (screen) => {
+      this.updateScreenViews(screen)
+    })
+
+    this.setScreen('lobby')
+  }
+
+  setScreen(screen) {
+    state.setScreen(screen)
+  }
+
+  updateScreenViews(screen) {
+    if (screen === 'lobby') {
+      this.leaveCurrentGame()
+      this.configView.hide()
+      this.gameView.hide()
+      this.lobbyView.show()
+    } else if (screen === 'config') {
+      this.lobbyView.hide()
+      this.gameView.hide()
+      this.configView.show(state.currentGame)
+    } else if (screen === 'game') {
+      this.lobbyView.hide()
+      this.configView.hide()
+      this.gameView.show()
+    }
+  }
+
+  initThemeListeners() {
+    const updateColors = () => {
+      const colors = buildColorConfig()
+      const playerColors = (
+        settings.coloredPlayers ? colors.playercolors : colors.playerbw
+      ).map((c) => c.value)
+
+      this.renderer.setColors({
+        bgColor: colors.bgColor,
+        bordercolor: colors.bordercolor,
+        explosioncolor: colors.explosioncolor,
+        playercolors: playerColors,
+      })
+
+      if (state.players.length) {
+        this.configView.updatePlayersTable(state.players)
+        this.gameView.updateScores(state.scores, state.players)
+      }
+    }
+
+    onThemeChange(updateColors)
+    settings.addListener('coloredPlayers', updateColors)
+    settings.addListener('speed', (speed) => {
+      if (this.currentGameKey) {
+        network.setInterval(Math.round(1000 / speed))
+      }
+    })
+  }
+
+  initKeyboardControls() {
+    this.onKeyDown = this.onKeyDown.bind(this)
+    this.onButtonClick = this.onButtonClick.bind(this)
+
+    window.addEventListener('keydown', this.onKeyDown)
+
+    const leftBtn = document.getElementById('btn-left')
+    const rightBtn = document.getElementById('btn-right')
+    if (leftBtn) leftBtn.addEventListener('click', this.onButtonClick)
+    if (rightBtn) rightBtn.addEventListener('click', this.onButtonClick)
+  }
+
+  onKeyDown(evt) {
+    if (evt.repeat) return
+
+    this.localPlayersConfig.forEach((cfg, playerId) => {
+      if (typeof cfg.left === 'number') {
+        if (evt.keyCode === cfg.left) {
+          network.changeDir({ id: playerId, dir: 'left' })
+        } else if (evt.keyCode === cfg.right) {
+          network.changeDir({ id: playerId, dir: 'right' })
+        }
+      }
+    })
+  }
+
+  onButtonClick(evt) {
+    const isLeft = evt.target.id?.includes('left')
+    const isRight = evt.target.id?.includes('right')
+
+    this.localPlayersConfig.forEach((cfg, playerId) => {
+      if (typeof cfg.left === 'string') {
+        if (isLeft) {
+          network.changeDir({ id: playerId, dir: 'left' })
+        } else if (isRight) {
+          network.changeDir({ id: playerId, dir: 'right' })
+        }
+      }
+    })
+  }
+
+  initNetworkListeners() {
+    network.on(MSG_TYPE.GAME_INFO, (info) => {
+      if (!info) return
+      const players = (info.players || []).map((p) => ({
+        ...p,
+        isLocal: state.isLocalPlayer(p.id),
+      }))
+      state.set('players', players)
+      this.configView.updatePlayersTable(players)
+
+      if (info.started) {
+        if (info.scores) {
+          state.set('scores', info.scores)
+          this.gameView.updateScores(info.scores, players)
+        }
+        this.setScreen('game')
+        this.setMatchState(info.running ? 'scoresWaiting' : 'scores')
+      } else {
+        this.setMatchState('settingPlayers')
+      }
+    })
+
+    network.on(MSG_TYPE.GAME_STATE, (matchState) => {
+      this.setMatchState(matchState)
+    })
+
+    network.on(MSG_TYPE.GAME_RESET, (positions) => {
+      state.set('positions', positions)
+      this.gameView.updatePlayerPositions(state.players, positions)
+      this.setScreen('game')
+    })
+
+    network.on(MSG_TYPE.GAME_DRAW, (changes) => {
+      this.renderer.draw(changes)
+    })
+
+    network.on(MSG_TYPE.GAME_FINISH, (scores) => {
+      state.set('scores', scores)
+      this.gameView.updateScores(scores, state.players)
+      this.setMatchState('scores')
+      setTimeout(() => {
+        this.setMatchState('finished')
+      }, 1000)
+    })
+  }
+
+  setMatchState(matchState) {
+    state.set('matchState', matchState)
+    this.gameView.updateState(matchState)
+  }
+
+  joinGame(gameKey) {
+    this.currentGameKey = gameKey
+    this.localPlayersConfig.clear()
+    network.joinGame(gameKey)
+  }
+
+  leaveCurrentGame() {
+    this.currentGameKey = null
+    this.localPlayersConfig.clear()
+  }
+}
+
+export const app = new AppCoordinator()

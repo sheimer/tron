@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 
 import { indexRouter } from './routes/index.js'
-import { addWebsockets } from './websockets/index.js'
+import { setupWebSocketServer } from './server/wsHandler.js'
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
@@ -20,7 +20,7 @@ const customCacheControl = (res, file, stat) => {
   res.setHeader('Last-Modified', notModifiedSince.toUTCString())
 }
 
-addWebsockets(server)
+setupWebSocketServer(server)
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
