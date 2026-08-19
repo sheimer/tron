@@ -6,11 +6,6 @@ import { GRID_SIZE } from '../shared/constants.js'
 const sanitizeString = (str, maxLength = 32) =>
   typeof str === 'string' ? str.trim().slice(0, maxLength) : ''
 
-const sanitizeSize = (size) => ({
-  x: Math.max(20, Math.min(300, Math.round(Number(size?.x)) || GRID_SIZE.x)),
-  y: Math.max(20, Math.min(300, Math.round(Number(size?.y)) || GRID_SIZE.y)),
-})
-
 const sanitizeInterval = (interval) =>
   Math.max(10, Math.min(500, Math.round(Number(interval)) || 25))
 
@@ -60,6 +55,8 @@ export const setupWebSocketServer = (server) => {
     broadcastLobbyList()
   })
 
+  const pendingStarts = new Map()
+
   wss.on('connection', (ws) => {
     ws.gameKey = null
 
@@ -104,13 +101,12 @@ export const setupWebSocketServer = (server) => {
           case MSG_TYPE.CREATE_GAME:
           case 'create': {
             const name = sanitizeString(payload?.name, 32) || 'Tron Game'
-            const size = sanitizeSize(payload?.size)
             const interval = sanitizeInterval(payload?.interval)
             const isPublic = Boolean(payload?.isPublic ?? true)
 
             const key = gameServer.createGame({
               name,
-              size,
+              size: GRID_SIZE,
               interval,
               isPublic,
             })
@@ -193,16 +189,73 @@ export const setupWebSocketServer = (server) => {
           case MSG_TYPE.START_GAME:
           case 'start': {
             if (!ws.gameKey) return
-            const game = gameServer.getGame(ws.gameKey)
-            if (game) {
-              game.reset()
-              broadcastToRoom(ws.gameKey, {
+            const gameKey = ws.gameKey
+            const game = gameServer.getGame(gameKey)
+            if (!game) return
+
+            // Clear any prior pending start in this room
+            const prevPending = pendingStarts.get(gameKey)
+            if (prevPending) {
+              clearTimeout(prevPending.fallbackTimer)
+              clearTimeout(prevPending.startTimer)
+              pendingStarts.delete(gameKey)
+            }
+
+            game.reset()
+
+            const roomClients = Array.from(wss.clients).filter(
+              (c) => c.readyState === WebSocket.OPEN && c.gameKey === gameKey,
+            )
+
+            const pending = {
+              readyClients: new Set(),
+              expectedCount: roomClients.length,
+              countdownStarted: false,
+              fallbackTimer: null,
+              startTimer: null,
+            }
+            pendingStarts.set(gameKey, pending)
+
+            const launchCountdown = () => {
+              if (pending.countdownStarted) return
+              pending.countdownStarted = true
+              if (pending.fallbackTimer) {
+                clearTimeout(pending.fallbackTimer)
+                pending.fallbackTimer = null
+              }
+
+              broadcastToRoom(gameKey, {
                 type: MSG_TYPE.GAME_STATE,
                 payload: 'running',
               })
-              setTimeout(() => {
-                game.start()
+
+              pending.startTimer = setTimeout(() => {
+                const g = gameServer.getGame(gameKey)
+                if (g) {
+                  g.start()
+                }
+                pendingStarts.delete(gameKey)
               }, 1000)
+            }
+
+            pending.launchCountdown = launchCountdown
+            pending.fallbackTimer = setTimeout(launchCountdown, 2000)
+
+            if (pending.expectedCount === 0) {
+              launchCountdown()
+            }
+            break
+          }
+
+          case MSG_TYPE.ARENA_READY:
+          case 'ARENA_READY': {
+            if (!ws.gameKey) return
+            const pending = pendingStarts.get(ws.gameKey)
+            if (pending && !pending.countdownStarted) {
+              pending.readyClients.add(ws)
+              if (pending.readyClients.size >= pending.expectedCount) {
+                pending.launchCountdown()
+              }
             }
             break
           }

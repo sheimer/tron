@@ -4,6 +4,8 @@ import {
   START_POSITIONS,
   AVAILABLE_POSITIONS,
   GRID_SIZE,
+  EXPLOSION_MAX_MS_RUNNING,
+  EXPLOSION_MAX_MS_FINISHED,
 } from '../shared/constants.js'
 import { Explosion } from './Explosion.js'
 
@@ -53,6 +55,7 @@ export class Arena {
   init() {
     this.escaped = []
     this.deadPlayers = 0
+    this.explosions = []
 
     this.fields = []
     this.fieldChanges = []
@@ -62,10 +65,8 @@ export class Arena {
       for (let y = 0; y < this.size.y; y++) {
         if (x === 0 || y === 0 || x === this.xMax || y === this.yMax) {
           this.fields[x][y] = CELL_TYPE.BORDER
-          this.fieldChanges.push([x, y, CELL_TYPE.BORDER])
         } else {
           this.fields[x][y] = CELL_TYPE.EMPTY
-          this.fieldChanges.push([x, y, CELL_TYPE.EMPTY])
         }
       }
     }
@@ -147,9 +148,12 @@ export class Arena {
     }
 
     // calc explosions
-    this.explosions = this.explosions.filter(
-      (explosion) => explosion.particles.length,
-    )
+    const playersLeftBefore = this.players.filter((p) => p.alive).length
+    const maxExplosionDuration =
+      playersLeftBefore > 1
+        ? EXPLOSION_MAX_MS_RUNNING
+        : EXPLOSION_MAX_MS_FINISHED
+
     const renderParticle = (pos, value) => {
       const x = Math.round(pos.x)
       const y = Math.round(pos.y)
@@ -159,8 +163,25 @@ export class Arena {
       this.fields[x][y] = value
       this.fieldChanges.push([x, y, value])
     }
+
+    const activeExplosions = []
     for (let i = 0; i < this.explosions.length; i++) {
       const explosion = this.explosions[i]
+      if (explosion.isExpired(maxExplosionDuration)) {
+        // Clear any residual rendered particles from the board
+        for (let p = 0; p < explosion.particles.length; p++) {
+          const particle = explosion.particles[p]
+          if (particle.pos !== null) {
+            renderParticle(particle.pos, CELL_TYPE.EMPTY)
+          }
+          if (particle.prev !== null) {
+            renderParticle(particle.prev, CELL_TYPE.EMPTY)
+          }
+        }
+        explosion.finish()
+        continue
+      }
+
       explosion.nextPos()
       for (let p = 0; p < explosion.particles.length; p++) {
         if (explosion.particles[p].prev !== null) {
@@ -173,7 +194,12 @@ export class Arena {
           renderParticle(explosion.particles[p].pos, CELL_TYPE.EXPLOSION)
         }
       }
+
+      if (explosion.particles.length) {
+        activeExplosions.push(explosion)
+      }
     }
+    this.explosions = activeExplosions
 
     // check on collisions --> incl. 2 in 1 spot detection
     const resetPlayers = []

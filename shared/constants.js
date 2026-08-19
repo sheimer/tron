@@ -13,6 +13,9 @@ export const MAX_PLAYERS = 6
 export const MIN_PLAYERS = 2
 export const KILLZONE_LENGTH = 32
 
+export const EXPLOSION_MAX_MS_RUNNING = 6000 // Max explosion duration while players are still alive
+export const EXPLOSION_MAX_MS_FINISHED = 4000 // Max explosion duration after all/last players crash
+
 export const SPEED = {
   SLOW: 25,
   NORMAL: 40,

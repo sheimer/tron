@@ -64,6 +64,18 @@ export class Explosion {
     }
 
     this.frame = 0
+    this.startTime = Date.now()
+  }
+
+  isExpired(maxDurationMs) {
+    return Date.now() - this.startTime >= maxDurationMs
+  }
+
+  finish() {
+    this.particles.forEach((particle) => {
+      particle.finished = true
+    })
+    this.particles = []
   }
 
   nextPos() {

@@ -183,6 +183,22 @@ export class Renderer {
     }
   }
 
+  resetGrid() {
+    const xMax = this.size.x - 1
+    const yMax = this.size.y - 1
+
+    for (let x = 0; x < this.size.x; x++) {
+      for (let y = 0; y < this.size.y; y++) {
+        if (x === 0 || y === 0 || x === xMax || y === yMax) {
+          this.fields[x][y] = CELL_TYPE.BORDER
+        } else {
+          this.fields[x][y] = CELL_TYPE.EMPTY
+        }
+      }
+    }
+    this.redrawAll()
+  }
+
   clear() {
     for (let x = 0; x < this.size.x; x++) {
       this.fields[x].fill(CELL_TYPE.EMPTY)

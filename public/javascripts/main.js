@@ -226,8 +226,10 @@ class AppCoordinator {
 
     network.on(MSG_TYPE.GAME_RESET, (positions) => {
       state.set('positions', positions)
+      this.renderer.resetGrid()
       this.gameView.updatePlayerPositions(state.players, positions)
       this.setScreen('game')
+      network.send(MSG_TYPE.ARENA_READY)
     })
 
     network.on(MSG_TYPE.GAME_DRAW, (changes) => {
