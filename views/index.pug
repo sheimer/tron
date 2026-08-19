@@ -85,4 +85,9 @@ block content
       #ping
     #palette
       div(class="flex-row small-gap")
+        each group in ['bg', 'fg', 'rose', 'leaf', 'wood', 'water', 'blossom', 'sky', 'rock']
+          div(class=`group-${group} flex-column`)
+            div(class=`color bg-${group}` title=`--color-${group}`)
+            div(class=`color bg-${group}-hl` title=`--color-${group}-hl`)
+            div(class=`color bg-${group}-muted` title=`--color-${group}-muted`)
   #log
