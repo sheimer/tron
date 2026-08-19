@@ -24,3 +24,8 @@ export const MSG_TYPE = {
   GAME_FINISH: 'GAME_FINISH',
   ERROR: 'ERROR',
 }
+
+export const BINARY_OPCODE = {
+  DRAW: 0x01,
+  CHANGE_DIR: 0x02,
+}

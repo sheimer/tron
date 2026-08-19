@@ -23,9 +23,11 @@ Focus on optimizing real-time packet delivery, handling unstable or high-latency
     - Stop movement updates for that player.
     - Trigger an immediate elimination explosion and clear their trail from `Arena.fields` so remaining players do not crash into an inactive ghost trail.
     - Keep their entry on the scoreboard marked with a `[Disconnected]` badge so they can rejoin on subsequent rounds.
-- [ ] **Binary Delta Streaming (Optional Optimization)**
-  - *Problem:* JSON array strings `[[x, y, color], ...]` have JSON serialization and parsing overhead during fast multi-explosion frames.
-  - *Proposed Solution:* Pack delta updates into compact `Uint8Array` binary buffers (3 bytes per cell: `[X, Y, Value]`) over the WebSocket for lightweight mobile network throughput.
+- [x] **Binary Delta Streaming & Movement Protocol**
+  - *Problem:* JSON strings for real-time draw deltas and frequent direction turns create serialization, string allocation, and GC overhead.
+  - *Solution:*
+    - **Server Draw Streaming:** Packed delta updates into compact binary ArrayBuffers with 5-byte cell records (`[Uint16 X, Uint16 Y, Int8 Value]`) with zero-copy `DataView` canvas decoding for lightweight mobile throughput and resolution independence up to 65,535.
+    - **Client Movement Inputs:** Packed `CHANGE_DIR` commands into 3-byte binary frames (`[Opcode 0x02, PlayerID, Direction]`) with an immediate fast-path on the server event loop bypassing `JSON.parse()`.
 
 ---
 

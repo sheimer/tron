@@ -1,4 +1,4 @@
-import { MSG_TYPE } from '/shared/protocol.js'
+import { MSG_TYPE, BINARY_OPCODE } from '/shared/protocol.js'
 
 class NetworkClient {
   constructor() {
@@ -27,6 +27,7 @@ class NetworkClient {
     const url = `${wsProto}://${hostname}${portStr}/ws`
 
     this.socket = new WebSocket(url)
+    this.socket.binaryType = 'arraybuffer'
 
     this.socket.addEventListener('open', () => {
       this.reconnectAttempts = 0
@@ -47,6 +48,19 @@ class NetworkClient {
     })
 
     this.socket.addEventListener('message', (event) => {
+      if (typeof event.data !== 'string') {
+        if (event.data instanceof ArrayBuffer) {
+          const view = new DataView(event.data)
+          if (view.byteLength > 0) {
+            const opcode = view.getUint8(0)
+            if (opcode === BINARY_OPCODE.DRAW) {
+              this.emit(MSG_TYPE.GAME_DRAW, view)
+            }
+          }
+        }
+        return
+      }
+
       try {
         const msg = JSON.parse(event.data)
         const type = msg.type || msg.action
@@ -159,7 +173,17 @@ class NetworkClient {
   }
 
   changeDir({ id, dir }) {
-    this.send(MSG_TYPE.CHANGE_DIR, { id, dir })
+    if (!this.isConnected()) return false
+    const numericId = Number(id)
+    if (Number.isInteger(numericId) && numericId >= 0 && numericId <= 255) {
+      const dirByte = dir === 'left' ? 0 : dir === 'right' ? 1 : 255
+      if (dirByte !== 255) {
+        const buf = new Uint8Array([BINARY_OPCODE.CHANGE_DIR, numericId, dirByte])
+        this.socket.send(buf)
+        return true
+      }
+    }
+    return this.send(MSG_TYPE.CHANGE_DIR, { id, dir })
   }
 }
 

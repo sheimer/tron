@@ -114,38 +114,66 @@ export class Renderer {
   }
 
   /**
+   * Updates local grid buffer and renders a single cell on the canvas.
+   * @param {number} x
+   * @param {number} y
+   * @param {number} value
+   */
+  drawCell(x, y, value) {
+    if (x < 0 || x >= this.size.x || y < 0 || y >= this.size.y) {
+      return
+    }
+
+    this.fields[x][y] = value
+
+    const cx = x * this.blocksize
+    const cy = y * this.blocksize
+
+    if (value === CELL_TYPE.EMPTY) {
+      this.canvas.fillStyle = this.bgColor
+    } else if (value === CELL_TYPE.BORDER) {
+      this.canvas.fillStyle = this.bordercolor
+    } else if (value === CELL_TYPE.EXPLOSION) {
+      this.canvas.fillStyle = this.explosioncolor
+    } else if (value >= 0 && value < this.playercolors.length) {
+      this.canvas.fillStyle = this.playercolors[value]
+    } else {
+      return
+    }
+
+    this.canvas.fillRect(cx, cy, this.blocksize, this.blocksize)
+  }
+
+  /**
    * Delta painting: Only draws modified cells on the canvas.
-   * @param {Array<[number, number, number]>} changes Array of [x, y, cellValue]
+   * Supports both binary DataView (zero-copy) and Array<[x, y, cellValue]>.
+   * @param {DataView | Array<[number, number, number]>} changes
    */
   draw(changes) {
-    if (!this.canvas || !changes || !changes.length) {
+    if (!this.canvas || !changes) {
+      return
+    }
+
+    if (changes instanceof DataView) {
+      const len = changes.byteLength
+      // Opcode is byte 0; each cell is 5 bytes (Uint16 x, Uint16 y, Int8 value)
+      for (let offset = 1; offset + 5 <= len; offset += 5) {
+        this.drawCell(
+          changes.getUint16(offset),
+          changes.getUint16(offset + 2),
+          changes.getInt8(offset + 4),
+        )
+      }
+      return
+    }
+
+    if (!changes.length) {
       return
     }
 
     for (let i = 0; i < changes.length; i++) {
       const [x, y, value] = changes[i]
-      if (x < 0 || x >= this.size.x || y < 0 || y >= this.size.y) {
-        continue
-      }
-
-      this.fields[x][y] = value
-
-      const cx = x * this.blocksize
-      const cy = y * this.blocksize
-
-      if (value === CELL_TYPE.EMPTY) {
-        this.canvas.fillStyle = this.bgColor
-      } else if (value === CELL_TYPE.BORDER) {
-        this.canvas.fillStyle = this.bordercolor
-      } else if (value === CELL_TYPE.EXPLOSION) {
-        this.canvas.fillStyle = this.explosioncolor
-      } else if (value >= 0 && value < this.playercolors.length) {
-        this.canvas.fillStyle = this.playercolors[value]
-      } else {
-        continue
-      }
-
-      this.canvas.fillRect(cx, cy, this.blocksize, this.blocksize)
+      this.drawCell(x, y, value)
     }
   }
 

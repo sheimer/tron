@@ -1,6 +1,6 @@
 import WebSocket, { WebSocketServer } from 'ws'
 import { gameServer } from './GameServer.js'
-import { MSG_TYPE } from '../shared/protocol.js'
+import { MSG_TYPE, BINARY_OPCODE } from '../shared/protocol.js'
 import { GRID_SIZE } from '../shared/constants.js'
 
 const sanitizeString = (str, maxLength = 32) =>
@@ -10,6 +10,19 @@ const sanitizeInterval = (interval) =>
   Math.max(10, Math.min(500, Math.round(Number(interval)) || 25))
 
 const sanitizeDir = (dir) => (dir === 'left' || dir === 'right' ? dir : null)
+
+const encodeBinaryDraw = (changes) => {
+  if (!changes || !changes.length) return null
+  const buf = Buffer.allocUnsafe(1 + changes.length * 5)
+  buf.writeUInt8(BINARY_OPCODE.DRAW, 0)
+  for (let i = 0; i < changes.length; i++) {
+    const offset = 1 + i * 5
+    buf.writeUInt16BE(changes[i][0], offset)
+    buf.writeUInt16BE(changes[i][1], offset + 2)
+    buf.writeInt8(changes[i][2], offset + 4)
+  }
+  return buf
+}
 
 export const setupWebSocketServer = (server) => {
   const wss = new WebSocketServer({
@@ -28,13 +41,23 @@ export const setupWebSocketServer = (server) => {
   })
 
   const broadcastToRoom = (gameKey, message) => {
-    const data = typeof message === 'string' ? message : JSON.stringify(message)
+    const isBuffer = Buffer.isBuffer(message) || message instanceof Uint8Array
+    const data = isBuffer
+      ? message
+      : typeof message === 'string'
+        ? message
+        : JSON.stringify(message)
+
     wss.clients.forEach((client) => {
       if (
         client.readyState === WebSocket.OPEN &&
         client.gameKey === gameKey
       ) {
-        client.send(data)
+        if (isBuffer) {
+          client.send(data, { binary: true })
+        } else {
+          client.send(data)
+        }
       }
     })
   }
@@ -69,6 +92,24 @@ export const setupWebSocketServer = (server) => {
     )
 
     ws.on('message', (raw) => {
+      // Fast path for 3-byte binary CHANGE_DIR frames: [OPCODE, playerId, dirByte]
+      if (
+        Buffer.isBuffer(raw) &&
+        raw.length === 3 &&
+        raw[0] === BINARY_OPCODE.CHANGE_DIR
+      ) {
+        if (!ws.gameKey) return
+        const game = gameServer.getGame(ws.gameKey)
+        if (game) {
+          const id = raw[1]
+          const dir = raw[2] === 0 ? 'left' : raw[2] === 1 ? 'right' : null
+          if (dir !== null) {
+            game.changeDir({ id, dir })
+          }
+        }
+        return
+      }
+
       try {
         const msg = JSON.parse(raw.toString())
         const type = msg.type || msg.action
@@ -138,10 +179,10 @@ export const setupWebSocketServer = (server) => {
             game.connect({
               client: ws,
               ondraw: (changes) => {
-                broadcastToRoom(gameKey, {
-                  type: MSG_TYPE.GAME_DRAW,
-                  payload: changes,
-                })
+                const buf = encodeBinaryDraw(changes)
+                if (buf) {
+                  broadcastToRoom(gameKey, buf)
+                }
               },
               onfinish: (stats) => {
                 broadcastToRoom(gameKey, {
