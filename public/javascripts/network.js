@@ -13,6 +13,10 @@ class NetworkClient {
     this.pingElement = document.getElementById('ping')
     this.cqiElement = document.getElementById('cqi')
 
+    if (this.pingElement) {
+      this.pingElement.textContent = 'connecting...'
+    }
+
     if (typeof window !== 'undefined') {
       window.addEventListener('beforeunload', () => {
         this.windowClosing = true
@@ -39,6 +43,9 @@ class NetworkClient {
     this.socket.addEventListener('close', () => {
       this.stopPing()
       this.updateCQI(null)
+      if (this.pingElement) {
+        this.pingElement.textContent = 'disconnected'
+      }
       this.emit('close')
 
       if (!this.windowClosing && this.reconnectAttempts < this.maxReconnectAttempts) {
@@ -128,7 +135,7 @@ class NetworkClient {
     if (this.isConnected()) {
       this.send(MSG_TYPE.PING, null, { t: Date.now() })
     } else if (this.pingElement) {
-      this.pingElement.textContent = '-'
+      this.pingElement.textContent = 'disconnected'
     }
   }
 

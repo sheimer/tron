@@ -76,7 +76,7 @@
 
 #gamestats {
   color: var(--color-fg-muted);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--size-tiny, 6px);
 }

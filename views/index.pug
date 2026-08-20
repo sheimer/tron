@@ -2,7 +2,11 @@ extends layout
 
 block content
   #layout
-    h1#head= title
+    #head
+      h1= title
+      #gamestats
+        #cqi(title='Connecting...')
+        #ping connecting...
     #controls
       include controls.pug
     #main
@@ -81,9 +85,6 @@ block content
             #btns(class="flex-row")
               button#btn-left <-
               button#btn-right ->
-    #gamestats(class="flex-row small-gap align-center")
-      #cqi(title='Connecting...')
-      #ping
     #palette
       div(class="flex-row small-gap")
         each group in ['bg', 'fg', 'rose', 'leaf', 'wood', 'water', 'blossom', 'sky', 'rock']

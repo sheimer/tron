@@ -68,6 +68,23 @@
 
 #head {
   grid-area: head;
+  display: flex;
+  align-items: last baseline;
+  gap: var(--size-huge);
+
+  @media (orientation: landscape) and (max-height: 800px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--size-tiny);
+
+    #gamestats {
+      padding-left: 2px;
+    }
+  }
+}
+
+#head h1 {
+  margin: 0;
 }
 
 #controls {
@@ -115,12 +132,6 @@
     width: max-content;
     max-width: max-content;
   }
-}
-
-#gamestats {
-  grid-area: stat;
-  display: flex;
-  align-items: end;
 }
 
 #palette {
