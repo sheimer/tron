@@ -11,6 +11,7 @@ class NetworkClient {
     this.listeners = new Map()
 
     this.pingElement = document.getElementById('ping')
+    this.cqiElement = document.getElementById('cqi')
 
     if (typeof window !== 'undefined') {
       window.addEventListener('beforeunload', () => {
@@ -37,6 +38,7 @@ class NetworkClient {
 
     this.socket.addEventListener('close', () => {
       this.stopPing()
+      this.updateCQI(null)
       this.emit('close')
 
       if (!this.windowClosing && this.reconnectAttempts < this.maxReconnectAttempts) {
@@ -70,6 +72,7 @@ class NetworkClient {
           if (this.pingElement) {
             this.pingElement.textContent = `${latency}ms ping`
           }
+          this.updateCQI(latency)
           this.emit('pong', latency)
           return
         }
@@ -83,6 +86,27 @@ class NetworkClient {
     this.socket.addEventListener('error', (err) => {
       this.emit('error', err)
     })
+  }
+
+  updateCQI(latency) {
+    if (!this.cqiElement) {
+      this.cqiElement = document.getElementById('cqi')
+    }
+    if (!this.cqiElement) return
+
+    this.cqiElement.className = ''
+    if (latency === null || typeof latency === 'undefined') {
+      this.cqiElement.title = 'Disconnected'
+    } else if (latency < 60) {
+      this.cqiElement.classList.add('optimal')
+      this.cqiElement.title = `Connection: Optimal (${latency}ms)`
+    } else if (latency <= 120) {
+      this.cqiElement.classList.add('moderate')
+      this.cqiElement.title = `Connection: Moderate (${latency}ms)`
+    } else {
+      this.cqiElement.classList.add('poor')
+      this.cqiElement.title = `Connection: High Latency (${latency}ms)`
+    }
   }
 
   startPing() {

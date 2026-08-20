@@ -8,12 +8,9 @@ This document outlines upcoming architectural improvements, networking enhanceme
 
 Focus on optimizing real-time packet delivery, handling unstable or high-latency connections, and managing disconnections gracefully.
 
-- [ ] **Connection Quality Indicator (CQI)**
+- [x] **Connection Quality Indicator (CQI)**
   - *Problem:* Players on high-latency networks (e.g. mobile 4G or cross-border Wi-Fi with 80–200ms ping) experience delayed cycle turns without clear feedback.
-  - *Proposed Solution:* Display a live signal badge in the header/settings:
-    - 🟢 **Optimal:** $< 50\text{ms}$
-    - 🟡 **Moderate:** $50 - 120\text{ms}$
-    - 🔴 **High Latency:** $> 120\text{ms}$ (displays warning toast: *"High latency detected (~X ms). Turns may feel delayed."*).
+  - *Solution:* Added persistent `#cqi` signal indicator next to `#ping` with theme-adaptive colors (🟢 Optimal $<60\text{ms}$, 🟡 Moderate $60-120\text{ms}$, 🔴 Poor $>120\text{ms}$, ⚫ Disconnected) and dynamic status tooltips, always visible even when numerical ping text is toggled off.
 - [ ] **Smooth Reconnection Handling**
   - *Problem:* Page reload or brief mobile carrier drops disconnect the player and can leave the session in an inconsistent state.
   - *Proposed Solution:* Preserve session token / player ID in `sessionStorage`. When the client reconnects via `/ws`, automatically send a `RECONNECT` handshake to re-associate the WebSocket with the existing player seat and restore current scores.

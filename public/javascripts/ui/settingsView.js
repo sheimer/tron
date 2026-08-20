@@ -12,7 +12,7 @@ export class SettingsView {
       showGamestats: document.querySelector('#show-gamestats input'),
       showPalette: document.querySelector('#show-palette input'),
       speed: document.getElementById('game-speed'),
-      gamestatsDiv: document.getElementById('gamestats'),
+      pingDiv: document.getElementById('ping'),
       paletteDiv: document.getElementById('palette'),
     }
 
@@ -88,8 +88,8 @@ export class SettingsView {
 
   initVisibilityListeners() {
     const updateGamestats = (show) => {
-      if (this.elements.gamestatsDiv) {
-        this.elements.gamestatsDiv.style.visibility = show
+      if (this.elements.pingDiv) {
+        this.elements.pingDiv.style.visibility = show
           ? 'visible'
           : 'hidden'
       }

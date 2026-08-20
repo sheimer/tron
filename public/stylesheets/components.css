@@ -75,8 +75,34 @@
 }
 
 #gamestats {
-  visibility: hidden;
   color: var(--color-fg-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--size-tiny, 6px);
+}
+
+#ping {
+  visibility: hidden;
+}
+
+#cqi {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-fg-muted);
+  transition: background-color 0.3s ease;
+}
+
+#cqi.optimal {
+  background-color: var(--color-leaf);
+}
+
+#cqi.moderate {
+  background-color: var(--color-wood);
+}
+
+#cqi.poor {
+  background-color: var(--color-rose);
 }
 
 #btn-left,
