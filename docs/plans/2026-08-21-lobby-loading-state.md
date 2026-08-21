@@ -2,7 +2,7 @@
 
 > **Date:** 2026-08-21  
 > **Topic:** Inline Lobby Table Connection, Loading, and Empty State Indicators  
-> **Status:** Ready for Execution  
+> **Status:** Completed  
 
 ---
 
@@ -65,9 +65,9 @@ stateDiagram-v2
 
 ## 4. Verification Checklist
 
-- [ ] Table immediately displays "Connecting to server..." on fresh page load while WebSocket handshake is in progress.
-- [ ] Displays "No active games found..." when server returns an empty game list (`[]`).
-- [ ] Transitions to populated game rows as soon as games exist.
-- [ ] Displays "Connection lost. Reconnecting..." if the server process is stopped while on the lobby screen.
-- [ ] Clean retro appearance with zero layout jumps or CSS styling issues.
-- [ ] `npx eslint .` passes with 0 errors.
+- [x] Table immediately displays "Connecting to server..." on fresh page load while WebSocket handshake is in progress.
+- [x] Displays "No active games found..." when server returns an empty game list (`[]`).
+- [x] Transitions to populated game rows as soon as games exist.
+- [x] Displays "Connection lost. Reconnecting..." if the server process is stopped while on the lobby screen.
+- [x] Clean retro appearance with zero layout jumps or CSS styling issues.
+- [x] `npx eslint .` passes with 0 errors.

@@ -44,8 +44,33 @@ export class LobbyView {
     }
   }
 
+  renderStatusRow(message, extraClass = 'fg-fg-muted') {
+    if (!this.bodyGamelistTable) return
+
+    while (this.bodyGamelistTable.firstChild) {
+      this.bodyGamelistTable.removeChild(this.bodyGamelistTable.lastChild)
+    }
+
+    const tr = document.createElement('tr')
+    const td = document.createElement('td')
+    td.colSpan = 5
+    td.className = extraClass
+    td.style.textAlign = 'center'
+    td.style.padding = '1.5rem 0'
+    td.appendChild(document.createTextNode(message))
+    tr.appendChild(td)
+    this.bodyGamelistTable.appendChild(tr)
+  }
+
   updateGamelistTable(list) {
     if (!this.bodyGamelistTable) return
+
+    if (!Array.isArray(list) || list.length === 0) {
+      this.renderStatusRow(
+        'No active games found. Create one above to get started!',
+      )
+      return
+    }
 
     while (this.bodyGamelistTable.firstChild) {
       this.bodyGamelistTable.removeChild(this.bodyGamelistTable.lastChild)
@@ -102,6 +127,32 @@ export class LobbyView {
   show() {
     if (this.container) this.container.style.display = ''
     if (this.footer) this.footer.style.display = ''
+
+    if (!state.gamesList || state.gamesList.length === 0) {
+      if (network.isConnected()) {
+        this.renderStatusRow('Fetching active games...')
+      } else {
+        this.renderStatusRow('Connecting to server & fetching games...')
+      }
+    } else {
+      this.updateGamelistTable(state.gamesList)
+    }
+
+    this.unsubscribers.push(
+      network.on('close', () => {
+        this.renderStatusRow(
+          'Connection lost. Reconnecting to server...',
+          'fg-rose-muted',
+        )
+      }),
+    )
+
+    this.unsubscribers.push(
+      network.on('open', () => {
+        this.renderStatusRow('Fetching active games...')
+        network.requestLobbyList()
+      }),
+    )
 
     this.unsubscribers.push(
       network.on(MSG_TYPE.LOBBY_LIST, (list) => {

@@ -46,10 +46,10 @@ Focus on room privacy, concurrent server capacity, and process recovery.
 - [x] **Match State Persistence & Graceful Restart Recovery**
   - *Problem:* Restarting the Node server daemon terminates all active games and wipes accumulated scores.
   - *Solution:* Implemented crash-safe atomic JSON snapshot storage (`server/Storage.js`) persisting active game rooms, registered players, and accumulated scores across service reboots and deployments without any I/O overhead during the 40 FPS physics loop.
-- [ ] **Lobby Connection & Loading State Feedback**
+- [x] **Lobby Connection & Loading State Feedback**
   - *Dedicated Plan:* [`docs/plans/2026-08-21-lobby-loading-state.md`](docs/plans/2026-08-21-lobby-loading-state.md)
   - *Problem:* On initial page load or reload, the lobby games table is empty with no visual feedback while the WebSocket connects and waits for the initial `LOBBY_LIST`.
-  - *Proposed Solution:* Display an inline connecting / loading status message inside the lobby table until the server list arrives, with a clear "No active games found" empty state if no rooms exist.
+  - *Solution:* Added inline 5-column spanning status row in `views/index.pug` and `LobbyView.js` handling "Connecting to server & fetching games...", "No active games found...", and "Connection lost. Reconnecting to server..." with zero layout jumps.
 
 ---
 
