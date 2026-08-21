@@ -11,9 +11,9 @@ Focus on optimizing real-time packet delivery, handling unstable or high-latency
 - [x] **Connection Quality Indicator (CQI)**
   - *Problem:* Players on high-latency networks (e.g. mobile 4G or cross-border Wi-Fi with 80–200ms ping) experience delayed cycle turns without clear feedback.
   - *Solution:* Added persistent `#cqi` signal indicator next to `#ping` with theme-adaptive colors (🟢 Optimal $<60\text{ms}$, 🟡 Moderate $60-120\text{ms}$, 🔴 Poor $>120\text{ms}$, ⚫ Disconnected) and dynamic status tooltips, always visible even when numerical ping text is toggled off.
-- [ ] **Smooth Reconnection Handling**
+- [x] **Smooth Reconnection Handling**
   - *Problem:* Page reload or brief mobile carrier drops disconnect the player and can leave the session in an inconsistent state.
-  - *Proposed Solution:* Preserve session token / player ID in `sessionStorage`. When the client reconnects via `/ws`, automatically send a `RECONNECT` handshake to re-associate the WebSocket with the existing player seat and restore current scores.
+  - *Solution:* Preserved local player identities and keybindings in `sessionStorage.connectedGames`. On WebSocket reconnection or page reload, automatically re-joins active match rooms, populates local player controls, displays the scoreboard, and enables the start button for seamless continuation.
 - [ ] **Disconnected Player Lifecycle & Trail Ghosting**
   - *Problem:* A disconnected player currently remains as a stationary, killable obstacle line on the grid.
   - *Proposed Solution:* When a socket disconnects mid-match:
@@ -43,9 +43,9 @@ Focus on room privacy, concurrent server capacity, and process recovery.
   - *Proposed Solution:*
     - Benchmark the target server CPU usage under concurrent match simulations (e.g. 50–100 active rooms).
     - Introduce a configurable `MAX_ACTIVE_GAMES` cap in server config, returning a friendly "Server at capacity" message when limits are reached.
-- [ ] **Match State Persistence & Graceful Restart Recovery**
+- [x] **Match State Persistence & Graceful Restart Recovery**
   - *Problem:* Restarting the Node server daemon terminates all active games and wipes accumulated scores.
-  - *Proposed Solution:* Periodically persist lightweight room metadata and score tallies to disk (or SQLite/Redis) so in-flight scores can be restored after service restarts.
+  - *Solution:* Implemented crash-safe atomic JSON snapshot storage (`server/Storage.js`) persisting active game rooms, registered players, and accumulated scores across service reboots and deployments without any I/O overhead during the 40 FPS physics loop.
 
 ---
 

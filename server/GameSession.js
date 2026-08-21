@@ -11,10 +11,13 @@ export class GameSession {
     size = GRID_SIZE,
     interval,
     isPublic,
+    stats,
+    players,
+    createdAt,
     onChange,
     onDestroy,
   }) {
-    this.createdAt = Date.now()
+    this.createdAt = createdAt || Date.now()
     this.key = key
     this.name = name
     this.isPublic = isPublic
@@ -26,8 +29,7 @@ export class GameSession {
     this.nextTickTime = null
     this.gameStarted = null
     this.running = false
-    this.acceptingPlayers = true
-    this.stats = {
+    this.stats = stats || {
       gamecount: 0,
       players: [],
       messages: [],
@@ -36,6 +38,16 @@ export class GameSession {
     this.arena = new Arena({
       size,
     })
+
+    if (Array.isArray(players) && players.length > 0) {
+      players.forEach((p) => {
+        this.arena.addPlayer(new Player({ ...p }))
+      })
+      this.acceptingPlayers = this.stats.players.length < MAX_PLAYERS
+      this.arena.init()
+    } else {
+      this.acceptingPlayers = true
+    }
 
     this.clients = []
     this.allDisconnected = null
@@ -183,6 +195,9 @@ export class GameSession {
     this.stats.players.forEach((player) => {
       player.total += player.lastScore
     })
+    if (typeof this.onChange === 'function') {
+      this.onChange()
+    }
   }
 
   reset() {

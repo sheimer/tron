@@ -3,10 +3,10 @@ Description=Tron Server Daemon
 
 [Service]
 Restart=on-failure
-Environment=PORT=3042 NODE_ENV=production
-WorkingDirectory=/srv/tron/run
-ExecStart=/home/hidden/.local/share/fnm/fnm exec npm start
-User=hidden
+Environment=PORT=__PORT__ NODE_ENV=production DATA_DIR=__PATH__/data
+WorkingDirectory=__PATH__/run
+ExecStart=__HOME__/.local/share/fnm/fnm exec npm start
+User=__USER__
 
 [Install]
 WantedBy=multi-user.target

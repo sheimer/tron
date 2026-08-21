@@ -28,6 +28,7 @@ tron/
 │   ├── Explosion.js            # Particle explosion physics simulation
 │   ├── GameSession.js          # Target-Timestamp game loop scheduler & score calculation
 │   ├── GameServer.js           # In-memory registry of active game sessions
+│   ├── Storage.js              # Crash-safe atomic JSON snapshot persistence
 │   └── wsHandler.js            # Unified WebSocket server (/ws) with input sanitization
 ├── public/                     # Frontend client assets
 │   ├── javascripts/
@@ -70,6 +71,37 @@ npm start
 
 # Run linter
 npx eslint .
+```
+
+---
+
+## Deployment
+
+Deployments to production servers use [`scripts/deploy.sh`](scripts/deploy.sh), which synchronizes files via rsync, preserves `/srv/tron/data/`, dynamically templates [`tron.service`](tron.service), and triggers systemd reload:
+
+```bash
+# 1. Setup local environment configuration (optional):
+cp .env.example .env
+# Edit .env with your DEPLOY_TARGET (e.g. user@your-server.com)
+
+# 2. Deploy with zero arguments (loads .env):
+./scripts/deploy.sh
+
+# Or pass parameters on the fly:
+./scripts/deploy.sh user@server /srv/tron 3042
+```
+
+### Server Sudoers Setup
+
+To allow automated deployments to restart the service and update systemd unit files without interactive password prompts, create `/etc/sudoers.d/tron-service` on the target server:
+
+```text
+<user> ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop tron.service
+<user> ALL=(ALL) NOPASSWD: /usr/bin/systemctl start tron.service
+<user> ALL=(ALL) NOPASSWD: /usr/bin/systemctl status tron.service
+<user> ALL=(ALL) NOPASSWD: /usr/bin/systemctl daemon-reload
+<user> ALL=(ALL) NOPASSWD: /usr/bin/cp <path>/build/tron.service.resolved /etc/systemd/system/tron.service
+<user> ALL=(ALL) NOPASSWD: /bin/cp <path>/build/tron.service.resolved /etc/systemd/system/tron.service
 ```
 
 ---

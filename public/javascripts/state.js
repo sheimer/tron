@@ -67,13 +67,22 @@ class State {
     }
   }
 
-  addLocalPlayer(playerId) {
+  addLocalPlayer(playerId, config = null) {
     const key = this.currentGame.key
     if (key && this.connectedGames[key]) {
-      this.connectedGames[key].localPlayers[playerId] = true
+      this.connectedGames[key].localPlayers[playerId] = config || true
       this.saveConnectedGames()
       this.emit('localPlayers', this.connectedGames[key].localPlayers)
     }
+  }
+
+  getLocalPlayerConfig(playerId) {
+    const key = this.currentGame.key
+    const entry = this.connectedGames[key]?.localPlayers?.[playerId]
+    if (typeof entry === 'object' && entry !== null) {
+      return entry
+    }
+    return null
   }
 
   isLocalPlayer(playerId) {

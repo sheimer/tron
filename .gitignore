@@ -57,6 +57,10 @@ typings/
 # dotenv environment variables file
 .env
 
+# Local state data & temporary files
+data/
+*.tmp
+
 # next.js build output
 .next
 

@@ -58,7 +58,7 @@ class AppCoordinator {
           .join('')
 
         this.localPlayersConfig.set(id, { left, right })
-        state.addLocalPlayer(id)
+        state.addLocalPlayer(id, { left, right })
 
         const colors = buildColorConfig()
         const playerColor =
@@ -199,12 +199,27 @@ class AppCoordinator {
   }
 
   initNetworkListeners() {
+    network.on('open', () => {
+      if (this.currentGameKey) {
+        network.joinGame(this.currentGameKey)
+      }
+    })
+
     network.on(MSG_TYPE.GAME_INFO, (info) => {
       if (!info) return
-      const players = (info.players || []).map((p) => ({
-        ...p,
-        isLocal: state.isLocalPlayer(p.id),
-      }))
+      const players = (info.players || []).map((p) => {
+        const isLocal = state.isLocalPlayer(p.id)
+        if (isLocal) {
+          const savedCfg = state.getLocalPlayerConfig(p.id)
+          const left = savedCfg?.left ?? p.left
+          const right = savedCfg?.right ?? p.right
+          this.localPlayersConfig.set(p.id, { left, right })
+        }
+        return {
+          ...p,
+          isLocal,
+        }
+      })
       state.set('players', players)
       this.configView.updatePlayersTable(players)
 
@@ -214,7 +229,7 @@ class AppCoordinator {
           this.gameView.updateScores(info.scores, players)
         }
         this.setScreen('game')
-        this.setMatchState(info.running ? 'scoresWaiting' : 'scores')
+        this.setMatchState(info.running ? 'scoresWaiting' : 'finished')
       } else {
         this.setMatchState('settingPlayers')
       }
@@ -253,7 +268,6 @@ class AppCoordinator {
 
   joinGame(gameKey) {
     this.currentGameKey = gameKey
-    this.localPlayersConfig.clear()
     network.joinGame(gameKey)
   }
 

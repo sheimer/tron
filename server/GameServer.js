@@ -1,11 +1,58 @@
 import { randomBytes } from 'crypto'
 
 import { GameSession } from './GameSession.js'
+import { storage } from './Storage.js'
 
 class GameServer {
   constructor() {
     this.games = []
     this.changeHandler = null
+    this.loadFromStorage()
+  }
+
+  loadFromStorage() {
+    const saved = storage.loadGames()
+    if (!Array.isArray(saved) || saved.length === 0) {
+      return
+    }
+
+    saved.forEach((record) => {
+      if (!record.key) return
+      try {
+        const session = new GameSession({
+          key: record.key,
+          name: record.name,
+          interval: record.interval,
+          isPublic: record.isPublic,
+          stats: record.stats,
+          players: record.players,
+          createdAt: record.createdAt,
+          onChange: () => {
+            this.saveToStorage()
+            if (this.changeHandler !== null) {
+              this.changeHandler()
+            }
+          },
+          onDestroy: () => {
+            this.destroyGame(record.key)
+            if (this.changeHandler !== null) {
+              this.changeHandler()
+            }
+          },
+        })
+        this.games.push(session)
+      } catch (err) {
+        console.error(`[GameServer] Error restoring session ${record.key}:`, err)
+      }
+    })
+
+    console.log(
+      `[GameServer] Restored ${this.games.length} game sessions from persistent storage.`,
+    )
+  }
+
+  saveToStorage() {
+    storage.saveGames(this.games)
   }
 
   createGame({ name, size, interval, isPublic }) {
@@ -18,6 +65,7 @@ class GameServer {
         interval,
         isPublic,
         onChange: () => {
+          this.saveToStorage()
           if (this.changeHandler !== null) {
             this.changeHandler()
           }
@@ -31,6 +79,7 @@ class GameServer {
       }),
     )
 
+    this.saveToStorage()
     return key
   }
 
@@ -39,6 +88,7 @@ class GameServer {
     const index = this.games.findIndex((game) => game.key === key)
     if (index !== -1) {
       this.games.splice(index, 1)
+      this.saveToStorage()
     }
   }
 
@@ -64,7 +114,10 @@ class GameServer {
       key: game.key,
       name: game.name,
       players: game.arena.players.map((player) => player),
-      started: game.gameStarted > 0,
+      started:
+        Boolean(game.gameStarted) ||
+        game.stats.gamecount > 0 ||
+        !game.acceptingPlayers,
       running: game.running,
       scores: game.stats,
     }
