@@ -85,6 +85,11 @@ class State {
     return null
   }
 
+  getLocalPlayerIds(gameKey = this.currentGame?.key) {
+    if (!gameKey || !this.connectedGames[gameKey]) return []
+    return Object.keys(this.connectedGames[gameKey].localPlayers || {})
+  }
+
   isLocalPlayer(playerId) {
     const key = this.currentGame.key
     return !!(key && this.connectedGames[key]?.localPlayers?.[playerId])

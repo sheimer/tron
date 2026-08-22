@@ -121,9 +121,14 @@ export class GameView {
 
   updatePlayerPositions(players, positions) {
     const posNames = {}
+    const posOffline = {}
     players.forEach((player) => {
       if (typeof positions[player.id] !== 'undefined') {
-        posNames[positions[player.id]] = player.name
+        const isOffline = player.connected === false
+        posNames[positions[player.id]] = isOffline
+          ? `${player.name} [disconnected]`
+          : player.name
+        posOffline[positions[player.id]] = isOffline
       }
     })
 
@@ -132,6 +137,7 @@ export class GameView {
         posEl.innerHTML = ''
         const name = posNames[index] || ''
         posEl.appendChild(document.createTextNode(name))
+        posEl.style.opacity = posOffline[index] ? '0.5' : ''
       }
     })
   }
@@ -191,24 +197,49 @@ export class GameView {
       tr.appendChild(td)
     }
 
-    for (let i = 0; i < scores.players.length; i++) {
-      const player = scores.players[i]
-      const playerColor = playersById[player.id]?.renderColor ?? 'fg'
+    const playerList =
+      Array.isArray(scores?.players) && scores.players.length > 0
+        ? scores.players
+        : players.map((p) => ({
+            id: p.id,
+            name: p.name,
+            lastScore: 0,
+            kills: 0,
+            killed: 0,
+            escaped: 0,
+            total: 0,
+            connected: p.connected,
+          }))
 
+    for (let i = 0; i < playerList.length; i++) {
+      const player = playerList[i]
+      const playerInfo = playersById[player.id]
+      const playerColor = playerInfo?.renderColor ?? 'fg'
+      const isConnected = playerInfo
+        ? playerInfo.connected !== false
+        : player.connected !== false
+
+      const isLocal = playerInfo ? Boolean(playerInfo.isLocal) : false
       const tr = document.createElement('tr')
-      tr.className = player.isLocal
+      tr.className = isLocal
         ? `fg-${playerColor}`
         : `fg-${playerColor}-muted`
+      if (!isConnected) {
+        tr.style.opacity = '0.6'
+      }
 
       const td = document.createElement('td')
-      td.appendChild(document.createTextNode(player.name))
+      const displayName = isConnected
+        ? player.name
+        : `${player.name} [disconnected]`
+      td.appendChild(document.createTextNode(displayName))
       tr.appendChild(td)
 
-      addScoreColumn(tr, player.lastScore)
-      addScoreColumn(tr, player.kills)
-      addScoreColumn(tr, player.killed)
-      addScoreColumn(tr, player.escaped)
-      addScoreColumn(tr, player.total)
+      addScoreColumn(tr, player.lastScore ?? 0)
+      addScoreColumn(tr, player.kills ?? 0)
+      addScoreColumn(tr, player.killed ?? 0)
+      addScoreColumn(tr, player.escaped ?? 0)
+      addScoreColumn(tr, player.total ?? 0)
 
       this.bodyScoreTable.appendChild(tr)
     }

@@ -135,12 +135,19 @@ export class ConfigView {
     for (let i = 0; i < players.length; i++) {
       const player = players[i]
       const isLocal = player.isLocal
+      const isConnected = player.connected !== false
       const tr = document.createElement('tr')
       tr.className = isLocal ? `fg-${colors[i]}` : `fg-${colors[i]}-muted`
+      if (!isConnected) {
+        tr.style.opacity = '0.6'
+      }
 
       // Name
       const tdName = document.createElement('td')
-      tdName.appendChild(document.createTextNode(player.name))
+      const displayName = isConnected
+        ? player.name
+        : `${player.name} [disconnected]`
+      tdName.appendChild(document.createTextNode(displayName))
       tr.appendChild(tdName)
 
       // Keys

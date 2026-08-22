@@ -46,7 +46,9 @@ class NetworkClient {
       if (this.pingElement) {
         this.pingElement.textContent = 'disconnected'
       }
-      this.emit('close')
+      if (!this.windowClosing) {
+        this.emit('close')
+      }
 
       if (!this.windowClosing && this.reconnectAttempts < this.maxReconnectAttempts) {
         setTimeout(() => {
@@ -187,8 +189,8 @@ class NetworkClient {
     this.send(MSG_TYPE.CREATE_GAME, { name, size, interval, isPublic })
   }
 
-  joinGame(key) {
-    this.send(MSG_TYPE.JOIN_GAME, { key })
+  joinGame(key, playerIds = []) {
+    this.send(MSG_TYPE.JOIN_GAME, { key, playerIds })
   }
 
   addPlayer(player) {

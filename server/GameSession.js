@@ -51,12 +51,17 @@ export class GameSession {
 
     this.clients = []
     this.allDisconnected = null
+    this.statusTimer = null
     this.checkConnectionStatus()
   }
 
   destroy() {
     this.stop()
-    if (typeof this.arena.destroy === 'function') {
+    if (this.statusTimer !== null) {
+      clearTimeout(this.statusTimer)
+      this.statusTimer = null
+    }
+    if (typeof this.arena?.destroy === 'function') {
       this.arena.destroy()
     }
     this.arena = null
@@ -86,7 +91,7 @@ export class GameSession {
         }
       }
     }
-    setTimeout(() => {
+    this.statusTimer = setTimeout(() => {
       if (this.arena) {
         this.checkConnectionStatus()
       }
@@ -194,6 +199,8 @@ export class GameSession {
     }
     this.stats.players.forEach((player) => {
       player.total += player.lastScore
+      const arenaPlayer = this.arena?.players?.find((ap) => ap.id === player.id)
+      player.connected = arenaPlayer ? arenaPlayer.connected !== false : true
     })
     if (typeof this.onChange === 'function') {
       this.onChange()
@@ -212,12 +219,42 @@ export class GameSession {
       }
     }
 
+    this.arena.startRound()
+
     this.stop()
     this.running = true
     this.gameStarted = Date.now()
     this.nextTickTime = Date.now() + this.interval
 
     this.scheduleNextTick()
+  }
+
+  disconnectPlayer(playerId) {
+    const player = this.arena.disconnectPlayer(playerId)
+    if (player) {
+      const statPlayer = this.stats.players.find((p) => p.id === playerId)
+      if (statPlayer) {
+        statPlayer.connected = false
+      }
+      if (typeof this.onChange === 'function') {
+        this.onChange()
+      }
+    }
+    return player
+  }
+
+  reconnectPlayer(playerId) {
+    const player = this.arena.reconnectPlayer(playerId)
+    if (player) {
+      const statPlayer = this.stats.players.find((p) => p.id === playerId)
+      if (statPlayer) {
+        statPlayer.connected = true
+      }
+      if (typeof this.onChange === 'function') {
+        this.onChange()
+      }
+    }
+    return player
   }
 
   stop() {

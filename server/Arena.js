@@ -121,6 +121,51 @@ export class Arena {
     this.players.push(player)
   }
 
+  startRound() {
+    let addDeadPlayers = 0
+    for (let i = 0; i < this.players.length; i++) {
+      const player = this.players[i]
+      if (!player.connected && player.alive && player.pos) {
+        addDeadPlayers++
+        this.killPlayer(i, player, -1)
+        // Clear starting dot so no trail or obstacle is left
+        const x = player.pos.x
+        const y = player.pos.y
+        if (this.fields[x][y] === i) {
+          this.fields[x][y] = CELL_TYPE.EMPTY
+          this.fieldChanges.push([x, y, CELL_TYPE.EMPTY])
+        }
+      }
+    }
+    this.deadPlayers += addDeadPlayers
+    if (addDeadPlayers > 0) {
+      this.draw()
+    }
+  }
+
+  disconnectPlayer(playerId) {
+    const index = this.players.findIndex((p) => p.id === playerId)
+    if (index === -1) return null
+
+    const player = this.players[index]
+    player.connected = false
+
+    if (player.alive && player.pos) {
+      this.deadPlayers++
+      this.killPlayer(index, player, -1)
+      this.draw()
+    }
+    return player
+  }
+
+  reconnectPlayer(playerId) {
+    const player = this.players.find((p) => p.id === playerId)
+    if (player) {
+      player.connected = true
+    }
+    return player
+  }
+
   killPlayer(index, player, killedBy) {
     player.deadPlayers = this.deadPlayers
     player.alive = false

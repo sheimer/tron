@@ -47,7 +47,6 @@ class AppCoordinator {
       onSelectGame: (gameId, name) => {
         state.setCurrentGame(gameId, name)
         this.joinGame(gameId)
-        this.setScreen('config')
       },
     })
 
@@ -113,7 +112,6 @@ class AppCoordinator {
 
   updateScreenViews(screen) {
     if (screen === 'lobby') {
-      this.leaveCurrentGame()
       this.configView.hide()
       this.gameView.hide()
       this.lobbyView.show()
@@ -201,7 +199,14 @@ class AppCoordinator {
   initNetworkListeners() {
     network.on('open', () => {
       if (this.currentGameKey) {
-        network.joinGame(this.currentGameKey)
+        this.joinGame(this.currentGameKey)
+      }
+    })
+
+    network.on('close', () => {
+      if (this.currentGameKey) {
+        this.setScreen('game')
+        this.setMatchState('scoresWaiting')
       }
     })
 
@@ -228,9 +233,14 @@ class AppCoordinator {
           state.set('scores', info.scores)
           this.gameView.updateScores(info.scores, players)
         }
-        this.setScreen('game')
-        this.setMatchState(info.running ? 'scoresWaiting' : 'finished')
+        if (state.screen !== 'game') {
+          this.setScreen('game')
+          this.setMatchState(info.running ? 'scoresWaiting' : 'finished')
+        }
       } else {
+        if (state.screen !== 'config') {
+          this.setScreen('config')
+        }
         this.setMatchState('settingPlayers')
       }
     })
@@ -268,7 +278,7 @@ class AppCoordinator {
 
   joinGame(gameKey) {
     this.currentGameKey = gameKey
-    network.joinGame(gameKey)
+    network.joinGame(gameKey, state.getLocalPlayerIds(gameKey))
   }
 
   leaveCurrentGame() {

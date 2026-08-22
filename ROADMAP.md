@@ -14,12 +14,10 @@ Focus on optimizing real-time packet delivery, handling unstable or high-latency
 - [x] **Smooth Reconnection Handling**
   - *Problem:* Page reload or brief mobile carrier drops disconnect the player and can leave the session in an inconsistent state.
   - *Solution:* Preserved local player identities and keybindings in `sessionStorage.connectedGames`. On WebSocket reconnection or page reload, automatically re-joins active match rooms, populates local player controls, displays the scoreboard, and enables the start button for seamless continuation.
-- [ ] **Disconnected Player Lifecycle & Trail Ghosting**
-  - *Problem:* A disconnected player currently remains as a stationary, killable obstacle line on the grid.
-  - *Proposed Solution:* When a socket disconnects mid-match:
-    - Stop movement updates for that player.
-    - Trigger an immediate elimination explosion and clear their trail from `Arena.fields` so remaining players do not crash into an inactive ghost trail.
-    - Keep their entry on the scoreboard marked with a `[Disconnected]` badge so they can rejoin on subsequent rounds.
+- [x] **Disconnected Client Lifecycle & Trail Ghosting**
+  - *Dedicated Plan:* [`docs/plans/2026-08-22-disconnected-client-lifecycle.md`](docs/plans/2026-08-22-disconnected-client-lifecycle.md)
+  - *Problem:* When a client disconnects, its light-cycles should explode mid-round leaving trails as obstacles, and on subsequent rounds explode at start ($t=0$) with zero trail left on the grid. Reconnecting clients should rejoin smoothly.
+  - *Solution:* On socket disconnect (`ws.on('close')`), eliminates associated players immediately while preserving their trails as physical obstacles. On subsequent rounds, explodes offline cycles at start with zero trail. Disconnected players show a `[disconnected]` badge, and reconnected clients join as spectators before seamlessly resuming driving on the next round.
 - [x] **Binary Delta Streaming & Movement Protocol**
   - *Problem:* JSON strings for real-time draw deltas and frequent direction turns create serialization, string allocation, and GC overhead.
   - *Solution:*

@@ -1,7 +1,7 @@
 import { KILLZONE_LENGTH } from './constants.js'
 
 export class Player {
-  constructor({ id, name, color, left, right }) {
+  constructor({ id, name, color, left, right, connected = true }) {
     this.dirStack = []
     this.killzone = new Array(KILLZONE_LENGTH).fill(null)
     this.id = id
@@ -9,6 +9,7 @@ export class Player {
     this.color = color
     this.left = left // keycode / control ID for turning left
     this.right = right // keycode / control ID for turning right
+    this.connected = connected !== false
     this.deadPlayers = 0
 
     this.init({})

@@ -82,6 +82,7 @@ export const setupWebSocketServer = (server) => {
 
   wss.on('connection', (ws) => {
     ws.gameKey = null
+    ws.playerIds = new Set()
 
     // Send initial lobby list
     ws.send(
@@ -164,6 +165,9 @@ export const setupWebSocketServer = (server) => {
           case MSG_TYPE.JOIN_GAME:
           case 'join': {
             const gameKey = sanitizeString(payload?.key || payload, 16)
+            const playerIds = Array.isArray(payload?.playerIds)
+              ? payload.playerIds
+              : []
             const game = gameServer.getGame(gameKey)
             if (!game) {
               ws.send(
@@ -176,6 +180,16 @@ export const setupWebSocketServer = (server) => {
             }
 
             ws.gameKey = gameKey
+            let reconnectedAny = false
+            playerIds.forEach((pid) => {
+              const cleanId = sanitizeString(pid, 16)
+              if (cleanId) {
+                ws.playerIds.add(cleanId)
+                game.reconnectPlayer(cleanId)
+                reconnectedAny = true
+              }
+            })
+
             game.connect({
               client: ws,
               ondraw: (changes) => {
@@ -198,12 +212,20 @@ export const setupWebSocketServer = (server) => {
               },
             })
 
+            const gameInfo = gameServer.getGameInfo(gameKey)
             ws.send(
               JSON.stringify({
                 type: MSG_TYPE.GAME_INFO,
-                payload: gameServer.getGameInfo(gameKey),
+                payload: gameInfo,
               }),
             )
+
+            if (reconnectedAny) {
+              broadcastToRoom(gameKey, {
+                type: MSG_TYPE.GAME_INFO,
+                payload: gameInfo,
+              })
+            }
             break
           }
 
@@ -218,6 +240,7 @@ export const setupWebSocketServer = (server) => {
               const left = payload.left
               const right = payload.right
 
+              ws.playerIds.add(id)
               game.addPlayer({ id, name, color, left, right })
               broadcastToRoom(ws.gameKey, {
                 type: MSG_TYPE.GAME_INFO,
@@ -339,7 +362,20 @@ export const setupWebSocketServer = (server) => {
     })
 
     ws.on('close', () => {
+      if (ws.gameKey) {
+        const game = gameServer.getGame(ws.gameKey)
+        if (game && ws.playerIds.size > 0) {
+          ws.playerIds.forEach((pid) => {
+            game.disconnectPlayer(pid)
+          })
+          broadcastToRoom(ws.gameKey, {
+            type: MSG_TYPE.GAME_INFO,
+            payload: gameServer.getGameInfo(ws.gameKey),
+          })
+        }
+      }
       ws.gameKey = null
+      ws.playerIds.clear()
     })
   })
 }
